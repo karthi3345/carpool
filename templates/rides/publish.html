@@ -606,6 +606,11 @@
           </div>
         </div>
 
+        <!-- Real-Time Error Notice if Departure and Destination are identical -->
+        <div id="same_city_error" style="display: none; background: #FEF2F2; border: 1.5px solid #FCA5A5; color: #991B1B; padding: 10px 14px; border-radius: 10px; margin-bottom: 14px; font-size: 13px; font-weight: 700;">
+          ⚠️ Departure and Destination cannot be the same city. Please select different cities for your trip!
+        </div>
+
         <div class="form-row-2">
           <!-- Origin Landmark -->
           <div class="form-field-group">
@@ -1207,6 +1212,51 @@
     bindInputToText('id_seats', 'prev_seats_num', '3');
     bindInputToText('id_date', 'prev_date_str', 'Sat, 22 Nov 2026');
     bindInputToText('id_price', 'prev_fare_num', '450');
+
+    // Prevent same departure and destination city
+    const originEl = document.getElementById('id_origin');
+    const destEl = document.getElementById('id_dest');
+    const sameCityAlert = document.getElementById('same_city_error');
+    const formEl = document.getElementById('publishRideForm');
+
+    function validateDifferentCities() {
+      const fromVal = (originEl ? originEl.value : '').trim().toLowerCase();
+      const toVal = (destEl ? destEl.value : '').trim().toLowerCase();
+
+      if (fromVal && toVal && fromVal === toVal) {
+        if (sameCityAlert) {
+          sameCityAlert.textContent = '⚠️ Departure and Destination cannot be the same city (' + originEl.value.trim() + '). Please choose different cities!';
+          sameCityAlert.style.display = 'block';
+        }
+        destEl.setCustomValidity('Departure and destination cannot be the same city');
+        return false;
+      } else {
+        if (sameCityAlert) sameCityAlert.style.display = 'none';
+        if (destEl) destEl.setCustomValidity('');
+        return true;
+      }
+    }
+
+    if (originEl) {
+      originEl.addEventListener('input', validateDifferentCities);
+      originEl.addEventListener('change', validateDifferentCities);
+    }
+    if (destEl) {
+      destEl.addEventListener('input', validateDifferentCities);
+      destEl.addEventListener('change', validateDifferentCities);
+    }
+
+    if (formEl) {
+      formEl.addEventListener('submit', function(e) {
+        if (!validateDifferentCities()) {
+          e.preventDefault();
+          alert('Departure and Destination cannot be the same city! Please select different cities.');
+          destEl.focus();
+          return false;
+        }
+      });
+    }
+
 
     // Real-time Driver Verification Check: Hides document upload slots when driver is already verified!
     function checkDriverVerificationStatus() {

@@ -130,6 +130,10 @@ def search_rides_view(request):
         from_city = 'Chennai'
         to_city = 'Madurai'
 
+    # If user searched same origin and destination, fallback to Madurai destination to prevent identical route
+    if from_city and to_city and from_city.strip().lower() == to_city.strip().lower():
+        to_city = 'Madurai' if from_city.strip().lower() != 'madurai' else 'Coimbatore'
+
     base_qs = Ride.objects.filter(status='published', available_seats__gt=0)
     if from_city:
         base_qs = base_qs.filter(origin__name__icontains=from_city)
@@ -260,6 +264,15 @@ def publish_ride_view(request):
         dest_name = (request.POST.get('destination', '') or request.POST.get('destination_name', '')).strip()
         origin_point = request.POST.get('origin_point', 'Central Bus Stand').strip()
         dest_point = request.POST.get('destination_point', 'Central Landmark').strip()
+
+        # Strict validation: Departure and Destination cannot be the same!
+        if origin_name and dest_name and origin_name.strip().lower() == dest_name.strip().lower():
+            error_message = f"Departure and Destination cannot be the same city ({origin_name.title()}). Please select different cities for pickup and drop."
+            return render(request, 'rides/publish.html', {
+                'cities': all_cities,
+                'error_message': error_message,
+                'form_data': request.POST
+            })
         raw_dep_date = request.POST.get('departure_date', '').strip()
         
         # Robust Date Parsing (handles 'Sat, 22 Nov 2026', '2026-11-22', '22/11/2026', etc.)
