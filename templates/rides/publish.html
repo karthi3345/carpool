@@ -1208,7 +1208,7 @@
     bindInputToText('id_date', 'prev_date_str', 'Sat, 22 Nov 2026');
     bindInputToText('id_price', 'prev_fare_num', '450');
 
-    // Real-time Driver Verification Check
+    // Real-time Driver Verification Check: Hides document upload slots when driver is already verified!
     function checkDriverVerificationStatus() {
       const dl = (document.getElementById('id_dl')?.value || '').trim();
       const govt = (document.getElementById('id_govt_num')?.value || '').trim();
@@ -1237,18 +1237,17 @@
             if (badge) {
               badge.style.display = 'block';
               if (badgeText) {
-                badgeText.textContent = `Driver "${data.driver_name}" (${data.masked_dl}) is pre-verified by ${data.verified_by}. Your ride will publish instantly!`;
+                badgeText.innerHTML = `<b>Verified Driver (${data.driver_name})</b> &bull; DL: <code>${data.masked_dl}</code> &bull; Verified by ${data.verified_by}.<br>No need to upload any documents again! Your ride will go live instantly.`;
               }
             }
             if (uploadCard) {
-              uploadCard.style.opacity = '0.75';
-              uploadCard.style.border = '1.5px dashed #10B981';
+              // Completely collapse document uploads for already verified driver
+              uploadCard.style.display = 'none';
             }
           } else {
             if (badge) badge.style.display = 'none';
             if (uploadCard) {
-              uploadCard.style.opacity = '1';
-              uploadCard.style.border = '1.5px solid #E2E8F0';
+              uploadCard.style.display = 'block';
             }
           }
         })

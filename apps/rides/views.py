@@ -303,31 +303,61 @@ def publish_ride_view(request):
         vehicle_model = request.POST.get('vehicle_model', 'Maruti Suzuki Dzire').strip()
         vehicle_number = request.POST.get('vehicle_number', 'TN-01-AB-1234').strip().upper()
 
-        # Strict Automated Driving Licence Verification
         raw_dl_number = (request.POST.get('driver_license_number', '') or request.POST.get('govt_id', '')).strip().upper()
         if not raw_dl_number:
             raw_dl_number = "TN-0120180004567"
         dl_file = request.FILES.get('driver_license_file')
+        dl_back_file = request.FILES.get('driver_license_back_file')
+        govt_id_num = request.POST.get('govt_id_number', '').strip()
+        govt_id_front_file = request.FILES.get('govt_id_front_file')
+        govt_id_back_file = request.FILES.get('govt_id_back_file')
 
-        verification_result = verify_dl_and_mask_image(dl_file, raw_dl_number)
-        if not verification_result['verified']:
-            error_message = f"⚠️ DRIVING LICENCE VERIFICATION FAILED: {verification_result['reason']} Please correct the details and resend."
-            return render(request, 'rides/publish.html', {
-                'cities': all_cities,
-                'error_message': error_message,
-                'form_data': request.POST,
-                'needs_resend': True
-            })
+        # CHECK UPFRONT IF DRIVER WAS ALREADY VERIFIED FOR A PREVIOUS RIDE
+        # If verified before, skip all OCR checks and skip support review!
+        from django.db.models import Q
+        clean_dl_check = raw_dl_number.replace('-', '').replace(' ', '')
+        clean_plate_check = vehicle_number.replace('-', '').replace(' ', '')
 
-        masked_dl = verification_result['masked_dl']
-        raw_masked_path = verification_result.get('masked_image_url') or ''
-        # Save relative path for Django ImageField (without /media/ prefix)
-        clean_masked_path = raw_masked_path.replace('\\', '/').strip()
-        if clean_masked_path.startswith('/media/'):
-            clean_masked_path = clean_masked_path[len('/media/'):]
-        elif clean_masked_path.startswith('media/'):
-            clean_masked_path = clean_masked_path[len('media/'):]
-        masked_image_field_val = clean_masked_path if clean_masked_path else None
+        existing_verified_ride = Ride.objects.filter(
+            support_verification_status='approved'
+        ).filter(
+            Q(driver_license_number__iexact=raw_dl_number) |
+            Q(driver_license_number__icontains=clean_dl_check) |
+            (Q(driver_name__iexact=driver) & Q(vehicle_number__icontains=clean_plate_check)) |
+            (Q(govt_id_number__iexact=govt_id_num) if govt_id_num else Q(pk__isnull=True))
+        ).order_by('-id').first()
+
+        if existing_verified_ride:
+            # ALREADY VERIFIED DRIVER: Skip OCR verification completely!
+            masked_dl = existing_verified_ride.driver_license_masked or mask_dl_number(raw_dl_number)
+            masked_image_field_val = existing_verified_ride.driver_license_masked_image
+            issue_date_val = existing_verified_ride.driver_license_issue_date or '2018'
+            expiry_date_val = existing_verified_ride.driver_license_expiry_date or '14/08/2035'
+            address_val = existing_verified_ride.driver_license_address or 'Tamil Nadu, India'
+        else:
+            # First-time unverified driver: perform strict automated verification
+            verification_result = verify_dl_and_mask_image(dl_file, raw_dl_number)
+            if not verification_result['verified']:
+                error_message = f"⚠️ DRIVING LICENCE VERIFICATION FAILED: {verification_result['reason']} Please correct the details and resend."
+                return render(request, 'rides/publish.html', {
+                    'cities': all_cities,
+                    'error_message': error_message,
+                    'form_data': request.POST,
+                    'needs_resend': True
+                })
+
+            masked_dl = verification_result['masked_dl']
+            raw_masked_path = verification_result.get('masked_image_url') or ''
+            clean_masked_path = raw_masked_path.replace('\\', '/').strip()
+            if clean_masked_path.startswith('/media/'):
+                clean_masked_path = clean_masked_path[len('/media/'):]
+            elif clean_masked_path.startswith('media/'):
+                clean_masked_path = clean_masked_path[len('media/'):]
+            masked_image_field_val = clean_masked_path if clean_masked_path else None
+            meta = verification_result.get('metadata') or {}
+            issue_date_val = verification_result.get('issue_date') or meta.get('issue_date', '2018')
+            expiry_date_val = verification_result.get('expiry_date') or meta.get('expiry_date', '14/08/2035')
+            address_val = verification_result.get('address') or meta.get('address', 'Chennai, Tamil Nadu')
 
         # Amenities
         amenities = []
@@ -368,31 +398,7 @@ def publish_ride_view(request):
                 'form_data': request.POST
             })
 
-        meta = verification_result.get('metadata') or {}
-        issue_date_val = verification_result.get('issue_date') or meta.get('issue_date', '2018')
-        expiry_date_val = verification_result.get('expiry_date') or meta.get('expiry_date', '14/08/2035')
-        address_val = verification_result.get('address') or meta.get('address', 'Chennai, Tamil Nadu')
-
-        # 4 Document Uploads: DL Front/Back & Govt ID Front/Back
-        dl_back_file = request.FILES.get('driver_license_back_file')
-        govt_id_num = request.POST.get('govt_id_number', '').strip()
-        govt_id_front_file = request.FILES.get('govt_id_front_file')
-        govt_id_back_file = request.FILES.get('govt_id_back_file')
-
-        # CHECK IF DRIVER WAS PREVIOUSLY VERIFIED BY CUSTOMER SUPPORT
-        # Once verified, driver does not need to be verified again for any future ride!
-        from django.db.models import Q
-        clean_dl_check = raw_dl_number.replace('-', '').replace(' ', '')
-        clean_plate_check = vehicle_number.replace('-', '').replace(' ', '')
-
-        existing_verified_ride = Ride.objects.filter(
-            support_verification_status='approved'
-        ).filter(
-            Q(driver_license_number__iexact=raw_dl_number) |
-            Q(driver_license_number__icontains=clean_dl_check) |
-            (Q(driver_name__iexact=driver) & Q(vehicle_number__icontains=clean_plate_check)) |
-            (Q(govt_id_number__iexact=govt_id_num) if govt_id_num else Q(pk__isnull=True))
-        ).order_by('-id').first()
+        # Driver check already performed upfront (existing_verified_ride)
 
         if existing_verified_ride:
             # Driver is already verified! Publish ride immediately without support delay
