@@ -69,8 +69,23 @@ def explore_map_view(request):
     return render(request, 'public/explore_map.html')
 
 def my_rides_view(request):
-    rides = Ride.objects.all().order_by('-id')[:10]
-    return render(request, 'rides/my_rides.html', {'rides': rides})
+    tab = request.GET.get('tab', 'upcoming')
+    all_rides = Ride.objects.all().order_by('-id')
+    
+    if tab == 'completed':
+        rides = all_rides.filter(status='completed')[:15]
+    elif tab == 'cancelled':
+        rides = all_rides.filter(status='cancelled')[:15]
+    else:
+        # upcoming / active
+        rides = all_rides.filter(status__in=['published', 'pending', 'fully_booked'])[:15]
+        
+    cancelled_param = request.GET.get('cancelled') == '1'
+    return render(request, 'rides/my_rides.html', {
+        'rides': rides,
+        'current_tab': tab,
+        'cancelled_alert': cancelled_param
+    })
 
 def user_profile_view(request):
     return render(request, 'accounts/profile.html')

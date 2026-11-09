@@ -271,14 +271,28 @@
           Safe driver with 7+ years experience. Always on time! AC vehicle with comfortable legroom. No smoking inside.
         </div>
 
-        <form action="/bookings/create/" method="POST">
-          {% csrf_token %}
-          <input type="hidden" name="ride_id" value="{{ ride.id|default:1 }}">
-          <input type="hidden" name="seats" value="1">
-          <button type="submit" class="book-now-full-btn">
-            Book Ride Now
-          </button>
-        </form>
+        {% if ride.status == 'cancelled' %}
+        <div style="background: #FEE2E2; border: 1.5px solid #FCA5A5; color: #991B1B; padding: 14px 18px; border-radius: 12px; margin-top: 14px; text-align: center; font-weight: 700;">
+          ⚠️ THIS RIDE HAS BEEN CANCELLED BY THE DRIVER
+          {% if ride.support_notes %}
+          <div style="font-size: 12.5px; font-weight: normal; margin-top: 4px; color: #7F1D1D;">Reason: {{ ride.support_notes }}</div>
+          {% endif %}
+        </div>
+        {% else %}
+        <div style="display: flex; gap: 12px; align-items: center; margin-top: 16px;">
+          <form action="/bookings/create/" method="POST" style="flex: 1;">
+            {% csrf_token %}
+            <input type="hidden" name="ride_id" value="{{ ride.id|default:1 }}">
+            <input type="hidden" name="seats" value="1">
+            <button type="submit" class="book-now-full-btn">
+              Book Ride Now
+            </button>
+          </form>
+          <a href="/rides/{{ ride.id }}/cancel/" style="background: #FFFFFF; color: #DC2626; border: 1.5px solid #FCA5A5; font-size: 14px; font-weight: 700; padding: 12px 18px; border-radius: 999px; text-decoration: none; white-space: nowrap;">
+            Cancel Ride
+          </a>
+        </div>
+        {% endif %}
       </div>
     </div>
 

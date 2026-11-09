@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Confirm Ride Cancellation | TamizhPayanam{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 48px auto 80px; padding: 0 20px;">
+  <div style="background: #FFFFFF; border: 1.5px solid #FCA5A5; border-radius: 20px; padding: 32px; box-shadow: 0 8px 26px rgba(239, 68, 68, 0.08);">
+    
+    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 18px;">
+      <span style="font-size: 28px;">⚠️</span>
+      <div>
+        <h2 style="margin: 0; font-size: 20px; font-weight: 800; color: #991B1B;">Cancel Published Ride #{{ ride.id }}</h2>
+        <span style="font-size: 13px; color: #64748B;">Are you sure you want to cancel this ride?</span>
+      </div>
+    </div>
+
+    <!-- Ride summary box -->
+    <div style="background: #FEF2F2; border-radius: 12px; padding: 16px 18px; margin-bottom: 22px;">
+      <div style="font-size: 16px; font-weight: 800; color: #1E293B; margin-bottom: 4px;">
+        {{ ride.origin.name }} &rarr; {{ ride.destination.name }}
+      </div>
+      <div style="font-size: 13px; color: #64748B; margin-bottom: 6px;">
+        📅 {{ ride.departure_date|date:"D, d M Y" }} &bull; ⏰ {{ ride.departure_time|time:"h:i A" }}
+      </div>
+      <div style="font-size: 13px; color: #0D5C3A; font-weight: 600;">
+        🚗 {{ ride.vehicle_model }} ({{ ride.vehicle_number }}) &bull; ₹{{ ride.price_per_seat|floatformat:0 }}/seat
+      </div>
+    </div>
+
+    <form method="POST" action="/rides/{{ ride.id }}/cancel/">
+      {% csrf_token %}
+      <label style="display: block; font-size: 13px; font-weight: 700; color: #374151; margin-bottom: 6px;">
+        Reason for Cancellation:
+      </label>
+      <textarea name="cancellation_reason" rows="3" required placeholder="Please let passengers know why you are cancelling this ride (e.g. change in travel plan, vehicle repair, schedule conflict)..." style="width: 100%; box-sizing: border-box; font-family: inherit; font-size: 13px; padding: 10px 12px; border: 1.5px solid #CBD5E1; border-radius: 8px; margin-bottom: 20px;"></textarea>
+
+      <div style="display: flex; justify-content: flex-end; gap: 12px;">
+        <a href="/rides/my-rides/" style="background: #F1F5F9; color: #475569; font-weight: 700; font-size: 13.5px; padding: 10px 20px; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center;">
+          Never mind, Keep Ride
+        </a>
+        <button type="submit" style="background: #DC2626; color: #FFFFFF; font-weight: 700; font-size: 13.5px; padding: 10px 22px; border: none; border-radius: 8px; cursor: pointer;">
+          Yes, Cancel This Ride
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>
+{% endblock %}

@@ -5,7 +5,8 @@ from .views import (
     search_rides_view,
     publish_ride_view,
     verify_license_api_view,
-    check_driver_verified_api_view
+    check_driver_verified_api_view,
+    cancel_ride_view
 )
 
 urlpatterns = [
@@ -13,6 +14,7 @@ urlpatterns = [
     path('search/', search_rides_view, name='rides-search'),
     path('publish/', publish_ride_view, name='rides-publish'),
     path('<int:ride_id>/', ride_detail_view, name='ride-detail'),
+    path('<int:ride_id>/cancel/', cancel_ride_view, name='ride-cancel'),
     path('verify-license/', verify_license_api_view, name='api-verify-license'),
     path('check-driver-verified/', check_driver_verified_api_view, name='api-check-driver-verified'),
 ]

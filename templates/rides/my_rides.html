@@ -33,7 +33,7 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
   }
 
-  /* Top Tab Segment: My Rides | My Bookings (Mockup Screen 4) */
+  /* Top Tab Segment */
   .segmented-tabs-header {
     display: flex;
     justify-content: center;
@@ -48,51 +48,46 @@
     font-weight: 700;
     color: #64748B;
     text-decoration: none;
-    padding-bottom: 8px;
     position: relative;
-    cursor: pointer;
+    padding-bottom: 8px;
   }
 
   .tab-link-item.active {
-    color: #12372A;
+    color: var(--tp-dark);
+    border-bottom: 3px solid #FFD000;
   }
 
-  .tab-link-item.active::after {
-    content: '';
-    position: absolute;
-    bottom: -14px;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: var(--tp-green);
-    border-radius: 2px;
-  }
-
-  /* Sub-status pills: Upcoming, Completed, Cancelled */
+  /* Status Filter Pills */
   .status-pills-row {
     display: flex;
-    gap: 10px;
+    gap: 12px;
     margin-bottom: 24px;
   }
 
   .status-filter-pill {
-    font-size: 13px;
-    font-weight: 700;
-    padding: 6px 18px;
+    padding: 7px 18px;
     border-radius: 999px;
+    font-size: 13.5px;
+    font-weight: 700;
     text-decoration: none;
-    border: 1.5px solid transparent;
+    transition: all 0.15s ease;
   }
 
   .status-filter-pill.active {
     background: var(--tp-green-light);
     color: var(--tp-green);
-    border-color: var(--tp-green-border);
+    border: 1px solid var(--tp-green-border);
   }
 
   .status-filter-pill.inactive {
     background: #F1F5F9;
     color: #64748B;
+    border: 1px solid transparent;
+  }
+
+  .status-filter-pill.inactive:hover {
+    background: #E2E8F0;
+    color: #1E293B;
   }
 
   /* Item list */
@@ -137,6 +132,24 @@
     color: #FFFFFF;
     border-color: var(--tp-green);
   }
+
+  .cancel-ride-btn {
+    border: 1.5px solid #FCA5A5;
+    background: #FEF2F2;
+    color: #DC2626;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 7px 16px;
+    border-radius: 999px;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .cancel-ride-btn:hover {
+    background: #DC2626;
+    color: #FFFFFF;
+    border-color: #DC2626;
+  }
 </style>
 {% endblock %}
 
@@ -145,79 +158,71 @@
   
   <div class="my-rides-card">
     
-    <!-- Top Tabs (Mockup Screen 4) -->
+    <!-- Top Tabs -->
     <div class="segmented-tabs-header">
-      <a href="/rides/my-rides/" class="tab-link-item active">My Rides</a>
-      <a href="/rides/my-rides/?tab=bookings" class="tab-link-item">My Bookings</a>
+      <a href="/rides/my-rides/" class="tab-link-item active">My Published Rides</a>
+      <a href="/rides/publish/" class="tab-link-item" style="color: #0D5C3A;">+ Publish New Ride</a>
     </div>
+
+    {% if cancelled_alert %}
+    <div style="background: #FEF2F2; border: 1.5px solid #FCA5A5; color: #991B1B; padding: 12px 18px; border-radius: 12px; margin-bottom: 20px; font-size: 13.5px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+      <span>✓</span> Your published ride has been cancelled successfully. Passengers will be notified.
+    </div>
+    {% endif %}
 
     <!-- Status filter pills -->
     <div class="status-pills-row">
-      <span class="status-filter-pill active">Upcoming</span>
-      <span class="status-filter-pill inactive">Completed</span>
-      <span class="status-filter-pill inactive">Cancelled</span>
+      <a href="/rides/my-rides/?tab=upcoming" class="status-filter-pill {% if current_tab != 'cancelled' and current_tab != 'completed' %}active{% else %}inactive{% endif %}">Active / Upcoming</a>
+      <a href="/rides/my-rides/?tab=cancelled" class="status-filter-pill {% if current_tab == 'cancelled' %}active{% else %}inactive{% endif %}">Cancelled Rides</a>
+      <a href="/rides/my-rides/?tab=completed" class="status-filter-pill {% if current_tab == 'completed' %}active{% else %}inactive{% endif %}">Completed</a>
     </div>
 
-    <!-- Rides list matching mockup -->
+    <!-- Rides list from database -->
     <div>
-      
-      <!-- Item 1 -->
-      <div class="ride-row-card">
-        <div style="display: flex; align-items: center;">
-          <img src="/static/tamizh-payanam/images/p1.png" alt="Car" class="ride-thumb-img" onerror="this.src='/static/images/hero_logo.png'">
-          <div>
-            <div style="font-size: 16px; font-weight: 800; color: #12372A;">
-              Chennai &rarr; Madurai
+      {% if rides %}
+        {% for ride in rides %}
+        <div class="ride-row-card">
+          <div style="display: flex; align-items: center;">
+            <div style="width: 52px; height: 52px; border-radius: 12px; background: #F0FDF4; display: flex; align-items: center; justify-content: center; font-size: 26px; margin-right: 18px;">
+              🚗
             </div>
-            <div style="font-size: 13px; color: #64748B; margin-top: 3px;">
-              Sat, 22 Nov 2026 &bull; 08:30 AM
-            </div>
-            <div style="font-size: 12.5px; font-weight: 600; color: #0D5C3A; margin-top: 2px;">
-              3 seats &bull; ₹350/seat
-            </div>
-          </div>
-        </div>
-        <a href="/rides/1/" class="view-details-btn">View Details</a>
-      </div>
-
-      <!-- Item 2 -->
-      <div class="ride-row-card">
-        <div style="display: flex; align-items: center;">
-          <img src="/static/tamizh-payanam/images/p2.png" alt="Car" class="ride-thumb-img" onerror="this.src='/static/images/hero_logo.png'">
-          <div>
-            <div style="font-size: 16px; font-weight: 800; color: #12372A;">
-              Chennai &rarr; Pondicherry
-            </div>
-            <div style="font-size: 13px; color: #64748B; margin-top: 3px;">
-              Sun, 23 Nov 2026 &bull; 09:00 AM
-            </div>
-            <div style="font-size: 12.5px; font-weight: 600; color: #0D5C3A; margin-top: 2px;">
-              4 seats &bull; ₹300/seat
+            <div>
+              <div style="font-size: 16px; font-weight: 800; color: #12372A;">
+                {{ ride.origin.name }} &rarr; {{ ride.destination.name }}
+                <span style="font-size: 12px; font-weight: 600; color: #64748B;">({{ ride.origin_point }} &rarr; {{ ride.destination_point }})</span>
+              </div>
+              <div style="font-size: 13px; color: #64748B; margin-top: 3px;">
+                📅 {{ ride.departure_date|date:"D, d M Y" }} &bull; ⏰ {{ ride.departure_time|time:"h:i A" }}
+              </div>
+              <div style="font-size: 12.5px; font-weight: 600; color: #0D5C3A; margin-top: 2px;">
+                {{ ride.available_seats }} seats left &bull; ₹{{ ride.price_per_seat|floatformat:0 }}/seat &bull; Driver: {{ ride.driver_name }}
+                {% if ride.status == 'cancelled' %}
+                  <span style="background: #FEE2E2; color: #991B1B; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 800; margin-left: 6px;">CANCELLED</span>
+                {% elif ride.support_verification_status == 'pending_review' %}
+                  <span style="background: #FEF3C7; color: #92400E; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 800; margin-left: 6px;">PENDING REVIEW</span>
+                {% else %}
+                  <span style="background: #DCFCE7; color: #166534; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 800; margin-left: 6px;">LIVE &amp; PUBLISHED</span>
+                {% endif %}
+              </div>
             </div>
           </div>
-        </div>
-        <a href="/rides/1/" class="view-details-btn">View Details</a>
-      </div>
-
-      <!-- Item 3 -->
-      <div class="ride-row-card">
-        <div style="display: flex; align-items: center;">
-          <img src="/static/tamizh-payanam/images/p3.png" alt="Car" class="ride-thumb-img" onerror="this.src='/static/images/hero_logo.png'">
-          <div>
-            <div style="font-size: 16px; font-weight: 800; color: #12372A;">
-              Chennai &rarr; Trichy
-            </div>
-            <div style="font-size: 13px; color: #64748B; margin-top: 3px;">
-              Sun, 30 Nov 2026 &bull; 07:00 AM
-            </div>
-            <div style="font-size: 12.5px; font-weight: 600; color: #0D5C3A; margin-top: 2px;">
-              3 seats &bull; ₹300/seat
-            </div>
+          
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <a href="/rides/{{ ride.id }}/" class="view-details-btn">View Details</a>
+            {% if ride.status != 'cancelled' %}
+            <a href="/rides/{{ ride.id }}/cancel/" class="cancel-ride-btn" title="Cancel this ride">Cancel Ride</a>
+            {% endif %}
           </div>
         </div>
-        <a href="/rides/1/" class="view-details-btn">View Details</a>
-      </div>
-
+        {% endfor %}
+      {% else %}
+        <div style="background: #F8FAFC; border: 1.5px dashed #CBD5E1; border-radius: 16px; padding: 48px; text-align: center; color: #64748B;">
+          <span style="font-size: 36px; display: block; margin-bottom: 8px;">🚗</span>
+          <h3 style="margin: 0; color: #1E293B; font-size: 16px;">No rides found in this tab.</h3>
+          <p style="margin: 6px 0 16px; font-size: 13px;">Publish your next trip to travel and share costs across Tamil Nadu.</p>
+          <a href="/rides/publish/" style="background: #0D5C3A; color: #FFFFFF; font-weight: 700; font-size: 13px; padding: 10px 22px; border-radius: 999px; text-decoration: none; display: inline-block;">Publish a Ride Now</a>
+        </div>
+      {% endif %}
     </div>
 
   </div>

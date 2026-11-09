@@ -518,3 +518,17 @@ def ride_detail_view(request, ride_id):
     return render(request, 'rides/detail.html', {
         'ride': ride,
     })
+
+
+def cancel_ride_view(request, ride_id):
+    """
+    Allow driver to cancel their published ride.
+    """
+    ride = get_object_or_404(Ride, id=ride_id)
+    if request.method == 'POST':
+        cancellation_reason = request.POST.get('cancellation_reason', 'Driver personal emergency or plan change').strip()
+        ride.status = 'cancelled'
+        ride.support_notes = f"CANCELLED BY DRIVER: {cancellation_reason}"
+        ride.save()
+        return redirect('/rides/my-rides/?cancelled=1')
+    return render(request, 'rides/cancel_confirm.html', {'ride': ride})
