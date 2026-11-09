@@ -46,6 +46,52 @@ class RideListCreateAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+def check_driver_verified_api_view(request):
+    """
+    Check if a driver is already verified by Customer Support based on DL number,
+    Govt ID, vehicle plate, or driver name. Once verified, no re-verification needed!
+    """
+    dl = request.GET.get('dl', '').strip().upper()
+    govt_id = request.GET.get('govt_id', '').strip()
+    plate = request.GET.get('plate', '').strip().upper()
+    driver_name = request.GET.get('driver_name', '').strip()
+
+    clean_dl = dl.replace('-', '').replace(' ', '')
+    clean_plate = plate.replace('-', '').replace(' ', '')
+
+    from django.db.models import Q
+    query = Q(support_verification_status='approved')
+
+    matches = []
+    if len(clean_dl) >= 5:
+        matches.append(Q(driver_license_number__icontains=clean_dl) | Q(driver_license_number__icontains=dl))
+    if len(govt_id) >= 4:
+        matches.append(Q(govt_id_number__iexact=govt_id))
+    if len(clean_plate) >= 4:
+        matches.append(Q(vehicle_number__icontains=clean_plate) | Q(vehicle_number__icontains=plate))
+    if driver_name and len(driver_name) >= 3:
+        matches.append(Q(driver_name__iexact=driver_name))
+
+    if matches:
+        combined_q = matches[0]
+        for m in matches[1:]:
+            combined_q = combined_q | m
+        approved_ride = Ride.objects.filter(query & combined_q).order_by('-id').first()
+        if approved_ride:
+            return JsonResponse({
+                'is_verified': True,
+                'driver_name': approved_ride.driver_name,
+                'masked_dl': approved_ride.driver_license_masked or approved_ride.driver_license_number,
+                'vehicle_model': approved_ride.vehicle_model,
+                'vehicle_number': approved_ride.vehicle_number,
+                'govt_id_number': approved_ride.govt_id_number,
+                'verified_by': approved_ride.support_reviewed_by or 'Customer Support Officer',
+                'message': f"Driver verified previously! No need to re-upload documents or wait for support review."
+            })
+
+    return JsonResponse({'is_verified': False})
+
+
 def verify_license_api_view(request):
     """
     Real-time AJAX endpoint called on input or file upload to automatically verify
@@ -333,43 +379,112 @@ def publish_ride_view(request):
         govt_id_front_file = request.FILES.get('govt_id_front_file')
         govt_id_back_file = request.FILES.get('govt_id_back_file')
 
-        created_ride = Ride.objects.create(
-            origin=origin_city,
-            origin_point=origin_point,
-            destination=dest_city,
-            destination_point=dest_point,
-            departure_date=dep_date,
-            departure_time=dep_time,
-            available_seats=seats,
-            total_seats=seats,
-            price_per_seat=price,
-            driver_name=driver,
-            vehicle_model=vehicle_model,
-            vehicle_number=vehicle_number,
-            driver_license_number=raw_dl_number,
-            driver_license_masked=masked_dl,
-            driver_license_issue_date=issue_date_val,
-            driver_license_expiry_date=expiry_date_val,
-            driver_license_address=address_val,
-            driver_license_image=dl_file,
-            driver_license_masked_image=masked_image_field_val,
-            driver_license_back_image=dl_back_file,
-            govt_id_number=govt_id_num,
-            govt_id_front_image=govt_id_front_file,
-            govt_id_back_image=govt_id_back_file,
-            is_license_verified=False,
-            support_verification_status='pending_review',
-            support_notes='Submitted by driver. Awaiting Customer Support team document verification before publishing.',
-            notes=combined_notes,
-            status='pending'
-        )
-        success_message = f"Ride #{created_ride.id} submitted successfully! Your details and Driving Licence ({masked_dl}) have been routed to Customer Support for verification. Once approved by our team, your ride will go live!"
+        # CHECK IF DRIVER WAS PREVIOUSLY VERIFIED BY CUSTOMER SUPPORT
+        # Once verified, driver does not need to be verified again for any future ride!
+        from django.db.models import Q
+        clean_dl_check = raw_dl_number.replace('-', '').replace(' ', '')
+        clean_plate_check = vehicle_number.replace('-', '').replace(' ', '')
+
+        existing_verified_ride = Ride.objects.filter(
+            support_verification_status='approved'
+        ).filter(
+            Q(driver_license_number__iexact=raw_dl_number) |
+            Q(driver_license_number__icontains=clean_dl_check) |
+            (Q(driver_name__iexact=driver) & Q(vehicle_number__icontains=clean_plate_check)) |
+            (Q(govt_id_number__iexact=govt_id_num) if govt_id_num else Q(pk__isnull=True))
+        ).order_by('-id').first()
+
+        if existing_verified_ride:
+            # Driver is already verified! Publish ride immediately without support delay
+            support_status = 'approved'
+            ride_status = 'published'
+            is_verified = True
+            reviewer = existing_verified_ride.support_reviewed_by or 'System Auto-Approval (Previously Verified Driver)'
+            support_notes = f"Auto-approved: Driver ({driver}) Driving Licence & Identity previously audited and verified in Ride #{existing_verified_ride.id}."
+            
+            # Inherit previous verified docs if user omitted uploading them again
+            final_dl_front = dl_file or existing_verified_ride.driver_license_image
+            final_dl_masked = masked_image_field_val or existing_verified_ride.driver_license_masked_image
+            final_dl_back = dl_back_file or existing_verified_ride.driver_license_back_image
+            final_govt_num = govt_id_num or existing_verified_ride.govt_id_number
+            final_govt_front = govt_id_front_file or existing_verified_ride.govt_id_front_image
+            final_govt_back = govt_id_back_file or existing_verified_ride.govt_id_back_image
+
+            created_ride = Ride.objects.create(
+                origin=origin_city,
+                origin_point=origin_point,
+                destination=dest_city,
+                destination_point=dest_point,
+                departure_date=dep_date,
+                departure_time=dep_time,
+                available_seats=seats,
+                total_seats=seats,
+                price_per_seat=price,
+                driver_name=driver,
+                vehicle_model=vehicle_model,
+                vehicle_number=vehicle_number,
+                driver_license_number=raw_dl_number,
+                driver_license_masked=masked_dl,
+                driver_license_issue_date=issue_date_val,
+                driver_license_expiry_date=expiry_date_val,
+                driver_license_address=address_val,
+                driver_license_image=final_dl_front,
+                driver_license_masked_image=final_dl_masked,
+                driver_license_back_image=final_dl_back,
+                govt_id_number=final_govt_num,
+                govt_id_front_image=final_govt_front,
+                govt_id_back_image=final_govt_back,
+                is_license_verified=is_verified,
+                support_verification_status=support_status,
+                support_reviewed_by=reviewer,
+                support_reviewed_at=datetime.now(),
+                support_notes=support_notes,
+                notes=combined_notes,
+                status=ride_status
+            )
+            success_message = f"🎉 Ride #{created_ride.id} is LIVE! You are a VERIFIED DRIVER on TamizhPayanam. No re-verification needed - your ride has been instantly published!"
+            is_already_verified = True
+        else:
+            # First-time unverified driver -> routes to customer support
+            created_ride = Ride.objects.create(
+                origin=origin_city,
+                origin_point=origin_point,
+                destination=dest_city,
+                destination_point=dest_point,
+                departure_date=dep_date,
+                departure_time=dep_time,
+                available_seats=seats,
+                total_seats=seats,
+                price_per_seat=price,
+                driver_name=driver,
+                vehicle_model=vehicle_model,
+                vehicle_number=vehicle_number,
+                driver_license_number=raw_dl_number,
+                driver_license_masked=masked_dl,
+                driver_license_issue_date=issue_date_val,
+                driver_license_expiry_date=expiry_date_val,
+                driver_license_address=address_val,
+                driver_license_image=dl_file,
+                driver_license_masked_image=masked_image_field_val,
+                driver_license_back_image=dl_back_file,
+                govt_id_number=govt_id_num,
+                govt_id_front_image=govt_id_front_file,
+                govt_id_back_image=govt_id_back_file,
+                is_license_verified=False,
+                support_verification_status='pending_review',
+                support_notes='Submitted by driver. Awaiting Customer Support team document verification before publishing.',
+                notes=combined_notes,
+                status='pending'
+            )
+            success_message = f"Ride #{created_ride.id} submitted successfully! Your details and Driving Licence ({masked_dl}) have been routed to Customer Support for verification. Once approved by our team, your ride will go live!"
+            is_already_verified = False
 
     return render(request, 'rides/publish.html', {
         'cities': all_cities,
         'success_message': success_message,
         'error_message': error_message,
-        'created_ride': created_ride
+        'created_ride': created_ride,
+        'is_already_verified': locals().get('is_already_verified', False)
     })
 
 

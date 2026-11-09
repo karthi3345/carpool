@@ -4,7 +4,8 @@ from .views import (
     RideListCreateAPIView,
     search_rides_view,
     publish_ride_view,
-    verify_license_api_view
+    verify_license_api_view,
+    check_driver_verified_api_view
 )
 
 urlpatterns = [
@@ -13,4 +14,5 @@ urlpatterns = [
     path('publish/', publish_ride_view, name='rides-publish'),
     path('<int:ride_id>/', ride_detail_view, name='ride-detail'),
     path('verify-license/', verify_license_api_view, name='api-verify-license'),
+    path('check-driver-verified/', check_driver_verified_api_view, name='api-check-driver-verified'),
 ]

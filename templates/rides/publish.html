@@ -535,6 +535,24 @@
       <div class="publish-form-subtitle">Share your journey, offset fuel costs, and travel with verified passengers across Tamil Nadu.</div>
 
       {% if success_message %}
+      {% if is_already_verified %}
+      <div class="alert-banner-success" style="background: #ECFDF5; border: 1.5px solid #10B981; color: #065F46; padding: 18px 22px; border-radius: 14px; margin-bottom: 24px;">
+        <div style="display: flex; align-items: flex-start; gap: 14px;">
+          <span style="font-size: 30px; line-height: 1;">🎉</span>
+          <div>
+            <b style="font-size: 16px; color: #065F46; display: block; margin-bottom: 6px;">{{ success_message }}</b>
+            <div style="font-size: 13.5px; color: #047857; line-height: 1.6;">
+              Status: <span style="background: #D1FAE5; color: #065F46; padding: 3px 10px; border-radius: 6px; font-weight: 800; border: 1px solid #34D399;">PUBLISHED LIVE &amp; BOOKABLE</span>
+              <p style="margin: 6px 0 0; font-size: 13px; color: #065F46;">Because your Driving Licence and Identity have already been verified by Customer Support on TamizhPayanam, your ride is published instantly! Passengers can now book seats on your route immediately.</p>
+            </div>
+            <div style="margin-top: 12px; display: flex; gap: 10px;">
+              <a href="/rides/{{ created_ride.id }}/" style="display: inline-block; background: #0D5C3A; color: #FFFFFF; font-weight: 700; font-size: 12.5px; padding: 7px 16px; border-radius: 8px; text-decoration: none;">View Live Ride Page &rarr;</a>
+              <a href="/rides/search/?from={{ created_ride.origin.name }}&to={{ created_ride.destination.name }}" style="display: inline-block; background: #FFFFFF; color: #0D5C3A; border: 1px solid #0D5C3A; font-weight: 700; font-size: 12.5px; padding: 7px 16px; border-radius: 8px; text-decoration: none;">Search Rides</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% else %}
       <div class="alert-banner-success" style="background: #FFFBEB; border: 1.5px solid #FDE047; color: #854D0E; padding: 18px 22px; border-radius: 14px; margin-bottom: 24px;">
         <div style="display: flex; align-items: flex-start; gap: 14px;">
           <span style="font-size: 28px; line-height: 1;">🛡️</span>
@@ -542,11 +560,12 @@
             <b style="font-size: 16px; color: #92400E; display: block; margin-bottom: 6px;">{{ success_message }}</b>
             <div style="font-size: 13.5px; color: #78350F; line-height: 1.6;">
               Status: <span style="background: #FEF3C7; color: #B45309; padding: 3px 10px; border-radius: 6px; font-weight: 800; border: 1px solid #FCD34D;">UNDER CUSTOMER SUPPORT VERIFICATION</span>
-              <p style="margin: 6px 0 0; font-size: 13px; color: #854D0E;">Our customer support team is auditing your driving licence and route details. You will receive an SMS and in-app notification the moment your ride is approved and made live for passengers.</p>
+              <p style="margin: 6px 0 0; font-size: 13px; color: #854D0E;">Our customer support team is auditing your driving licence and route details. Once approved, all your future rides will be published immediately without waiting for review!</p>
             </div>
           </div>
         </div>
       </div>
+      {% endif %}
       {% endif %}
 
       {% if error_message %}
@@ -727,8 +746,22 @@
           </div>
         </div>
 
+        <!-- Real-Time Verified Driver Banner -->
+        <div id="verified_driver_badge" style="display: none; background: #ECFDF5; border: 1.5px solid #10B981; border-radius: 14px; padding: 14px 18px; margin-bottom: 18px;">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 22px;">🛡️</span>
+              <div>
+                <b style="color: #065F46; font-size: 14px; display: block;">VERIFIED DRIVER IDENTIFIED</b>
+                <span id="verified_driver_text" style="color: #047857; font-size: 12px;">Your documents have already been verified by Customer Support. No re-upload or support wait required!</span>
+              </div>
+            </div>
+            <span style="background: #0D5C3A; color: #FFFFFF; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 20px; white-space: nowrap;">✓ LIFETIME VERIFIED</span>
+          </div>
+        </div>
+
         <!-- 4 Verified Document Upload Slots: DL Front/Back & Govt ID Front/Back -->
-        <div style="background: #F8FAFC; border: 1.5px solid #E2E8F0; border-radius: 16px; padding: 20px; margin-bottom: 22px;">
+        <div id="document_upload_container" style="background: #F8FAFC; border: 1.5px solid #E2E8F0; border-radius: 16px; padding: 20px; margin-bottom: 22px;">
           <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
             <div style="font-size: 13.5px; font-weight: 800; color: #1E293B; display: flex; align-items: center; gap: 8px;">
               <span>📁</span> Driver Verification Documents (Mandatory for Support Approval)
@@ -1174,6 +1207,67 @@
     bindInputToText('id_seats', 'prev_seats_num', '3');
     bindInputToText('id_date', 'prev_date_str', 'Sat, 22 Nov 2026');
     bindInputToText('id_price', 'prev_fare_num', '450');
+
+    // Real-time Driver Verification Check
+    function checkDriverVerificationStatus() {
+      const dl = (document.getElementById('id_dl')?.value || '').trim();
+      const govt = (document.getElementById('id_govt_num')?.value || '').trim();
+      const driver = (document.getElementById('id_driver_name')?.value || '').trim();
+      const plate = (document.getElementById('id_car_number')?.value || '').trim();
+
+      if (dl.length < 5 && govt.length < 4 && driver.length < 3 && plate.length < 4) {
+        return;
+      }
+
+      const params = new URLSearchParams({
+        dl: dl,
+        govt_id: govt,
+        driver_name: driver,
+        plate: plate
+      });
+
+      fetch('/rides/check-driver-verified/?' + params.toString())
+        .then(res => res.json())
+        .then(data => {
+          const badge = document.getElementById('verified_driver_badge');
+          const badgeText = document.getElementById('verified_driver_text');
+          const uploadCard = document.getElementById('document_upload_container');
+          
+          if (data.is_verified) {
+            if (badge) {
+              badge.style.display = 'block';
+              if (badgeText) {
+                badgeText.textContent = `Driver "${data.driver_name}" (${data.masked_dl}) is pre-verified by ${data.verified_by}. Your ride will publish instantly!`;
+              }
+            }
+            if (uploadCard) {
+              uploadCard.style.opacity = '0.75';
+              uploadCard.style.border = '1.5px dashed #10B981';
+            }
+          } else {
+            if (badge) badge.style.display = 'none';
+            if (uploadCard) {
+              uploadCard.style.opacity = '1';
+              uploadCard.style.border = '1.5px solid #E2E8F0';
+            }
+          }
+        })
+        .catch(err => console.error('Verification check error:', err));
+    }
+
+    const dlInput = document.getElementById('id_dl');
+    const govtInput = document.getElementById('id_govt_num');
+    const driverInput = document.getElementById('id_driver_name');
+    const plateInput = document.getElementById('id_car_number');
+
+    if (dlInput) dlInput.addEventListener('blur', checkDriverVerificationStatus);
+    if (govtInput) govtInput.addEventListener('blur', checkDriverVerificationStatus);
+    if (driverInput) driverInput.addEventListener('blur', checkDriverVerificationStatus);
+    if (plateInput) plateInput.addEventListener('blur', checkDriverVerificationStatus);
+
+    // Initial check on page load if fields have default/stored values
+    setTimeout(checkDriverVerificationStatus, 500);
+
   });
 </script>
 {% endblock %}
