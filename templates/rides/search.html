@@ -4,6 +4,10 @@
 {% block title %}Available Rides - {{ from_city }} to {{ to_city }} | TamizhPayanam{% endblock %}
 
 {% block extra_head %}
+<!-- Leaflet Map CSS & JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
 <style>
   :root {
     --tp-dark: #12372A;
@@ -14,6 +18,7 @@
     --tp-bg: #F8FAFC;
     --tp-card-bg: #FFFFFF;
     --tp-border: #E2E8F0;
+    --tp-blue: #0066FF;
   }
 
   body {
@@ -29,7 +34,7 @@
 
   .search-grid-layout {
     display: grid;
-    grid-template-columns: 290px 1fr;
+    grid-template-columns: 310px 1fr;
     gap: 32px;
     align-items: start;
   }
@@ -38,6 +43,54 @@
     .search-grid-layout {
       grid-template-columns: 1fr;
     }
+  }
+
+  /* Map Thumbnail Preview Card matching Mockup 1 */
+  .map-thumb-card {
+    position: relative;
+    border-radius: 18px;
+    overflow: hidden;
+    height: 110px;
+    margin-bottom: 24px;
+    border: 1px solid #E2E8F0;
+    background: #E8F0FE;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  .map-thumb-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.9;
+  }
+
+  .map-thumb-btn {
+    position: relative;
+    z-index: 2;
+    background: #0070F3;
+    color: #FFFFFF;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 112, 243, 0.35);
+    transition: all 0.18s ease;
+  }
+
+  .map-thumb-btn:hover {
+    background: #0056C7;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(0, 112, 243, 0.45);
   }
 
   /* Left Sidebar Filters Card */
@@ -49,16 +102,103 @@
     box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
   }
 
-  .filter-sidebar-title {
-    font-size: 17px;
-    font-weight: 800;
-    color: #12372A;
-    margin-bottom: 20px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid #F1F5F9;
+  /* Sort By section matching Screenshot 1 */
+  .sort-section-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .sort-section-title {
+    font-size: 19px;
+    font-weight: 800;
+    color: #0b1a30;
+    margin: 0;
+  }
+
+  .sort-clear-btn {
+    font-size: 13px;
+    font-weight: 600;
+    color: #94A3B8;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .sort-clear-btn:hover {
+    color: #0066FF;
+  }
+
+  .sort-radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #F1F5F9;
+  }
+
+  .sort-radio-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+    font-size: 14.5px;
+    font-weight: 700;
+    color: #0b1a30;
+    padding: 4px 0;
+  }
+
+  .sort-radio-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .sort-radio-item input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #0066FF;
+    border-radius: 50%;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+    margin: 0;
+    display: grid;
+    place-content: center;
+    transition: all 0.15s ease;
+  }
+
+  .sort-radio-item input[type="radio"]:not(:checked) {
+    border-color: #0066FF;
+    background: #FFFFFF;
+  }
+
+  .sort-radio-item input[type="radio"]:checked {
+    border-color: #0066FF;
+    background: #FFFFFF;
+  }
+
+  .sort-radio-item input[type="radio"]:checked::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #0066FF;
+  }
+
+  .sort-icon-box {
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .filter-group {
@@ -94,6 +234,370 @@
     height: 17px;
     accent-color: var(--tp-green);
     cursor: pointer;
+  }
+
+  /* Full Screen Interactive Map Split-View Layout matching User Reference */
+  .map-modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .map-modal-backdrop.active {
+    display: flex;
+  }
+
+  .map-modal-container {
+    background: #FFFFFF;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* Top App Bar */
+  .map-modal-topbar {
+    height: 52px;
+    background: #FFFFFF;
+    border-bottom: 1px solid #E2E8F0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 18px;
+    z-index: 100;
+  }
+
+  .map-modal-topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .map-topbar-close-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 22px;
+    color: #0066FF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    line-height: 1;
+    font-weight: 700;
+  }
+
+  .map-topbar-route-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .map-topbar-rides-count {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  /* Two Column Split Content */
+  .map-split-body {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 370px 1fr;
+    height: calc(100vh - 52px);
+    overflow: hidden;
+  }
+
+  @media (max-width: 860px) {
+    .map-split-body {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Left Panel: Ride Cards List */
+  .map-rides-sidebar {
+    background: #F8FAFC;
+    border-right: 1px solid #E2E8F0;
+    height: 100%;
+    overflow-y: auto;
+    padding: 14px 16px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .map-sidebar-date-heading {
+    display: flex;
+    justify-content: flex-end;
+    font-size: 13.5px;
+    font-weight: 800;
+    color: #0b1a30;
+    padding: 4px 6px;
+  }
+
+  /* Split Modal Ride Card */
+  .map-split-ride-card {
+    background: #FFFFFF;
+    border-radius: 16px;
+    border: 1px solid #E2E8F0;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .map-split-ride-card:hover,
+  .map-split-ride-card.selected {
+    border-color: #0066FF;
+    box-shadow: 0 6px 18px rgba(0, 102, 255, 0.12);
+  }
+
+  .map-card-time-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .map-route-timeline {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding-left: 20px;
+  }
+
+  .map-route-timeline::before {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 7px;
+    bottom: 7px;
+    width: 2px;
+    background: #000000;
+  }
+
+  .map-route-point {
+    position: relative;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #0b1a30;
+    line-height: 1.3;
+  }
+
+  .map-route-point::before {
+    content: '';
+    position: absolute;
+    left: -20px;
+    top: 4px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #000000;
+  }
+
+  .map-route-point.destination {
+    margin-top: 14px;
+  }
+
+  .map-route-duration {
+    font-size: 11px;
+    color: #64748B;
+    font-weight: 500;
+    margin: 2px 0;
+  }
+
+  .map-card-price {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: #0b1a30;
+    white-space: nowrap;
+  }
+
+  .map-card-price sup {
+    font-size: 11px;
+    font-weight: 600;
+    top: -0.3em;
+  }
+
+  .map-card-driver-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid #F1F5F9;
+  }
+
+  .map-driver-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .map-driver-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #E2E8F0;
+  }
+
+  .map-driver-meta {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .map-driver-name {
+    font-size: 13px;
+    font-weight: 800;
+    color: #0b1a30;
+  }
+
+  .map-driver-rating {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #64748B;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .map-amenities-icons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #94A3B8;
+  }
+
+  /* Right Panel: Interactive Map Container */
+  .map-view-column {
+    position: relative;
+    height: 100%;
+    width: 100%;
+  }
+
+  #interactive-leaflet-map {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Map Floating Filter Pills on Top Left */
+  .map-floating-controls {
+    position: absolute;
+    top: 16px;
+    left: 20px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .map-filter-pill-btn {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #0b1a30;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    transition: all 0.15s ease;
+  }
+
+  .map-filter-pill-btn:hover {
+    background: #F8FAFC;
+    border-color: #CBD5E1;
+  }
+
+  /* Custom Leaflet Map Markers matching Screenshot 2 */
+  .leaflet-div-icon {
+    background: transparent !important;
+    border: none !important;
+  }
+
+  .map-price-badge {
+    background: #FFFFFF;
+    border-radius: 999px;
+    padding: 4px 10px 4px 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    color: #0b1a30;
+    border: 1px solid #E2E8F0;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .map-price-badge:hover {
+    transform: scale(1.08);
+    box-shadow: 0 8px 20px rgba(0, 102, 255, 0.3);
+    border-color: #0066FF;
+    z-index: 1000 !important;
+  }
+
+  .map-driver-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #E2E8F0;
+  }
+
+  .map-cluster-badge {
+    background: #FFFFFF;
+    border-radius: 999px;
+    padding: 5px 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+    font-size: 13px;
+    font-weight: 800;
+    color: #0b1a30;
+    border: 1px solid #E2E8F0;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .map-cluster-badge:hover {
+    transform: scale(1.06);
+    border-color: #0066FF;
+  }
+
+  .map-destination-pin {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #0b1a30;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 14px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+    border: 2px solid #FFFFFF;
   }
 
   /* Right Side: Available Rides */
@@ -308,6 +812,115 @@
     
     <!-- Left Column: Filter Sidebar (matching mockup screen 1) -->
     <aside class="filter-sidebar-card">
+      
+      <!-- 1. Map Preview Thumbnail with 'Show on map' Button -->
+      <div class="map-thumb-card">
+        <!-- SVG Stylized City Road Map Background -->
+        <svg class="map-thumb-bg" viewBox="0 0 320 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="320" height="120" fill="#EBF3FD"/>
+          <!-- River/Water Corridor -->
+          <path d="M-20,70 C50,55 90,85 140,40 C190,0 240,65 340,30 L340,65 C260,95 200,30 150,75 C90,120 40,85 -20,105 Z" fill="#90CAF9" opacity="0.8"/>
+          <!-- Major Arterials (Golden Yellow) -->
+          <path d="M20,-10 L70,130" stroke="#FFE082" stroke-width="4"/>
+          <path d="M280,-10 L230,130" stroke="#FFE082" stroke-width="4"/>
+          <path d="M-10,35 L330,85" stroke="#FFE082" stroke-width="3"/>
+          <!-- Street Network (White) -->
+          <path d="M-10,15 L330,15" stroke="#FFFFFF" stroke-width="2.5"/>
+          <path d="M-10,60 L330,60" stroke="#FFFFFF" stroke-width="2.5"/>
+          <path d="M-10,100 L330,100" stroke="#FFFFFF" stroke-width="2.5"/>
+          <path d="M50,-10 L50,130" stroke="#FFFFFF" stroke-width="2"/>
+          <path d="M110,-10 L110,130" stroke="#FFFFFF" stroke-width="2"/>
+          <path d="M180,-10 L180,130" stroke="#FFFFFF" stroke-width="2"/>
+          <path d="M250,-10 L250,130" stroke="#FFFFFF" stroke-width="2"/>
+          <!-- Minor Roads (Soft Grey) -->
+          <path d="M10,25 L120,55" stroke="#CFD8DC" stroke-width="1.5"/>
+          <path d="M160,85 L310,45" stroke="#CFD8DC" stroke-width="1.5"/>
+          <path d="M80,75 L220,115" stroke="#CFD8DC" stroke-width="1.5"/>
+        </svg>
+
+        <button type="button" class="map-thumb-btn" onclick="openMapModal()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
+          Show on map
+        </button>
+      </div>
+
+      <!-- 2. Sort by Section matching exact Screenshot 1 -->
+      <div class="sort-section-header">
+        <h2 class="sort-section-title">Sort by</h2>
+        <button type="button" class="sort-clear-btn" onclick="clearSortSelection()">Clear all</button>
+      </div>
+
+      <div class="sort-radio-group">
+        
+        <!-- Earliest departure -->
+        <label class="sort-radio-item" onclick="applyRideSort('earliest')">
+          <div class="sort-radio-left">
+            <input type="radio" name="sort_order" value="earliest" id="sort_earliest" checked>
+            <span>Earliest departure</span>
+          </div>
+          <div class="sort-icon-box">
+            <!-- Clock Icon -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+          </div>
+        </label>
+
+        <!-- Lowest price -->
+        <label class="sort-radio-item" onclick="applyRideSort('price')">
+          <div class="sort-radio-left">
+            <input type="radio" name="sort_order" value="price" id="sort_price">
+            <span>Lowest price</span>
+          </div>
+          <div class="sort-icon-box">
+            <!-- Coins Icon -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="8" cy="8" r="6"></circle>
+              <path d="M18 10a6 6 0 0 1-6 6"></path>
+              <path d="M12 16a6 6 0 0 0 6 6"></path>
+              <path d="M8 14a6 6 0 0 0 6 6"></path>
+            </svg>
+          </div>
+        </label>
+
+        <!-- Close to departure point -->
+        <label class="sort-radio-item" onclick="applyRideSort('close_departure')">
+          <div class="sort-radio-left">
+            <input type="radio" name="sort_order" value="close_departure" id="sort_close_dept">
+            <span>Close to departure point</span>
+          </div>
+          <div class="sort-icon-box">
+            <!-- Walking Person in Green Circle -->
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" fill="#0D5C3A"/>
+              <circle cx="12" cy="7.5" r="1.5" fill="#FFFFFF"/>
+              <path d="M10 11.5L12 10L13.5 12L15 11M12 10V14.5L10.5 17.5M12 14.5L14 17.5" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </label>
+
+        <!-- Close to arrival point -->
+        <label class="sort-radio-item" onclick="applyRideSort('close_arrival')">
+          <div class="sort-radio-left">
+            <input type="radio" name="sort_order" value="close_arrival" id="sort_close_arr">
+            <span>Close to arrival point</span>
+          </div>
+          <div class="sort-icon-box">
+            <!-- Walking Person in Green Circle -->
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" fill="#0D5C3A"/>
+              <circle cx="12" cy="7.5" r="1.5" fill="#FFFFFF"/>
+              <path d="M10 11.5L12 10L13.5 12L15 11M12 10V14.5L10.5 17.5M12 14.5L14 17.5" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </label>
+
+      </div>
+
       <div class="filter-sidebar-title">
         <span>Filter By</span>
         <a href="/rides/search/?from={{ from_city }}&to={{ to_city }}" style="font-size: 12px; color: #0D5C3A; text-decoration: none; font-weight: 600;">Reset</a>
@@ -536,4 +1149,394 @@
     </main>
   </div>
 </div>
+
+<!-- Full Screen Interactive Map Modal with Left Ride Cards & Right Interactive Map -->
+<div id="mapModalBackdrop" class="map-modal-backdrop" onclick="closeMapModalOnBackdrop(event)">
+  <div class="map-modal-container">
+    
+    <!-- Top App Bar -->
+    <div class="map-modal-topbar">
+      <div class="map-modal-topbar-left">
+        <button type="button" class="map-topbar-close-btn" onclick="closeMapModal()" title="Close map">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+        <div class="map-topbar-route-title">
+          <span>{{ from_city }} &rarr; {{ to_city }}</span>
+        </div>
+      </div>
+      <div class="map-topbar-rides-count">
+        <span>{{ total_rides|default:3 }} rides available</span>
+      </div>
+    </div>
+
+    <!-- Two-Column Split Body -->
+    <div class="map-split-body">
+      
+      <!-- Left Column: Scrollable Ride Cards -->
+      <aside class="map-rides-sidebar">
+        <div class="map-sidebar-date-heading">
+          <span>Today</span>
+        </div>
+
+        {% if rides %}
+          {% for ride in rides %}
+          <div class="map-split-ride-card" onclick="panToMapMarker('{{ ride.driver_name }}')">
+            <div class="map-card-time-row">
+              <div class="map-route-timeline">
+                <div class="map-route-point">
+                  <div>{{ ride.departure_time|time:"H:i"|default:"08:30" }} &bull; {{ ride.origin.name|default:from_city }}</div>
+                </div>
+                <div class="map-route-duration">3h 40m</div>
+                <div class="map-route-point destination">
+                  <div>12:10 &bull; {{ ride.destination_point|default:to_city }}</div>
+                </div>
+              </div>
+              <div class="map-card-price">
+                ₹{{ ride.price_per_seat|floatformat:0 }}<sup>.00</sup>
+              </div>
+            </div>
+
+            <div class="map-card-driver-footer">
+              <div class="map-driver-left">
+                <img src="/static/tamizh-payanam/images/p{{ forloop.counter|default:1|divisibleby:4|yesno:'1,2,3,4' }}.png" 
+                     class="map-driver-avatar" 
+                     alt="{{ ride.driver_name }}"
+                     onerror="this.src='/static/tamizh-payanam/images/p1.png'">
+                <div class="map-driver-meta">
+                  <span class="map-driver-name">{{ ride.driver_name }}</span>
+                  <span class="map-driver-rating">★ {{ ride.driver_rating|default:"4.8" }}</span>
+                </div>
+              </div>
+              <div class="map-amenities-icons">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20"/></svg>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <!-- Mock Ride Cards matching User Reference Screenshot -->
+          <div class="map-split-ride-card" onclick="panToMapMarker('Raja Kumar')">
+            <div class="map-card-time-row">
+              <div class="map-route-timeline">
+                <div class="map-route-point">
+                  <div>18:40 &bull; {{ from_city }}</div>
+                </div>
+                <div class="map-route-duration">0h 40m</div>
+                <div class="map-route-point destination">
+                  <div>19:20 &bull; {{ to_city }} Central</div>
+                </div>
+              </div>
+              <div class="map-card-price">₹170<sup>.00</sup></div>
+            </div>
+            <div class="map-card-driver-footer">
+              <div class="map-driver-left">
+                <img src="/static/tamizh-payanam/images/p1.png" class="map-driver-avatar" alt="Raja Kumar">
+                <div class="map-driver-meta">
+                  <span class="map-driver-name">Raja Kumar</span>
+                  <span class="map-driver-rating">★ 4.8</span>
+                </div>
+              </div>
+              <div class="map-amenities-icons">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="map-split-ride-card" onclick="panToMapMarker('Arun Prakash')">
+            <div class="map-card-time-row">
+              <div class="map-route-timeline">
+                <div class="map-route-point">
+                  <div>18:50 &bull; {{ from_city }}</div>
+                </div>
+                <div class="map-route-duration">0h 40m</div>
+                <div class="map-route-point destination">
+                  <div>19:30 &bull; {{ to_city }} Junction</div>
+                </div>
+              </div>
+              <div class="map-card-price">₹160<sup>.00</sup></div>
+            </div>
+            <div class="map-card-driver-footer">
+              <div class="map-driver-left">
+                <img src="/static/tamizh-payanam/images/p2.png" class="map-driver-avatar" alt="Arun Prakash">
+                <div class="map-driver-meta">
+                  <span class="map-driver-name">Arun Prakash</span>
+                  <span class="map-driver-rating">★ 4.7</span>
+                </div>
+              </div>
+              <div class="map-amenities-icons">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="map-split-ride-card" onclick="panToMapMarker('Suresh Babu')">
+            <div class="map-card-time-row">
+              <div class="map-route-timeline">
+                <div class="map-route-point">
+                  <div>19:00 &bull; {{ from_city }}</div>
+                </div>
+                <div class="map-route-duration">0h 50m</div>
+                <div class="map-route-point destination">
+                  <div>19:50 &bull; {{ to_city }} Mattuthavani</div>
+                </div>
+              </div>
+              <div class="map-card-price">₹130<sup>.00</sup></div>
+            </div>
+            <div class="map-card-driver-footer">
+              <div class="map-driver-left">
+                <img src="/static/tamizh-payanam/images/p3.png" class="map-driver-avatar" alt="Suresh Babu">
+                <div class="map-driver-meta">
+                  <span class="map-driver-name">Suresh Babu</span>
+                  <span class="map-driver-rating">★ 4.9</span>
+                </div>
+              </div>
+              <div class="map-amenities-icons">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20"/></svg>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      </aside>
+
+      <!-- Right Column: Interactive Map -->
+      <main class="map-view-column">
+        <!-- Floating Filter Buttons over Map matching user reference -->
+        <div class="map-floating-controls">
+          <button type="button" class="map-filter-pill-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="7 13 12 18 17 13"></polyline><polyline points="7 6 12 11 17 6"></polyline></svg>
+            Departures
+          </button>
+          <button type="button" class="map-filter-pill-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+            Filters
+          </button>
+        </div>
+
+        <div id="interactive-leaflet-map"></div>
+      </main>
+
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Sorting implementation
+  function applyRideSort(sortType) {
+    const radio = document.getElementById(
+      sortType === 'earliest' ? 'sort_earliest' :
+      sortType === 'price' ? 'sort_price' :
+      sortType === 'close_departure' ? 'sort_close_dept' : 'sort_close_arr'
+    );
+    if (radio) radio.checked = true;
+
+    const main = document.querySelector('main');
+    const cards = Array.from(document.querySelectorAll('.ride-card-item'));
+    if (!cards.length) return;
+
+    if (sortType === 'price') {
+      cards.sort((a, b) => {
+        const pA = parseInt((a.querySelector('.price-tag-big')?.textContent || '0').replace(/[^0-9]/g, ''));
+        const pB = parseInt((b.querySelector('.price-tag-big')?.textContent || '0').replace(/[^0-9]/g, ''));
+        return pA - pB;
+      });
+    } else if (sortType === 'earliest') {
+      cards.sort((a, b) => {
+        const tA = a.querySelector('.time-dot-label')?.textContent || '';
+        const tB = b.querySelector('.time-dot-label')?.textContent || '';
+        return tA.localeCompare(tB);
+      });
+    }
+    cards.forEach(card => main.appendChild(card));
+  }
+
+  function clearSortSelection() {
+    const defaultRadio = document.getElementById('sort_earliest');
+    if (defaultRadio) {
+      defaultRadio.checked = true;
+      applyRideSort('earliest');
+    }
+  }
+
+  // Interactive Leaflet Map logic
+  let leafletMapInstance = null;
+  const rawRideMarkers = {{ ride_map_markers_json|safe|default:"[]" }};
+  const toCityName = "{{ to_city|default:'Madurai'|escapejs }}";
+
+  function openMapModal() {
+    const modal = document.getElementById('mapModalBackdrop');
+    if (!modal) return;
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+
+    setTimeout(() => {
+      initOrRefreshLeafletMap();
+    }, 150);
+  }
+
+  function closeMapModal() {
+    const modal = document.getElementById('mapModalBackdrop');
+    if (modal) modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  function closeMapModalOnBackdrop(e) {
+    if (e.target.id === 'mapModalBackdrop') {
+      closeMapModal();
+    }
+  }
+
+  function initOrRefreshLeafletMap() {
+    const mapEl = document.getElementById('interactive-leaflet-map');
+    if (!mapEl) return;
+
+    // Center coordinates: fallback to destination city or default
+    let centerLat = 9.9252;
+    let centerLng = 78.1198;
+
+    if (rawRideMarkers.length > 0 && rawRideMarkers[0].lat && rawRideMarkers[0].lng) {
+      centerLat = rawRideMarkers[0].lat;
+      centerLng = rawRideMarkers[0].lng;
+    }
+
+    if (!leafletMapInstance) {
+      leafletMapInstance = L.map('interactive-leaflet-map', {
+        center: [centerLat, centerLng],
+        zoom: 12,
+        zoomControl: true
+      });
+
+      // MapTiler Vector / Raster Streets Layer using active key WIbwOq9Iz1uoXYXGrfwK with OSM fallback
+      const maptilerUrl = 'https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=WIbwOq9Iz1uoXYXGrfwK';
+      L.tileLayer(maptilerUrl, {
+        attribution: '&copy; <a href="https://www.maptiler.com/">MapTiler</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: 19
+      }).addTo(leafletMapInstance);
+    } else {
+      leafletMapInstance.invalidateSize();
+      leafletMapInstance.setView([centerLat, centerLng], 12);
+    }
+
+    // Clear previous markers
+    if (window._currentMapMarkers) {
+      window._currentMapMarkers.forEach(m => leafletMapInstance.removeLayer(m));
+    }
+    window._currentMapMarkers = [];
+
+    const bounds = L.latLngBounds();
+
+    // 1. Destination Center City Pin
+    const cityPinIcon = L.divIcon({
+      className: 'dest-city-pin-icon',
+      html: `<div class="map-destination-pin" title="${toCityName}">${toCityName.charAt(0).toUpperCase()}</div>`,
+      iconSize: [32, 32],
+      iconAnchor: [16, 16]
+    });
+    const cityPinMarker = L.marker([centerLat, centerLng], { icon: cityPinIcon }).addTo(leafletMapInstance);
+    cityPinMarker.bindPopup(`<b>${toCityName}</b><br>Destination Corridor`);
+    window._currentMapMarkers.push(cityPinMarker);
+    bounds.extend([centerLat, centerLng]);
+
+    // 2. Add Driver Price Badges & Ride Cluster Markers matching Screenshot 2
+    let markersToRender = rawRideMarkers;
+    if (!markersToRender || markersToRender.length === 0) {
+      // Sample mock markers matching screenshot 2 if no rides loaded
+      markersToRender = [
+        { driver: 'Raja Kumar', price: 540, seats: 3, lat: centerLat + 0.025, lng: centerLng + 0.015, time: '08:30 AM', avatar_id: 1, landmark: 'Amrutdham' },
+        { driver: 'Arun Prakash', price: 550, seats: 2, lat: centerLat - 0.010, lng: centerLng - 0.012, time: '09:00 AM', avatar_id: 2, landmark: 'Pathardi Phata' },
+        { driver: 'Suresh Babu', price: 570, seats: 4, lat: centerLat - 0.022, lng: centerLng - 0.018, time: '09:30 AM', avatar_id: 3, landmark: 'MIDC Ambad' },
+        { driver: 'Selvakumar M', price: 590, seats: 3, lat: centerLat + 0.010, lng: centerLng + 0.008, time: '10:00 AM', avatar_id: 4, landmark: 'Central Hub' },
+      ];
+    }
+
+    markersToRender.forEach((ride, i) => {
+      const lat = ride.lat;
+      const lng = ride.lng;
+      bounds.extend([lat, lng]);
+
+      // Alternating Price Badge or Ride Count Cluster matching Screenshot 2
+      const isCluster = (i % 3 === 0);
+      let htmlContent = '';
+
+      if (isCluster) {
+        htmlContent = `
+          <div class="map-cluster-badge" onclick="handleMapMarkerClick('${ride.driver}')">
+            <span>🚗</span>
+            <span>${ride.seats || 3} rides</span>
+          </div>
+        `;
+      } else {
+        htmlContent = `
+          <div class="map-price-badge" onclick="handleMapMarkerClick('${ride.driver}')">
+            <img src="/static/tamizh-payanam/images/p${ride.avatar_id || 1}.png" class="map-driver-thumb" onerror="this.src='/static/tamizh-payanam/images/p1.png'">
+            <span>₹${Math.round(ride.price)}.00</span>
+          </div>
+        `;
+      }
+
+      const customIcon = L.divIcon({
+        className: 'custom-ride-map-icon',
+        html: htmlContent,
+        iconSize: [95, 34],
+        iconAnchor: [47, 17]
+      });
+
+      const marker = L.marker([lat, lng], { icon: customIcon }).addTo(leafletMapInstance);
+      marker.bindPopup(`
+        <div style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px;">
+          <b style="font-size: 14px; color: #0b1a30;">${ride.driver}</b><br>
+          <span style="color: #64748B;">Drop at:</span> <b>${ride.landmark || toCityName}</b><br>
+          <span style="color: #64748B;">Time:</span> ${ride.time}<br>
+          <span style="color: #0D5C3A; font-weight: 800; font-size: 15px;">₹${Math.round(ride.price)}</span> &bull; ${ride.seats} seats left
+        </div>
+      `);
+      window._currentMapMarkers.push(marker);
+    });
+
+    if (markersToRender.length > 1) {
+      leafletMapInstance.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
+    }
+  }
+
+  function handleMapMarkerClick(driverName) {
+    console.log("Clicked marker for driver:", driverName);
+    // Highlight matching card in the left sidebar
+    const cards = document.querySelectorAll('.map-split-ride-card');
+    cards.forEach(card => {
+      const name = card.querySelector('.map-driver-name')?.textContent || '';
+      if (name.toLowerCase().includes(driverName.toLowerCase())) {
+        card.classList.add('selected');
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        card.classList.remove('selected');
+      }
+    });
+  }
+
+  function panToMapMarker(driverName) {
+    if (!leafletMapInstance || !window._currentMapMarkers) return;
+    const cards = document.querySelectorAll('.map-split-ride-card');
+    cards.forEach(card => {
+      const name = card.querySelector('.map-driver-name')?.textContent || '';
+      if (name.toLowerCase().includes(driverName.toLowerCase())) {
+        card.classList.add('selected');
+      } else {
+        card.classList.remove('selected');
+      }
+    });
+
+    for (let m of window._currentMapMarkers) {
+      const popup = m.getPopup();
+      if (popup && popup.getContent().toLowerCase().includes(driverName.toLowerCase())) {
+        leafletMapInstance.setView(m.getLatLng(), 14, { animate: true });
+        m.openPopup();
+        break;
+      }
+    }
+  }
+</script>
 {% endblock %}

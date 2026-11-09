@@ -87,11 +87,19 @@
       <div><label for="date">Journey Date</label><input id="date" name="date" type="text" placeholder="Select date" required readonly></div>
       <i class="chev"></i>
     </div>
-    <div class="field has-chevron">
+    <div class="field has-chevron" style="position: relative;">
       <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="8" r="3.500"/><circle cx="17.500" cy="9" r="2.500"/><path d="M2 20c0-4 3-6 7-6s7 2 7 6zM16.200 14.200c3.500-.4 5.800 1.400 5.800 4.800h-4.200c-.1-1.800-.7-3.400-1.600-4.800z"/></svg>
-      <div><label for="pax">Passengers</label>
-        <select id="pax" name="passengers"><option value="1">1 Passenger</option><option value="2">2 Passengers</option><option value="3">3 Passengers</option><option value="4">4 Passengers</option></select></div>
-      <i class="chev"></i>
+      <div style="flex: 1;">
+        <div class="pax-stepper-box" style="display: flex; align-items: center; justify-content: space-between; width: 100%; min-width: 175px;">
+          <span style="font-weight: 800; font-size: 15px; color: #0b1a30; font-family: 'Plus Jakarta Sans', sans-serif;">Passenger</span>
+          <div style="display: inline-flex; align-items: center; gap: 14px;">
+            <button type="button" id="pax-minus-btn" class="stepper-circle-btn" style="width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid #CBD5E1; background: #FFFFFF; color: #94A3B8; font-size: 16px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s ease; padding: 0; line-height: 1;">&minus;</button>
+            <span id="pax-display-val" style="font-size: 16px; font-weight: 800; color: #0b1a30; min-width: 12px; text-align: center;">1</span>
+            <button type="button" id="pax-plus-btn" class="stepper-circle-btn" style="width: 28px; height: 28px; border-radius: 50%; border: 1.8px solid #0066FF; background: #FFFFFF; color: #0066FF; font-size: 16px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s ease; padding: 0; line-height: 1;">&#43;</button>
+          </div>
+        </div>
+        <input type="hidden" id="pax" name="passengers" value="1">
+      </div>
     </div>
     <button class="btn btn-gold find" type="submit">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.500" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>Find a Ride</button>
@@ -940,6 +948,62 @@ function toggleFaq(element) {
       const duration = Math.max(25, textLength * 0.12);
       span.style.setProperty('--duration', `${duration}s`);
     });
+
+    // Passenger Stepper logic matching exact UX
+    (function initPassengerStepper() {
+      const minusBtn = document.getElementById('pax-minus-btn');
+      const plusBtn = document.getElementById('pax-plus-btn');
+      const displayVal = document.getElementById('pax-display-val');
+      const hiddenInput = document.getElementById('pax');
+
+      if (!minusBtn || !plusBtn || !displayVal || !hiddenInput) return;
+
+      let count = parseInt(hiddenInput.value) || 1;
+
+      function updateUI() {
+        displayVal.textContent = count;
+        hiddenInput.value = count;
+        if (count <= 1) {
+          minusBtn.style.borderColor = '#E2E8F0';
+          minusBtn.style.color = '#CBD5E1';
+          minusBtn.style.cursor = 'not-allowed';
+        } else {
+          minusBtn.style.borderColor = '#0066FF';
+          minusBtn.style.color = '#0066FF';
+          minusBtn.style.cursor = 'pointer';
+        }
+
+        if (count >= 8) {
+          plusBtn.style.borderColor = '#E2E8F0';
+          plusBtn.style.color = '#CBD5E1';
+          plusBtn.style.cursor = 'not-allowed';
+        } else {
+          plusBtn.style.borderColor = '#0066FF';
+          plusBtn.style.color = '#0066FF';
+          plusBtn.style.cursor = 'pointer';
+        }
+      }
+
+      minusBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (count > 1) {
+          count--;
+          updateUI();
+        }
+      });
+
+      plusBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (count < 8) {
+          count++;
+          updateUI();
+        }
+      });
+
+      updateUI();
+    })();
   </script>
 
 </body>

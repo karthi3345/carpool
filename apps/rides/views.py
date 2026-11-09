@@ -229,6 +229,63 @@ def search_rides_view(request):
         'lng': float(origin_city_obj.longitude) if (origin_city_obj and origin_city_obj.longitude) else 79.8083,
     }
 
+    # Collect individual ride markers with accurate landmark coordinate offsets so they cluster naturally
+    dest_city_obj = City.objects.filter(name__icontains=to_city).first()
+    dest_base_lat = float(dest_city_obj.latitude) if (dest_city_obj and dest_city_obj.latitude) else 9.9252
+    dest_base_lng = float(dest_city_obj.longitude) if (dest_city_obj and dest_city_obj.longitude) else 78.1198
+
+    landmark_offsets = {
+        'mattuthavani': (0.021, 0.041),
+        'periyar': (-0.008, -0.012),
+        'aarapalayam': (0.015, -0.018),
+        'goripalayam': (0.012, 0.015),
+        'tirunagar': (-0.052, -0.035),
+        'thirumangalam': (-0.082, -0.062),
+        'koyambedu': (0.018, -0.042),
+        'tambaram': (-0.085, -0.038),
+        'guindy': (-0.035, 0.012),
+        'central': (0.005, 0.035),
+        'omr': (-0.075, 0.055),
+        'airport': (-0.072, -0.015),
+        'velachery': (-0.045, 0.042),
+        'gandhipuram': (0.012, 0.015),
+        'singanallur': (-0.015, 0.045),
+        'ukkadam': (-0.025, -0.018),
+        'peelamedu': (0.025, 0.065),
+    }
+
+    import hashlib
+    import json
+    ride_map_markers = []
+    for idx, r in enumerate(active_rides):
+        drop_txt = (r.destination_point or '').lower()
+        offset = None
+        for key, off in landmark_offsets.items():
+            if key in drop_txt:
+                offset = off
+                break
+        if not offset:
+            h = int(hashlib.md5(f"{r.id}-{r.driver_name}".encode()).hexdigest()[:6], 16)
+            dlat = ((h % 100) - 50) * 0.00065
+            dlng = (((h // 100) % 100) - 50) * 0.00065
+            offset = (dlat, dlng)
+
+        ride_map_markers.append({
+            'ride_id': r.id,
+            'driver': r.driver_name,
+            'vehicle': r.vehicle_model or 'Car',
+            'rating': float(r.driver_rating or 4.8),
+            'landmark': r.destination_point or f"{to_city} Central",
+            'lat': round(dest_base_lat + offset[0], 6),
+            'lng': round(dest_base_lng + offset[1], 6),
+            'price': float(r.price_per_seat),
+            'seats': r.available_seats,
+            'time': r.departure_time.strftime('%I:%M %p') if r.departure_time else '08:30 AM',
+            'avatar_id': (idx % 4) + 1
+        })
+
+    ride_map_markers_json = json.dumps(ride_map_markers)
+
     return render(request, 'rides/search.html', {
         'rides': active_rides,
         'from_city': from_city,
@@ -250,6 +307,8 @@ def search_rides_view(request):
         'related_from': related_from,
         'dest_markers': dest_markers,
         'origin_info': origin_info,
+        'ride_map_markers': ride_map_markers,
+        'ride_map_markers_json': ride_map_markers_json,
     })
 
 
