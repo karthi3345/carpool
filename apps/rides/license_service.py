@@ -13,13 +13,19 @@ except Exception as e:
     ocr_engine = None
     print("Warning: rapidocr_onnxruntime not loaded:", e)
 
-VALID_TN_RTOS = {f"TN{i:02d}" for i in range(1, 100)}
+# All 28 States and 8 Union Territories of India
+ALL_INDIA_STATE_CODES = {
+    "AP", "AR", "AS", "BR", "CG", "CH", "DD", "DL", "DN", "GA",
+    "GJ", "HR", "HP", "JH", "JK", "KA", "KL", "LA", "LD", "MH",
+    "ML", "MN", "MP", "MZ", "NL", "OD", "PB", "PY", "RJ", "SK",
+    "TN", "TR", "TS", "UK", "UP", "WB"
+}
 
 DL_REQUIRED_KEYWORDS = [
-    'DRIVING LICENCE', 'DRIVING LICENSE', 'UNION OF INDIA',
+    'DRIVING LICENCE', 'DRIVING LICENSE', 'UNION OF INDIA', 'INDIAN UNION',
     'TRANSPORT DEPARTMENT', 'STATE TRANSPORT', 'LICENCE TO DRIVE',
     'FORM 7', 'SARATHI', 'PARIVAHAN', 'MOTOR VEHICLES',
-    'MOTOR CAR', 'LMV', 'MCWG', 'DL NO', 'DLNO'
+    'MOTOR CAR', 'LMV', 'MCWG', 'DL NO', 'DLNO', 'MINISTRY OF ROAD TRANSPORT'
 ]
 
 def validate_dl_number(raw_dl):
@@ -29,23 +35,22 @@ def validate_dl_number(raw_dl):
     raw = raw_dl.strip().upper()
     cleaned = re.sub(r'[\s\-]', '', raw)
 
-    if not cleaned.startswith("TN"):
-        return False, raw, f"Invalid State Code. Only Tamil Nadu Driving Licences (starting with TN-) are accepted. Found: '{raw[:2]}'"
+    state_code = cleaned[:2]
+    if state_code not in ALL_INDIA_STATE_CODES:
+        return False, raw, f"Invalid State/UT code '{state_code}'. Driving Licence must start with a valid Indian State/UT code (e.g. TN, KA, KL, AP, TS, MH, DL, etc.)."
 
-    rto_code = cleaned[:4]
-    if rto_code not in VALID_TN_RTOS:
-        return False, raw, f"Invalid Tamil Nadu RTO code '{rto_code}'. Must be between TN-01 and TN-99."
+    if len(cleaned) < 10 or len(cleaned) > 18:
+        return False, raw, f"Invalid DL length ({len(cleaned)} chars). Driving licence must have 12 to 16 alphanumeric characters (e.g. TN-0120180004567 or KA-0120190001234)."
 
-    if len(cleaned) < 14 or len(cleaned) > 16:
-        return False, raw, f"Invalid DL length ({len(cleaned)} chars). Driving licence must have 15 or 16 alphanumeric characters (e.g., TN-01-20180004567). Please resend a valid number."
+    # If standard 15/16 length with 4-digit year at pos 4..8
+    if len(cleaned) >= 8:
+        year_part = cleaned[4:8]
+        if year_part.isdigit():
+            year = int(year_part)
+            if year < 1970 or year > 2026:
+                return False, raw, f"Invalid licence issue year ({year}). Must be between 1970 and 2026."
 
-    year_part = cleaned[4:8]
-    if year_part.isdigit():
-        year = int(year_part)
-        if year < 1980 or year > 2026:
-            return False, raw, f"Invalid licence issue year ({year}). Must be between 1980 and 2026. Please check and resend."
-
-    return True, cleaned, "Valid Tamil Nadu Driving Licence"
+    return True, cleaned, f"Valid Indian Driving Licence ({state_code})"
 
 
 def mask_dl_number(raw_dl_number):
