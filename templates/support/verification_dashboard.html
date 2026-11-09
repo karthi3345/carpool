@@ -259,38 +259,38 @@
             </div>
           </div>
 
-          <!-- Customer Support Decision Actions with Custom Rejection Reason -->
-          <div style="display: flex; flex-direction: column; gap: 12px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+          <!-- Customer Support Decision Actions: Manual Reason Typing for Reject -->
+          <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 16px; margin-top: 10px;">
+            <div style="display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: start;">
               
-              <!-- Quick Reason Selector & Input Form for Reject -->
-              <form method="POST" action="/support/rides/{{ ride.id }}/reject/" style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 300px;" onsubmit="return confirmReject(this, '{{ ride.id }}');">
+              <!-- Manual Reason Typing & Reject Form -->
+              <form method="POST" action="/support/rides/{{ ride.id }}/reject/" style="display: flex; flex-direction: column; gap: 8px;" onsubmit="return confirmReject(this, '{{ ride.id }}');">
                 {% csrf_token %}
-                <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
-                  <span style="font-size: 12px; font-weight: 700; color: #dc2626; white-space: nowrap;">Rejection Reason:</span>
-                  <select name="reason_preset" onchange="applyReasonPreset(this, 'reason_input_{{ ride.id }}')" style="font-size: 12px; padding: 7px 10px; border-radius: 6px; border: 1.5px solid #fca5a5; background: #fef2f2; color: #991b1b; font-weight: 600;">
-                    <option value="">-- Choose Common Reason --</option>
-                    <option value="Document photo is blurry or unreadable.">Blurry / unreadable photo</option>
-                    <option value="Driving Licence number does not match uploaded card.">DL number mismatch</option>
-                    <option value="Driving Licence has expired according to transport records.">Expired Driving Licence</option>
-                    <option value="Government ID (Aadhaar / Voter ID) front or back side missing.">Govt ID incomplete</option>
-                    <option value="Vehicle number plate does not match registration document.">Vehicle number mismatch</option>
-                    <option value="Suspicious or edited document detected.">Tampered / invalid document</option>
-                  </select>
-                  <input type="text" id="reason_input_{{ ride.id }}" name="reason" placeholder="Mention specific reason for rejection..." required style="flex: 1; font-size: 12.5px; padding: 7px 12px; border: 1.5px solid #fca5a5; border-radius: 6px; color: #1e293b;" value="Document clarity poor or details did not match transport registry.">
+                <label for="reason_input_{{ ride.id }}" style="font-size: 12.5px; font-weight: 800; color: #dc2626; display: flex; align-items: center; justify-content: space-between;">
+                  <span>✍️ Type Rejection Reason Manually:</span>
+                  <span style="font-size: 11px; font-weight: 600; color: #64748b;">(Driver will see this exact message)</span>
+                </label>
+                
+                <div style="display: flex; gap: 10px;">
+                  <textarea id="reason_input_{{ ride.id }}" name="reason" rows="2" placeholder="Type manual rejection reason here (e.g. Aadhaar back side address is blurred, Please upload a clear photo of driving licence)..." required style="flex: 1; font-family: inherit; font-size: 13px; padding: 10px 14px; border: 1.5px solid #f87171; border-radius: 8px; color: #1e293b; background: #fffaf0; resize: vertical; outline: none;"></textarea>
+                  
+                  <button type="submit" style="background: #ef4444; color: #ffffff; border: none; padding: 0 20px; border-radius: 8px; font-weight: 800; font-size: 13px; cursor: pointer; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);">
+                    ❌ Reject &amp; Send Reason
+                  </button>
                 </div>
-                <button type="submit" style="background: #ffffff; border: 1.5px solid #dc2626; color: #dc2626; padding: 7px 16px; border-radius: 6px; font-weight: 700; font-size: 12.5px; cursor: pointer; white-space: nowrap; transition: all 0.2s ease;">
-                  ❌ Reject Ride
-                </button>
               </form>
 
               <!-- Approve Form -->
-              <form method="POST" action="/support/rides/{{ ride.id }}/approve/" style="display: inline-block;">
-                {% csrf_token %}
-                <button type="submit" style="background: #12372A; border: none; color: #FFD000; padding: 9px 24px; border-radius: 8px; font-weight: 800; font-size: 13px; cursor: pointer; box-shadow: 0 2px 6px rgba(18, 55, 42, 0.2); white-space: nowrap;">
-                  ✓ Approve &amp; Make Live
-                </button>
-              </form>
+              <div style="border-left: 1.5px solid #e2e8f0; padding-left: 16px; display: flex; flex-direction: column; justify-content: center; height: 100%;">
+                <span style="font-size: 11.5px; color: #64748b; font-weight: 700; margin-bottom: 6px; text-transform: uppercase;">Documents Valid?</span>
+                <form method="POST" action="/support/rides/{{ ride.id }}/approve/">
+                  {% csrf_token %}
+                  <button type="submit" style="background: #12372A; border: none; color: #FFD000; padding: 14px 24px; border-radius: 8px; font-weight: 800; font-size: 13.5px; cursor: pointer; box-shadow: 0 3px 10px rgba(18, 55, 42, 0.2); white-space: nowrap; display: flex; align-items: center; gap: 8px;">
+                    ✓ Verify &amp; Make Live
+                  </button>
+                </form>
+              </div>
+
             </div>
           </div>
 
