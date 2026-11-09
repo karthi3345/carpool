@@ -605,8 +605,8 @@
             <div class="field-input-box">
               <span class="field-icon">🏁</span>
               <div class="field-text-wrap">
-                <label class="field-label-small">Drop Landmark (Suggested for City)</label>
-                <input type="text" id="id_dest_point" name="destination_point" class="field-input-clean" placeholder="e.g. Mattuthavani / Gandhipuram" value="{{ form_data.destination_point|default:'' }}" list="destLandmarksList" autocomplete="off">
+                <label class="field-label-small">Drop Landmark (Choose for Destination City)</label>
+                <input type="text" id="id_dest_point" name="destination_point" class="field-input-clean" placeholder="Select or type drop landmark" value="{{ form_data.destination_point|default:'' }}" list="destLandmarksList" autocomplete="off">
                 <datalist id="destLandmarksList"></datalist>
               </div>
             </div>
@@ -854,8 +854,8 @@
             <span id="prev_to_city">Madurai</span>
           </div>
           <div class="preview-landmarks">
-            <span id="prev_from_point">Koyambedu CMBT</span>
-            <span id="prev_to_point">Mattuthavani Bus Stand</span>
+            <span id="prev_from_point">Pickup Landmark</span>
+            <span id="prev_to_point">Drop Landmark</span>
           </div>
         </div>
 
