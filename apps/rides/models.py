@@ -32,6 +32,10 @@ class Ride(models.Model):
     driver_license_address = models.CharField(max_length=255, blank=True, default='')
     driver_license_image = models.ImageField(upload_to='licenses/', null=True, blank=True)
     driver_license_masked_image = models.ImageField(upload_to='licenses/masked/', null=True, blank=True)
+    driver_license_back_image = models.ImageField(upload_to='licenses/back/', null=True, blank=True)
+    govt_id_number = models.CharField(max_length=50, blank=True, default='')
+    govt_id_front_image = models.ImageField(upload_to='govt_ids/front/', null=True, blank=True)
+    govt_id_back_image = models.ImageField(upload_to='govt_ids/back/', null=True, blank=True)
     is_license_verified = models.BooleanField(default=True)
     SUPPORT_STATUS_CHOICES = (
         ('pending_review', 'Pending Customer Support Review'),

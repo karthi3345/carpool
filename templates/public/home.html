@@ -33,8 +33,16 @@
     </nav>
 
     <div class="auth">
+      {% if user.is_authenticated %}
+      <a href="/accounts/profile/" style="text-decoration: none; display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.15); border: 1.5px solid #FFD000; padding: 4px 14px 4px 6px; border-radius: 999px; color: #FFFFFF;" title="View Profile">
+        <img src="/static/tamizh-payanam/images/p4.png" alt="Profile" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1.5px solid #FFD000;" onerror="this.src='/static/images/hero_logo.png'">
+        <span style="font-size: 13.5px; font-weight: 700; color: #FFD000;">{{ user.first_name|default:user.username|title }}</span>
+      </a>
+      <a href="/accounts/logout/" class="btn btn-outline" style="text-decoration:none; padding: 6px 14px; font-size: 13px; border-color: rgba(255,255,255,0.3); color: #FCA5A5;">Logout</a>
+      {% else %}
       <a href="/accounts/login/" class="btn btn-outline" style="text-decoration:none;">Login</a>
       <a href="/accounts/register/" class="btn btn-gold" style="text-decoration:none;">Register</a>
+      {% endif %}
     </div>
     <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false">☰</button>
   </header>

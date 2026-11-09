@@ -327,6 +327,12 @@ def publish_ride_view(request):
         expiry_date_val = verification_result.get('expiry_date') or meta.get('expiry_date', '14/08/2035')
         address_val = verification_result.get('address') or meta.get('address', 'Chennai, Tamil Nadu')
 
+        # 4 Document Uploads: DL Front/Back & Govt ID Front/Back
+        dl_back_file = request.FILES.get('driver_license_back_file')
+        govt_id_num = request.POST.get('govt_id_number', '').strip()
+        govt_id_front_file = request.FILES.get('govt_id_front_file')
+        govt_id_back_file = request.FILES.get('govt_id_back_file')
+
         created_ride = Ride.objects.create(
             origin=origin_city,
             origin_point=origin_point,
@@ -345,7 +351,12 @@ def publish_ride_view(request):
             driver_license_issue_date=issue_date_val,
             driver_license_expiry_date=expiry_date_val,
             driver_license_address=address_val,
+            driver_license_image=dl_file,
             driver_license_masked_image=masked_image_field_val,
+            driver_license_back_image=dl_back_file,
+            govt_id_number=govt_id_num,
+            govt_id_front_image=govt_id_front_file,
+            govt_id_back_image=govt_id_back_file,
             is_license_verified=False,
             support_verification_status='pending_review',
             support_notes='Submitted by driver. Awaiting Customer Support team document verification before publishing.',

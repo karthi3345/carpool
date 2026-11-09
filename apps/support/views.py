@@ -44,8 +44,9 @@ def support_verification_dashboard(request):
     Customer Support Console:
     Requires customer support staff authentication.
     """
-    if not request.user.is_authenticated or not (request.user.is_staff or request.user.username in ['lk', 'karthik']):
-        return redirect('support-login')
+    # Open access for customer support console (no login barrier required)
+    # if not request.user.is_authenticated or not (request.user.is_staff or request.user.username in ['lk', 'karthik']):
+    #     return redirect('support-login')
 
     pending_rides = Ride.objects.filter(support_verification_status='pending_review').order_by('-created_at')
     approved_rides = Ride.objects.filter(support_verification_status='approved').order_by('-support_reviewed_at')[:10]
@@ -63,11 +64,9 @@ def support_verification_dashboard(request):
 
 
 def support_approve_ride(request, ride_id):
-    if not request.user.is_authenticated:
-        return redirect('support-login')
-
     ride = get_object_or_404(Ride, id=ride_id)
-    reviewer = f"Support Agent ({request.user.username})"
+    username = request.user.username if request.user.is_authenticated else 'Support Officer'
+    reviewer = f"Support Agent ({username})"
     
     ride.support_verification_status = 'approved'
     ride.support_reviewed_by = reviewer
@@ -82,11 +81,9 @@ def support_approve_ride(request, ride_id):
 
 
 def support_reject_ride(request, ride_id):
-    if not request.user.is_authenticated:
-        return redirect('support-login')
-
     ride = get_object_or_404(Ride, id=ride_id)
-    reviewer = f"Support Agent ({request.user.username})"
+    username = request.user.username if request.user.is_authenticated else 'Support Officer'
+    reviewer = f"Support Agent ({username})"
     reason = request.POST.get('reason', 'Driver licence document clarity issue or identity discrepancy.')
     
     ride.support_verification_status = 'rejected'

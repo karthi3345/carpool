@@ -1,6 +1,26 @@
 {% extends 'base.html' %}
 
-{% block title %}Customer Support Verification Console | ChalRe{% endblock %}
+{% block title %}Customer Support Verification Console | ChalRe
+<script>
+  function applyReasonPreset(selectEl, inputId) {
+    const input = document.getElementById(inputId);
+    if (selectEl.value) {
+      input.value = selectEl.value;
+    }
+  }
+
+  function confirmReject(form, rideId) {
+    const input = document.getElementById('reason_input_' + rideId);
+    const reason = input ? input.value.trim() : '';
+    if (!reason) {
+      alert('Please mention a specific reason for rejecting this ride.');
+      return false;
+    }
+    return confirm('Are you sure you want to REJECT Ride #' + rideId + ' with reason:\n"' + reason + '"?\nThe driver will be notified with this reason.');
+  }
+</script>
+
+{% endblock %}
 
 {% block content %}
 <div class="chalre-container" style="max-width: 1200px; margin: 30px auto; padding: 0 20px;">
@@ -87,72 +107,191 @@
           </div>
 
           <!-- Document & OCR Inspection Panel -->
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 18px; margin-bottom: 20px;">
-            <!-- Left: Document Information -->
-            <div>
-              <div style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 8px;">Driving Licence Data (OCR Verified)</div>
-              
-              <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
-                <div>
-                  <span style="color: #64748b;">Masked DL Number:</span>
-                  <span style="background: #e2e8f0; font-family: monospace; font-weight: 800; padding: 2px 8px; border-radius: 4px; color: #1e293b; margin-left: 6px;">{{ ride.driver_license_masked }}</span>
-                  <span style="font-size: 11px; color: #059669; font-weight: bold; margin-left: 6px;">✓ Format OK</span>
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px; margin-bottom: 20px;">
+            <!-- Top Details Row -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid #e2e8f0;">
+              <div>
+                <div style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 8px;">Driving Licence Data (All-India Transport Registry)</div>
+                <div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px;">
+                  <div>
+                    <span style="color: #64748b;">DL Number:</span>
+                    <span style="background: #e2e8f0; font-family: monospace; font-weight: 800; padding: 2px 8px; border-radius: 4px; color: #1e293b; margin-left: 6px;">{{ ride.driver_license_masked|default:ride.driver_license_number }}</span>
+                    <span style="font-size: 11px; color: #059669; font-weight: bold; margin-left: 6px;">✓ Verified Format</span>
+                  </div>
+                  <div>
+                    <span style="color: #64748b;">📅 Issue Date:</span>
+                    <strong style="color: #12372A; margin-left: 6px;">{{ ride.driver_license_issue_date|default:"2018" }}</strong>
+                    <span style="color: #64748b; margin-left: 12px;">⏳ Expiry:</span>
+                    <strong style="color: #059669; margin-left: 4px;">{{ ride.driver_license_expiry_date|default:"14/08/2035 (Active)" }}</strong>
+                  </div>
+                  <div>
+                    <span style="color: #64748b;">📍 Registered Address:</span>
+                    <span style="color: #1e293b; font-weight: 600; margin-left: 6px;">{{ ride.driver_license_address|default:"Tamil Nadu, India" }}</span>
+                  </div>
                 </div>
-                <div>
-                  <span style="color: #64748b;">📅 When Licence Taken:</span>
-                  <strong style="color: #12372A; margin-left: 6px;">{{ ride.driver_license_issue_date|default:"2018 (Verified RTO Issue)" }}</strong>
-                </div>
-                <div>
-                  <span style="color: #64748b;">⏳ Licence Expiry Date:</span>
-                  <strong style="color: #059669; margin-left: 6px;">{{ ride.driver_license_expiry_date|default:"14/08/2035 (Active)" }}</strong>
-                </div>
-                <div>
-                  <span style="color: #64748b;">📍 Registered Address:</span>
-                  <span style="color: #1e293b; font-weight: 600; margin-left: 6px;">{{ ride.driver_license_address|default:"Anna Nagar West, Chennai, Tamil Nadu - 600040" }}</span>
+              </div>
+
+              <div>
+                <div style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 8px;">Government Identification Proof</div>
+                <div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px;">
+                  <div>
+                    <span style="color: #64748b;">Govt ID / Aadhaar / Passport:</span>
+                    <span style="background: #fef3c7; color: #92400e; font-family: monospace; font-weight: 800; padding: 2px 8px; border-radius: 4px; margin-left: 6px;">
+                      {{ ride.govt_id_number|default:"Uploaded with submission" }}
+                    </span>
+                  </div>
+                  <div>
+                    <span style="color: #64748b;">Vehicle & Route:</span>
+                    <strong style="color: #1e293b; margin-left: 6px;">{{ ride.vehicle_model }} ({{ ride.vehicle_number }})</strong>
+                  </div>
+                  <div>
+                    <span style="color: #64748b;">Driver Full Name:</span>
+                    <strong style="color: #087443; margin-left: 6px;">{{ ride.driver_name }}</strong>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <!-- Right: Document Preview Image -->
-            <div>
-              <div style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
-                <span>Uploaded Driving Licence Preview</span>
+            <!-- 4-Quadrant Document Visual Preview Gallery -->
+            <div style="font-size: 12px; font-weight: 800; color: #334155; text-transform: uppercase; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+              <span>📁 Uploaded Verification Documents Preview (4 Cards)</span>
+              <span style="font-size: 11px; color: #64748b; font-weight: normal;">Click any image to view full high-res document</span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
+              
+              <!-- 1. DL Front Preview -->
+              <div style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 8px; text-align: center;">
+                <div style="font-size: 11px; font-weight: 700; color: #1e293b; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+                  <span>🚗 DL Front</span>
+                  {% if ride.driver_license_masked_image %}
+                    <a href="{{ ride.driver_license_masked_image.url }}" target="_blank" style="color: #087443; text-decoration: underline; font-size: 10.5px;">Open ↗</a>
+                  {% elif ride.driver_license_image %}
+                    <a href="{{ ride.driver_license_image.url }}" target="_blank" style="color: #087443; text-decoration: underline; font-size: 10.5px;">Open ↗</a>
+                  {% endif %}
+                </div>
                 {% if ride.driver_license_masked_image %}
-                  <a href="{{ ride.driver_license_masked_image.url }}" target="_blank" style="color: #087443; font-size: 11px; text-decoration: underline; font-weight: 700;">🔍 View Full Size</a>
+                  <div style="background: #0F172A; border-radius: 6px; overflow: hidden; height: 110px; display: flex; align-items: center; justify-content: center;">
+                    <a href="{{ ride.driver_license_masked_image.url }}" target="_blank">
+                      <img src="{{ ride.driver_license_masked_image.url }}" alt="DL Front" style="max-height: 105px; max-width: 100%; object-fit: contain;">
+                    </a>
+                  </div>
+                {% elif ride.driver_license_image %}
+                  <div style="background: #0F172A; border-radius: 6px; overflow: hidden; height: 110px; display: flex; align-items: center; justify-content: center;">
+                    <a href="{{ ride.driver_license_image.url }}" target="_blank">
+                      <img src="{{ ride.driver_license_image.url }}" alt="DL Front" style="max-height: 105px; max-width: 100%; object-fit: contain;">
+                    </a>
+                  </div>
+                {% else %}
+                  <div style="background: #f1f5f9; border-radius: 6px; height: 110px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; font-size: 11px;">
+                    <span style="font-size: 24px;">📄</span>
+                    <span>OCR Masked</span>
+                  </div>
                 {% endif %}
               </div>
-              {% if ride.driver_license_masked_image %}
-                <div style="border-radius: 10px; overflow: hidden; border: 1.5px solid #cbd5e1; background: #0F172A; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08); padding: 6px;">
-                  <img src="{{ ride.driver_license_masked_image.url }}" alt="Driver Licence Document" style="max-height: 160px; width: 100%; object-fit: contain; border-radius: 6px;">
+
+              <!-- 2. DL Back Preview -->
+              <div style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 8px; text-align: center;">
+                <div style="font-size: 11px; font-weight: 700; color: #1e293b; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+                  <span>🚗 DL Back</span>
+                  {% if ride.driver_license_back_image %}
+                    <a href="{{ ride.driver_license_back_image.url }}" target="_blank" style="color: #087443; text-decoration: underline; font-size: 10.5px;">Open ↗</a>
+                  {% endif %}
                 </div>
-              {% else %}
-                <div style="background: linear-gradient(135deg, #12372A 0%, #0d281e 100%); border-radius: 10px; padding: 24px; color: white; text-align: center; border: 1px solid #1e4a3a;">
-                  <div style="font-size: 11px; color: #FFD000; font-weight: 800; letter-spacing: 1px;">GOVERNMENT OF TAMIL NADU TRANSPORT</div>
-                  <div style="font-family: monospace; font-size: 15px; font-weight: 800; margin: 8px 0; color: #FFFFFF; letter-spacing: 1px;">{{ ride.driver_license_masked }}</div>
-                  <div style="font-size: 11px; color: #86efac; font-weight: 600;">✓ Automated RTO OCR Verified</div>
+                {% if ride.driver_license_back_image %}
+                  <div style="background: #0F172A; border-radius: 6px; overflow: hidden; height: 110px; display: flex; align-items: center; justify-content: center;">
+                    <a href="{{ ride.driver_license_back_image.url }}" target="_blank">
+                      <img src="{{ ride.driver_license_back_image.url }}" alt="DL Back" style="max-height: 105px; max-width: 100%; object-fit: contain;">
+                    </a>
+                  </div>
+                {% else %}
+                  <div style="background: #f1f5f9; border-radius: 6px; height: 110px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; font-size: 11px;">
+                    <span style="font-size: 24px;">🔄</span>
+                    <span>No Back File</span>
+                  </div>
+                {% endif %}
+              </div>
+
+              <!-- 3. Govt ID Front Preview -->
+              <div style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 8px; text-align: center;">
+                <div style="font-size: 11px; font-weight: 700; color: #1e293b; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+                  <span>🪪 Govt ID Front</span>
+                  {% if ride.govt_id_front_image %}
+                    <a href="{{ ride.govt_id_front_image.url }}" target="_blank" style="color: #087443; text-decoration: underline; font-size: 10.5px;">Open ↗</a>
+                  {% endif %}
                 </div>
-              {% endif %}
+                {% if ride.govt_id_front_image %}
+                  <div style="background: #0F172A; border-radius: 6px; overflow: hidden; height: 110px; display: flex; align-items: center; justify-content: center;">
+                    <a href="{{ ride.govt_id_front_image.url }}" target="_blank">
+                      <img src="{{ ride.govt_id_front_image.url }}" alt="Govt ID Front" style="max-height: 105px; max-width: 100%; object-fit: contain;">
+                    </a>
+                  </div>
+                {% else %}
+                  <div style="background: #f1f5f9; border-radius: 6px; height: 110px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; font-size: 11px;">
+                    <span style="font-size: 24px;">🪪</span>
+                    <span>No ID Front</span>
+                  </div>
+                {% endif %}
+              </div>
+
+              <!-- 4. Govt ID Back Preview -->
+              <div style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 8px; text-align: center;">
+                <div style="font-size: 11px; font-weight: 700; color: #1e293b; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+                  <span>🪪 Govt ID Back</span>
+                  {% if ride.govt_id_back_image %}
+                    <a href="{{ ride.govt_id_back_image.url }}" target="_blank" style="color: #087443; text-decoration: underline; font-size: 10.5px;">Open ↗</a>
+                  {% endif %}
+                </div>
+                {% if ride.govt_id_back_image %}
+                  <div style="background: #0F172A; border-radius: 6px; overflow: hidden; height: 110px; display: flex; align-items: center; justify-content: center;">
+                    <a href="{{ ride.govt_id_back_image.url }}" target="_blank">
+                      <img src="{{ ride.govt_id_back_image.url }}" alt="Govt ID Back" style="max-height: 105px; max-width: 100%; object-fit: contain;">
+                    </a>
+                  </div>
+                {% else %}
+                  <div style="background: #f1f5f9; border-radius: 6px; height: 110px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; font-size: 11px;">
+                    <span style="font-size: 24px;">🔄</span>
+                    <span>No ID Back</span>
+                  </div>
+                {% endif %}
+              </div>
+
             </div>
           </div>
 
-          <!-- Customer Support Decision Actions -->
-          <div style="display: flex; justify-content: flex-end; align-items: center; gap: 12px;">
-            <!-- Reject Form -->
-            <form method="POST" action="/support/rides/{{ ride.id }}/reject/" style="display: inline-block;">
-              {% csrf_token %}
-              <input type="hidden" name="reason" value="Document clarity poor or details did not match transport registry.">
-              <button type="submit" onclick="return confirm('Are you sure you want to REJECT this ride licence? Driver will be asked to resend.');" style="background: #fff; border: 1.5px solid #fca5a5; color: #dc2626; padding: 9px 18px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer;">
-                ❌ Reject &amp; Ask Resend
-              </button>
-            </form>
+          <!-- Customer Support Decision Actions with Custom Rejection Reason -->
+          <div style="display: flex; flex-direction: column; gap: 12px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+              
+              <!-- Quick Reason Selector & Input Form for Reject -->
+              <form method="POST" action="/support/rides/{{ ride.id }}/reject/" style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 300px;" onsubmit="return confirmReject(this, '{{ ride.id }}');">
+                {% csrf_token %}
+                <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+                  <span style="font-size: 12px; font-weight: 700; color: #dc2626; white-space: nowrap;">Rejection Reason:</span>
+                  <select name="reason_preset" onchange="applyReasonPreset(this, 'reason_input_{{ ride.id }}')" style="font-size: 12px; padding: 7px 10px; border-radius: 6px; border: 1.5px solid #fca5a5; background: #fef2f2; color: #991b1b; font-weight: 600;">
+                    <option value="">-- Choose Common Reason --</option>
+                    <option value="Document photo is blurry or unreadable.">Blurry / unreadable photo</option>
+                    <option value="Driving Licence number does not match uploaded card.">DL number mismatch</option>
+                    <option value="Driving Licence has expired according to transport records.">Expired Driving Licence</option>
+                    <option value="Government ID (Aadhaar / Voter ID) front or back side missing.">Govt ID incomplete</option>
+                    <option value="Vehicle number plate does not match registration document.">Vehicle number mismatch</option>
+                    <option value="Suspicious or edited document detected.">Tampered / invalid document</option>
+                  </select>
+                  <input type="text" id="reason_input_{{ ride.id }}" name="reason" placeholder="Mention specific reason for rejection..." required style="flex: 1; font-size: 12.5px; padding: 7px 12px; border: 1.5px solid #fca5a5; border-radius: 6px; color: #1e293b;" value="Document clarity poor or details did not match transport registry.">
+                </div>
+                <button type="submit" style="background: #ffffff; border: 1.5px solid #dc2626; color: #dc2626; padding: 7px 16px; border-radius: 6px; font-weight: 700; font-size: 12.5px; cursor: pointer; white-space: nowrap; transition: all 0.2s ease;">
+                  ❌ Reject Ride
+                </button>
+              </form>
 
-            <!-- Approve Form -->
-            <form method="POST" action="/support/rides/{{ ride.id }}/approve/" style="display: inline-block;">
-              {% csrf_token %}
-              <button type="submit" style="background: #12372A; border: none; color: #FFD000; padding: 10px 22px; border-radius: 8px; font-weight: 800; font-size: 13px; cursor: pointer; box-shadow: 0 2px 6px rgba(18, 55, 42, 0.2);">
-                ✓ Verify &amp; Publish Ride Live
-              </button>
-            </form>
+              <!-- Approve Form -->
+              <form method="POST" action="/support/rides/{{ ride.id }}/approve/" style="display: inline-block;">
+                {% csrf_token %}
+                <button type="submit" style="background: #12372A; border: none; color: #FFD000; padding: 9px 24px; border-radius: 8px; font-weight: 800; font-size: 13px; cursor: pointer; box-shadow: 0 2px 6px rgba(18, 55, 42, 0.2); white-space: nowrap;">
+                  ✓ Approve &amp; Make Live
+                </button>
+              </form>
+            </div>
           </div>
 
         </div>
@@ -209,4 +348,24 @@
   </div>
 
 </div>
+
+<script>
+  function applyReasonPreset(selectEl, inputId) {
+    const input = document.getElementById(inputId);
+    if (selectEl.value) {
+      input.value = selectEl.value;
+    }
+  }
+
+  function confirmReject(form, rideId) {
+    const input = document.getElementById('reason_input_' + rideId);
+    const reason = input ? input.value.trim() : '';
+    if (!reason) {
+      alert('Please mention a specific reason for rejecting this ride.');
+      return false;
+    }
+    return confirm('Are you sure you want to REJECT Ride #' + rideId + ' with reason:\n"' + reason + '"?\nThe driver will be notified with this reason.');
+  }
+</script>
+
 {% endblock %}
