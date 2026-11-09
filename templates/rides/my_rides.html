@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}My Rides &amp; Bookings | TamizhPayanam{% endblock %}
+
+{% block extra_head %}
+<style>
+  :root {
+    --tp-dark: #12372A;
+    --tp-green: #0D5C3A;
+    --tp-green-light: #E8F5E9;
+    --tp-green-border: #C8E6C9;
+    --tp-bg: #F8FAFC;
+    --tp-card-bg: #FFFFFF;
+    --tp-border: #E2E8F0;
+  }
+
+  body {
+    background-color: var(--tp-bg);
+  }
+
+  .my-rides-container {
+    max-width: 980px;
+    margin: 32px auto 80px;
+    padding: 0 20px;
+  }
+
+  .my-rides-card {
+    background: #FFFFFF;
+    border: 1.5px solid var(--tp-border);
+    border-radius: 24px;
+    padding: 28px 32px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  }
+
+  /* Top Tab Segment: My Rides | My Bookings (Mockup Screen 4) */
+  .segmented-tabs-header {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    border-bottom: 2px solid #F1F5F9;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+  }
+
+  .tab-link-item {
+    font-size: 16px;
+    font-weight: 700;
+    color: #64748B;
+    text-decoration: none;
+    padding-bottom: 8px;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .tab-link-item.active {
+    color: #12372A;
+  }
+
+  .tab-link-item.active::after {
+    content: '';
+    position: absolute;
+    bottom: -14px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--tp-green);
+    border-radius: 2px;
+  }
+
+  /* Sub-status pills: Upcoming, Completed, Cancelled */
+  .status-pills-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .status-filter-pill {
+    font-size: 13px;
+    font-weight: 700;
+    padding: 6px 18px;
+    border-radius: 999px;
+    text-decoration: none;
+    border: 1.5px solid transparent;
+  }
+
+  .status-filter-pill.active {
+    background: var(--tp-green-light);
+    color: var(--tp-green);
+    border-color: var(--tp-green-border);
+  }
+
+  .status-filter-pill.inactive {
+    background: #F1F5F9;
+    color: #64748B;
+  }
+
+  /* Item list */
+  .ride-row-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px;
+    border: 1.5px solid var(--tp-border);
+    border-radius: 18px;
+    margin-bottom: 14px;
+    background: #FFFFFF;
+    transition: all 0.18s ease;
+  }
+
+  .ride-row-card:hover {
+    border-color: #A7F3D0;
+    box-shadow: 0 4px 16px rgba(13, 92, 58, 0.08);
+  }
+
+  .ride-thumb-img {
+    width: 68px;
+    height: 48px;
+    object-fit: contain;
+    margin-right: 18px;
+  }
+
+  .view-details-btn {
+    border: 1.5px solid #CBD5E1;
+    background: #FFFFFF;
+    color: #1E293B;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 7px 18px;
+    border-radius: 999px;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .view-details-btn:hover {
+    background: var(--tp-green);
+    color: #FFFFFF;
+    border-color: var(--tp-green);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="my-rides-container">
+  
+  <div class="my-rides-card">
+    
+    <!-- Top Tabs (Mockup Screen 4) -->
+    <div class="segmented-tabs-header">
+      <a href="/rides/my-rides/" class="tab-link-item active">My Rides</a>
+      <a href="/rides/my-rides/?tab=bookings" class="tab-link-item">My Bookings</a>
+    </div>
+
+    <!-- Status filter pills -->
+    <div class="status-pills-row">
+      <span class="status-filter-pill active">Upcoming</span>
+      <span class="status-filter-pill inactive">Completed</span>
+      <span class="status-filter-pill inactive">Cancelled</span>
+    </div>
+
+    <!-- Rides list matching mockup -->
+    <div>
+      
+      <!-- Item 1 -->
+      <div class="ride-row-card">
+        <div style="display: flex; align-items: center;">
+          <img src="/static/tamizh-payanam/images/p1.png" alt="Car" class="ride-thumb-img" onerror="this.src='/static/images/hero_logo.png'">
+          <div>
+            <div style="font-size: 16px; font-weight: 800; color: #12372A;">
+              Chennai &rarr; Madurai
+            </div>
+            <div style="font-size: 13px; color: #64748B; margin-top: 3px;">
+              Sat, 22 Nov 2026 &bull; 08:30 AM
+            </div>
+            <div style="font-size: 12.5px; font-weight: 600; color: #0D5C3A; margin-top: 2px;">
+              3 seats &bull; ₹350/seat
+            </div>
+          </div>
+        </div>
+        <a href="/rides/1/" class="view-details-btn">View Details</a>
+      </div>
+
+      <!-- Item 2 -->
+      <div class="ride-row-card">
+        <div style="display: flex; align-items: center;">
+          <img src="/static/tamizh-payanam/images/p2.png" alt="Car" class="ride-thumb-img" onerror="this.src='/static/images/hero_logo.png'">
+          <div>
+            <div style="font-size: 16px; font-weight: 800; color: #12372A;">
+              Chennai &rarr; Pondicherry
+            </div>
+            <div style="font-size: 13px; color: #64748B; margin-top: 3px;">
+              Sun, 23 Nov 2026 &bull; 09:00 AM
+            </div>
+            <div style="font-size: 12.5px; font-weight: 600; color: #0D5C3A; margin-top: 2px;">
+              4 seats &bull; ₹300/seat
+            </div>
+          </div>
+        </div>
+        <a href="/rides/1/" class="view-details-btn">View Details</a>
+      </div>
+
+      <!-- Item 3 -->
+      <div class="ride-row-card">
+        <div style="display: flex; align-items: center;">
+          <img src="/static/tamizh-payanam/images/p3.png" alt="Car" class="ride-thumb-img" onerror="this.src='/static/images/hero_logo.png'">
+          <div>
+            <div style="font-size: 16px; font-weight: 800; color: #12372A;">
+              Chennai &rarr; Trichy
+            </div>
+            <div style="font-size: 13px; color: #64748B; margin-top: 3px;">
+              Sun, 30 Nov 2026 &bull; 07:00 AM
+            </div>
+            <div style="font-size: 12.5px; font-weight: 600; color: #0D5C3A; margin-top: 2px;">
+              3 seats &bull; ₹300/seat
+            </div>
+          </div>
+        </div>
+        <a href="/rides/1/" class="view-details-btn">View Details</a>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

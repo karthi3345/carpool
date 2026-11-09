@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Login | ChalRe Tamil Nadu Carpooling{% endblock %}
+
+{% block extra_head %}
+<style>
+  :root {
+    --chalre-dark: #12372A;
+    --chalre-accent: #FFD000;
+    --chalre-accent-hover: #E5BB00;
+  }
+
+  .login-page-wrap {
+    min-height: 75vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px 60px;
+  }
+
+  .login-card {
+    background: #FFFFFF;
+    border-radius: 24px;
+    border: 1.5px solid #E2E8F0;
+    box-shadow: 0 16px 40px rgba(18, 55, 42, 0.08);
+    max-width: 440px;
+    width: 100%;
+    padding: 38px 36px;
+    text-align: center;
+    position: relative;
+  }
+
+  .login-icon-box {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #FFFBEA;
+    border: 1.5px solid var(--chalre-accent);
+    color: var(--chalre-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    margin: 0 auto 16px;
+  }
+
+  .login-card h2 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--chalre-dark);
+    margin: 0 0 6px 0;
+  }
+
+  .login-card p {
+    font-size: 14px;
+    color: #64748B;
+    margin: 0 0 24px 0;
+  }
+
+  .dummy-credential-pill {
+    background: #F8FAFC;
+    border: 1px dashed #CBD5E1;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 22px;
+    font-size: 13px;
+    color: #334155;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .form-group-login {
+    text-align: left;
+    margin-bottom: 18px;
+  }
+
+  .form-group-login label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 6px;
+  }
+
+  .input-login {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 16px;
+    border: 1.5px solid #CBD5E1;
+    border-radius: 12px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--chalre-dark);
+    outline: none;
+    transition: all 0.2s ease;
+  }
+  .input-login:focus {
+    border-color: var(--chalre-dark);
+    box-shadow: 0 0 0 3px rgba(18, 55, 42, 0.1);
+  }
+
+  .btn-login-submit {
+    width: 100%;
+    background: var(--chalre-dark);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 999px;
+    padding: 14px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 6px;
+    box-shadow: 0 4px 14px rgba(18, 55, 42, 0.25);
+  }
+  .btn-login-submit:hover {
+    background: #0B251C;
+    transform: translateY(-1px);
+  }
+
+  .btn-quick-fill {
+    background: var(--chalre-accent);
+    color: var(--chalre-dark);
+    border: none;
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  .btn-quick-fill:hover {
+    background: var(--chalre-accent-hover);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="login-page-wrap">
+  
+  <div class="login-card">
+    
+    <div class="login-icon-box">🚗</div>
+    
+    <h2>Welcome to ChalRe</h2>
+    <p>Sign in to manage your Tamil Nadu carpool rides &amp; chat with drivers</p>
+
+    {% if error_message %}
+    <div style="background: #FEE2E2; border: 1px solid #F87171; color: #991B1B; padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 600; margin-bottom: 18px; text-align: left;">
+      ⚠️ {{ error_message }}
+    </div>
+    {% endif %}
+
+    <!-- Dummy credentials highlight box -->
+    <div class="dummy-credential-pill">
+      <div>
+        <div style="font-weight: 800; color: #12372A;">Demo Login:</div>
+        <div style="font-size: 12px; color: #64748B;">Username: <strong style="color: #12372A;">karthik</strong> &bull; Password: <strong style="color: #12372A;">123</strong></div>
+      </div>
+      <button type="button" class="btn-quick-fill" onclick="quickFill()">Auto Fill</button>
+    </div>
+
+    <form method="POST" action="/accounts/login/?next={{ next_url }}">
+      {% csrf_token %}
+
+      <div class="form-group-login">
+        <label>Username / Email</label>
+        <input type="text" name="username" id="loginUsername" required placeholder="karthik" value="karthik" class="input-login">
+      </div>
+
+      <div class="form-group-login">
+        <label>Password</label>
+        <input type="password" name="password" id="loginPassword" required placeholder="123" value="123" class="input-login">
+      </div>
+
+      <button type="submit" class="btn-login-submit">
+        Login &rarr;
+      </button>
+
+      <!-- 1-Click Instant Login button -->
+      <button type="submit" name="quick_demo" value="1" style="width: 100%; margin-top: 12px; background: #FFFBEA; border: 1.5px solid var(--chalre-accent); color: #B45309; border-radius: 999px; padding: 11px; font-size: 13px; font-weight: 800; cursor: pointer; transition: all 0.2s ease;">
+        ⚡ 1-Click Instant Demo Login
+      </button>
+    </form>
+
+    <div style="margin-top: 24px; font-size: 13px; color: #64748B;">
+      Looking for rides? <a href="/rides/search/" style="color: #12372A; font-weight: 700; text-decoration: none;">Search Tamil Nadu Corridors</a>
+    </div>
+
+  </div>
+
+</main>
+
+<script>
+  function quickFill() {
+    document.getElementById('loginUsername').value = 'karthik';
+    document.getElementById('loginPassword').value = '123';
+  }
+</script>
+{% endblock %}

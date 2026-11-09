@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Customer Support Staff Login | ChalRe{% endblock %}
+
+{% block content %}
+<div class="chalre-container" style="max-width: 480px; margin: 50px auto; padding: 0 20px;">
+  <div style="background: white; border-radius: 16px; padding: 36px 32px; box-shadow: 0 10px 30px rgba(18, 55, 42, 0.08); border-top: 5px solid #12372A;">
+    
+    <div style="text-align: center; margin-bottom: 28px;">
+      <div style="width: 56px; height: 56px; border-radius: 50%; background: #12372A; color: #FFD000; font-size: 26px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(18, 55, 42, 0.2);">
+        🎧
+      </div>
+      <h2 style="font-size: 22px; font-weight: 800; color: #12372A; margin: 0;">Customer Support Portal</h2>
+      <p style="color: #64748b; font-size: 13px; margin: 6px 0 0;">Authorized support personnel document verification console</p>
+    </div>
+
+    <!-- Quick Credentials Helper Box -->
+    <div style="background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 10px; padding: 14px 16px; margin-bottom: 22px; font-size: 13px;">
+      <div style="font-weight: 800; color: #065f46; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+        <span>🔑</span> Support Staff Credentials:
+      </div>
+      <div style="color: #166534;">
+        Username: <strong style="background: white; padding: 1px 6px; border-radius: 4px; font-family: monospace;">lk</strong> &nbsp;&bull;&nbsp; 
+        Password: <strong style="background: white; padding: 1px 6px; border-radius: 4px; font-family: monospace;">123</strong>
+      </div>
+    </div>
+
+    {% if error %}
+      <div style="background: #fef2f2; border: 1.5px solid #fca5a5; color: #991b1b; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; font-weight: 600;">
+        ⚠️ {{ error }}
+      </div>
+    {% endif %}
+
+    <form method="POST" action="/support/login/">
+      {% csrf_token %}
+      <div style="margin-bottom: 16px;">
+        <label style="display: block; font-size: 13px; font-weight: 700; color: #12372A; margin-bottom: 6px;">Support Username</label>
+        <input type="text" name="username" id="sp_user" required value="lk" style="width: 100%; padding: 11px 14px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 14px; box-sizing: border-box; font-family: monospace; font-weight: 700;">
+      </div>
+
+      <div style="margin-bottom: 22px;">
+        <label style="display: block; font-size: 13px; font-weight: 700; color: #12372A; margin-bottom: 6px;">Password</label>
+        <input type="password" name="password" id="sp_pass" required value="123" style="width: 100%; padding: 11px 14px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 14px; box-sizing: border-box; font-family: monospace;">
+      </div>
+
+      <button type="submit" style="width: 100%; background: #12372A; color: #FFD000; border: none; padding: 13px; border-radius: 8px; font-weight: 800; font-size: 15px; cursor: pointer; box-shadow: 0 4px 12px rgba(18, 55, 42, 0.2); margin-bottom: 14px;">
+        Login to Support Console ➔
+      </button>
+
+      <!-- 1-Click Instant Support Login -->
+      <button type="button" onclick="document.getElementById('sp_user').value='lk'; document.getElementById('sp_pass').value='123'; this.form.submit();" style="width: 100%; background: #f8fafc; border: 1.5px solid #cbd5e1; color: #334155; padding: 10px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer;">
+        ⚡ 1-Click Support Demo Login (lk / 123)
+      </button>
+    </form>
+
+  </div>
+</div>
+{% endblock %}

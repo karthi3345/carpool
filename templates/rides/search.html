@@ -1,0 +1,539 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Available Rides - {{ from_city }} to {{ to_city }} | TamizhPayanam{% endblock %}
+
+{% block extra_head %}
+<style>
+  :root {
+    --tp-dark: #12372A;
+    --tp-green: #0D5C3A;
+    --tp-green-light: #E8F5E9;
+    --tp-green-border: #C8E6C9;
+    --tp-gold: #F59E0B;
+    --tp-bg: #F8FAFC;
+    --tp-card-bg: #FFFFFF;
+    --tp-border: #E2E8F0;
+  }
+
+  body {
+    background-color: var(--tp-bg);
+  }
+
+  /* Subheader banner or breadcrumb */
+  .search-page-wrapper {
+    max-width: 1280px;
+    margin: 28px auto 80px;
+    padding: 0 24px;
+  }
+
+  .search-grid-layout {
+    display: grid;
+    grid-template-columns: 290px 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+
+  @media (max-width: 900px) {
+    .search-grid-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Left Sidebar Filters Card */
+  .filter-sidebar-card {
+    background: #FFFFFF;
+    border: 1.5px solid var(--tp-border);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+  }
+
+  .filter-sidebar-title {
+    font-size: 17px;
+    font-weight: 800;
+    color: #12372A;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #F1F5F9;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .filter-group {
+    margin-bottom: 24px;
+  }
+
+  .filter-group:last-child {
+    margin-bottom: 0;
+  }
+
+  .filter-group-label {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #1E293B;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .filter-checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    font-size: 13.5px;
+    color: #475569;
+    user-select: none;
+  }
+
+  .filter-checkbox-item input[type="checkbox"],
+  .filter-checkbox-item input[type="radio"] {
+    width: 17px;
+    height: 17px;
+    accent-color: var(--tp-green);
+    cursor: pointer;
+  }
+
+  /* Right Side: Available Rides */
+  .rides-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .rides-header-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 26px;
+    font-weight: 800;
+    color: #12372A;
+    margin: 0;
+  }
+
+  .rides-header-subtitle {
+    font-size: 14px;
+    color: #64748B;
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  .filter-badge-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #FFFFFF;
+    border: 1.5px solid #CBD5E1;
+    border-radius: 999px;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #334155;
+    text-decoration: none;
+  }
+
+  /* Ride Cards matching exact mockup */
+  .ride-card-item {
+    background: #FFFFFF;
+    border: 1.5px solid var(--tp-border);
+    border-radius: 20px;
+    padding: 22px 26px;
+    margin-bottom: 18px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 24px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+    transition: all 0.2s ease;
+  }
+
+  .ride-card-item:hover {
+    box-shadow: 0 8px 26px rgba(13, 92, 58, 0.1);
+    border-color: #A7F3D0;
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 680px) {
+    .ride-card-item {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+  }
+
+  .driver-avatar-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #E2E8F0;
+  }
+
+  .driver-info-block {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .driver-name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 800;
+    color: #12372A;
+  }
+
+  .driver-rating-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #D97706;
+  }
+
+  .vehicle-info-text {
+    font-size: 12.5px;
+    color: #64748B;
+    font-weight: 500;
+  }
+
+  .verified-driver-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--tp-green);
+    margin-top: 4px;
+  }
+
+  /* Center Timeline */
+  .timeline-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 10px;
+  }
+
+  .time-dot-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #1E293B;
+  }
+
+  .timeline-arrow-line {
+    width: 32px;
+    height: 2px;
+    background: #CBD5E1;
+    position: relative;
+  }
+
+  .timeline-arrow-line::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: -3px;
+    width: 6px;
+    height: 6px;
+    border-top: 2px solid #CBD5E1;
+    border-right: 2px solid #CBD5E1;
+    transform: rotate(45deg);
+  }
+
+  /* Right Pricing & CTA */
+  .ride-action-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+  }
+
+  .seats-left-pill {
+    background: var(--tp-green-light);
+    color: var(--tp-green);
+    font-size: 11.5px;
+    font-weight: 800;
+    padding: 3px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--tp-green-border);
+  }
+
+  .price-tag-big {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 22px;
+    font-weight: 900;
+    color: #12372A;
+  }
+
+  .price-tag-big span {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #64748B;
+  }
+
+  .book-ride-btn {
+    background: var(--tp-green);
+    color: #FFFFFF;
+    text-decoration: none;
+    font-size: 13.5px;
+    font-weight: 700;
+    padding: 8px 24px;
+    border-radius: 999px;
+    transition: all 0.18s ease;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(13, 92, 58, 0.25);
+  }
+
+  .book-ride-btn:hover {
+    background: #09472C;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(13, 92, 58, 0.35);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="search-page-wrapper">
+  
+  <div class="search-grid-layout">
+    
+    <!-- Left Column: Filter Sidebar (matching mockup screen 1) -->
+    <aside class="filter-sidebar-card">
+      <div class="filter-sidebar-title">
+        <span>Filter By</span>
+        <a href="/rides/search/?from={{ from_city }}&to={{ to_city }}" style="font-size: 12px; color: #0D5C3A; text-decoration: none; font-weight: 600;">Reset</a>
+      </div>
+
+      <!-- Departure Time -->
+      <div class="filter-group">
+        <label class="filter-group-label">Departure Time</label>
+        <label class="filter-checkbox-item">
+          <input type="checkbox" checked>
+          <span>Any Time</span>
+        </label>
+        <label class="filter-checkbox-item">
+          <input type="checkbox">
+          <span>Morning (06:00 - 12:00)</span>
+        </label>
+        <label class="filter-checkbox-item">
+          <input type="checkbox">
+          <span>Afternoon (12:00 - 18:00)</span>
+        </label>
+        <label class="filter-checkbox-item">
+          <input type="checkbox">
+          <span>Evening (18:00 - 24:00)</span>
+        </label>
+      </div>
+
+      <!-- Price Range -->
+      <div class="filter-group">
+        <label class="filter-group-label">Price Range</label>
+        <label class="filter-checkbox-item">
+          <input type="radio" name="price_range" value="all" checked>
+          <span>All Prices</span>
+        </label>
+        <label class="filter-checkbox-item">
+          <input type="radio" name="price_range" value="0-500">
+          <span>₹0 - ₹500</span>
+        </label>
+        <label class="filter-checkbox-item">
+          <input type="radio" name="price_range" value="501-1000">
+          <span>₹501 - ₹1000</span>
+        </label>
+      </div>
+
+      <!-- Seats -->
+      <div class="filter-group">
+        <label class="filter-group-label">Seats</label>
+        <label class="filter-checkbox-item">
+          <input type="radio" name="seats_count" value="1" checked>
+          <span>1+ Seat</span>
+        </label>
+        <label class="filter-checkbox-item">
+          <input type="radio" name="seats_count" value="2">
+          <span>2+ Seats</span>
+        </label>
+        <label class="filter-checkbox-item">
+          <input type="radio" name="seats_count" value="3">
+          <span>3+ Seats</span>
+        </label>
+      </div>
+    </aside>
+
+    <!-- Right Column: Available Rides List -->
+    <main>
+      <div class="rides-list-header">
+        <div>
+          <h1 class="rides-header-title">Available Rides</h1>
+          <div class="rides-header-subtitle">
+            {{ from_city }} &rarr; {{ to_city }} &bull; {{ date_str }}
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="filter-badge-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            Filter
+          </button>
+        </div>
+      </div>
+
+      {% if rides %}
+        {% for ride in rides %}
+        <div class="ride-card-item">
+          <!-- Driver Avatar & Info -->
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <img src="/static/tamizh-payanam/images/p{{ forloop.counter|default:1|divisibleby:4|yesno:'1,2,3,4' }}.png" 
+                 alt="{{ ride.driver_name }}" 
+                 class="driver-avatar-circle"
+                 onerror="this.src='/static/tamizh-payanam/images/p1.png'">
+            
+            <div class="driver-info-block">
+              <div class="driver-name-row">
+                <span>{{ ride.driver_name }}</span>
+                <span class="driver-rating-badge">★ {{ ride.driver_rating|default:"4.8" }} <small style="color: #64748B; font-weight: 500;">(320)</small></span>
+              </div>
+              <div class="vehicle-info-text">
+                {{ ride.vehicle_model|default:"Toyota Innova" }} &bull; {{ ride.vehicle_number|default:"TN 07 AB 1234" }}
+              </div>
+              <div class="verified-driver-pill">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                <span>Trusted Driver</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Middle: Time & Timeline -->
+          <div>
+            <div class="timeline-row">
+              <div class="time-dot-label">
+                <span style="color: #D97706; font-size: 11px;">🟡</span>
+                <span>{{ ride.departure_time|time:"h:i A"|default:"08:30 AM" }}</span>
+              </div>
+              <div class="timeline-arrow-line"></div>
+              <div class="time-dot-label">
+                <span style="color: #D97706; font-size: 11px;">🟡</span>
+                <span>12:30 PM</span>
+              </div>
+            </div>
+            <div style="font-size: 12px; color: #64748B; margin-top: 6px;">
+              {{ ride.origin.name }} &rarr; {{ ride.destination.name }}
+            </div>
+          </div>
+
+          <!-- Right: Price & CTA -->
+          <div class="ride-action-block">
+            <span class="seats-left-pill">{{ ride.available_seats|default:3 }} seats left</span>
+            <div class="price-tag-big">
+              ₹{{ ride.price_per_seat|floatformat:0 }} <span>/ seat</span>
+            </div>
+            <a href="/rides/{{ ride.id }}/" class="book-ride-btn">
+              Book Ride
+            </a>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <!-- Sample Fallback Cards matching mockup -->
+        <div class="ride-card-item">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <img src="/static/tamizh-payanam/images/p1.png" alt="Raja Kumar" class="driver-avatar-circle">
+            <div class="driver-info-block">
+              <div class="driver-name-row">
+                <span>Raja Kumar</span>
+                <span class="driver-rating-badge">★ 4.8 <small style="color: #64748B; font-weight: 500;">(320)</small></span>
+              </div>
+              <div class="vehicle-info-text">Toyota Innova &bull; TN 07 AB 1234</div>
+              <div class="verified-driver-pill">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                <span>Trusted Driver</span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="timeline-row">
+              <div class="time-dot-label"><span>🟡</span> 08:30 AM</div>
+              <div class="timeline-arrow-line"></div>
+              <div class="time-dot-label"><span>🟡</span> 12:30 PM</div>
+            </div>
+            <div style="font-size: 12px; color: #64748B; margin-top: 6px;">Chennai &rarr; Madurai</div>
+          </div>
+          <div class="ride-action-block">
+            <span class="seats-left-pill">3 seats left</span>
+            <div class="price-tag-big">₹350 <span>/ seat</span></div>
+            <a href="/rides/1/" class="book-ride-btn">Book Ride</a>
+          </div>
+        </div>
+
+        <div class="ride-card-item">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <img src="/static/tamizh-payanam/images/p2.png" alt="Arun Prakash" class="driver-avatar-circle">
+            <div class="driver-info-block">
+              <div class="driver-name-row">
+                <span>Arun Prakash</span>
+                <span class="driver-rating-badge">★ 4.7 <small style="color: #64748B; font-weight: 500;">(89)</small></span>
+              </div>
+              <div class="vehicle-info-text">Honda City &bull; TN 09 CD 5678</div>
+              <div class="verified-driver-pill">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                <span>Trusted Driver</span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="timeline-row">
+              <div class="time-dot-label"><span>🟡</span> 09:00 AM</div>
+              <div class="timeline-arrow-line"></div>
+              <div class="time-dot-label"><span>🟡</span> 01:00 PM</div>
+            </div>
+            <div style="font-size: 12px; color: #64748B; margin-top: 6px;">Chennai &rarr; Madurai</div>
+          </div>
+          <div class="ride-action-block">
+            <span class="seats-left-pill">2 seats left</span>
+            <div class="price-tag-big">₹350 <span>/ seat</span></div>
+            <a href="/rides/1/" class="book-ride-btn">Book Ride</a>
+          </div>
+        </div>
+
+        <div class="ride-card-item">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <img src="/static/tamizh-payanam/images/p3.png" alt="Suresh Babu" class="driver-avatar-circle">
+            <div class="driver-info-block">
+              <div class="driver-name-row">
+                <span>Suresh Babu</span>
+                <span class="driver-rating-badge">★ 4.6 <small style="color: #64748B; font-weight: 500;">(160)</small></span>
+              </div>
+              <div class="vehicle-info-text">Swift Dzire &bull; TN 10 EF 9012</div>
+              <div class="verified-driver-pill">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                <span>Trusted Driver</span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="timeline-row">
+              <div class="time-dot-label"><span>🟡</span> 09:30 AM</div>
+              <div class="timeline-arrow-line"></div>
+              <div class="time-dot-label"><span>🟡</span> 01:30 PM</div>
+            </div>
+            <div style="font-size: 12px; color: #64748B; margin-top: 6px;">Chennai &rarr; Madurai</div>
+          </div>
+          <div class="ride-action-block">
+            <span class="seats-left-pill">4 seats left</span>
+            <div class="price-tag-big">₹300 <span>/ seat</span></div>
+            <a href="/rides/1/" class="book-ride-btn">Book Ride</a>
+          </div>
+        </div>
+      {% endif %}
+    </main>
+  </div>
+</div>
+{% endblock %}

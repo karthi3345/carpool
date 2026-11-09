@@ -1,0 +1,360 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Ride Details - {{ ride.origin.name }} to {{ ride.destination.name }} | TamizhPayanam{% endblock %}
+
+{% block extra_head %}
+<style>
+  :root {
+    --tp-dark: #12372A;
+    --tp-green: #0D5C3A;
+    --tp-green-light: #E8F5E9;
+    --tp-green-border: #C8E6C9;
+    --tp-gold: #F59E0B;
+    --tp-bg: #F8FAFC;
+    --tp-card-bg: #FFFFFF;
+    --tp-border: #E2E8F0;
+  }
+
+  body {
+    background-color: var(--tp-bg);
+  }
+
+  .detail-page-container {
+    max-width: 1240px;
+    margin: 24px auto 80px;
+    padding: 0 24px;
+  }
+
+  .back-link-bar {
+    margin-bottom: 20px;
+  }
+
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #334155;
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .back-btn:hover {
+    color: var(--tp-green);
+  }
+
+  .detail-two-col-layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 32px;
+    align-items: start;
+  }
+
+  @media (max-width: 960px) {
+    .detail-two-col-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Left Main Card */
+  .detail-main-card {
+    background: #FFFFFF;
+    border: 1.5px solid var(--tp-border);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  }
+
+  .car-hero-banner {
+    width: 100%;
+    height: 320px;
+    background: linear-gradient(135deg, #E2E8F0 0%, #CBD5E1 100%);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .car-hero-banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .detail-inner-padding {
+    padding: 30px 32px 36px;
+  }
+
+  .section-h2 {
+    font-size: 19px;
+    font-weight: 800;
+    color: #12372A;
+    margin: 0 0 16px 0;
+  }
+
+  /* Pill bar for ride stats */
+  .ride-stats-pill-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+
+  .stat-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-size: 13.5px;
+    font-weight: 700;
+  }
+
+  .pill-green {
+    background: var(--tp-green-light);
+    color: var(--tp-green);
+    border: 1px solid var(--tp-green-border);
+  }
+
+  .pill-yellow {
+    background: #FEF3C7;
+    color: #92400E;
+    border: 1px solid #FDE68A;
+  }
+
+  .driver-bio-box {
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 16px;
+    padding: 18px 22px;
+    margin-bottom: 32px;
+    font-size: 14.5px;
+    color: #475569;
+    line-height: 1.6;
+  }
+
+  .book-now-full-btn {
+    display: block;
+    width: 100%;
+    background: var(--tp-green);
+    color: #FFFFFF;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 800;
+    padding: 16px 24px;
+    border-radius: 999px;
+    box-shadow: 0 4px 18px rgba(13, 92, 58, 0.3);
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .book-now-full-btn:hover {
+    background: #09472C;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(13, 92, 58, 0.4);
+  }
+
+  /* Right Sidebar Card */
+  .detail-sidebar-card {
+    background: #FFFFFF;
+    border: 1.5px solid var(--tp-border);
+    border-radius: 24px;
+    padding: 28px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  }
+
+  .sidebar-driver-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #F1F5F9;
+  }
+
+  .sidebar-avatar {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #E2E8F0;
+  }
+
+  .rating-breakdown-box {
+    margin: 24px 0;
+  }
+
+  .rating-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: #64748B;
+    margin-bottom: 8px;
+  }
+
+  .rating-bar-track {
+    flex: 1;
+    height: 6px;
+    background: #E2E8F0;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .rating-bar-fill {
+    height: 100%;
+    background: var(--tp-gold);
+    border-radius: 4px;
+  }
+
+  /* Review item */
+  .review-compact-card {
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 14px;
+  }
+
+  .review-avatar-sm {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="detail-page-container">
+  
+  <div class="back-link-bar">
+    <a href="/rides/search/?from={{ ride.origin.name }}&to={{ ride.destination.name }}" class="back-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      <span>Back to Results</span>
+    </a>
+  </div>
+
+  <div class="detail-two-col-layout">
+    
+    <!-- Left Main Column (matching mockup screen 2) -->
+    <div class="detail-main-card">
+      <div class="car-hero-banner">
+        <img src="/static/tamizh-payanam/images/hero.jpg" alt="Ride Car Banner" onerror="this.src='/static/images/hero_highway.png'">
+      </div>
+
+      <div class="detail-inner-padding">
+        <h2 class="section-h2">Ride Details</h2>
+        
+        <div class="ride-stats-pill-row">
+          <span class="stat-pill pill-green">
+            <span>💺</span> {{ ride.available_seats|default:3 }} Seats Left
+          </span>
+          <span class="stat-pill pill-yellow">
+            <span>🏷️</span> ₹{{ ride.price_per_seat|floatformat:0|default:"350" }} / seat
+          </span>
+          <span class="stat-pill pill-green">
+            <span>✓</span> Verified Driver
+          </span>
+        </div>
+
+        <h3 class="section-h2" style="font-size: 17px;">About Driver</h3>
+        <div class="driver-bio-box">
+          Safe driver with 7+ years experience. Always on time! AC vehicle with comfortable legroom. No smoking inside.
+        </div>
+
+        <form action="/bookings/create/" method="POST">
+          {% csrf_token %}
+          <input type="hidden" name="ride_id" value="{{ ride.id|default:1 }}">
+          <input type="hidden" name="seats" value="1">
+          <button type="submit" class="book-now-full-btn">
+            Book Ride Now
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Right Sidebar Column (matching mockup screen 2) -->
+    <aside class="detail-sidebar-card">
+      <div class="sidebar-driver-header">
+        <img src="/static/tamizh-payanam/images/p1.png" alt="Driver" class="sidebar-avatar">
+        <div>
+          <h3 style="font-size: 18px; font-weight: 800; color: #12372A; margin: 0 0 4px 0;">
+            {{ ride.driver_name|default:"Raja Kumar" }}
+          </h3>
+          <div style="font-size: 13px; font-weight: 700; color: #D97706; margin-bottom: 3px;">
+            ★ {{ ride.driver_rating|default:"4.8" }} <span style="color: #64748B; font-weight: 500;">(320 reviews)</span>
+          </div>
+          <div style="font-size: 12px; color: #64748B;">
+            {{ ride.vehicle_model|default:"Toyota Innova" }} &bull; {{ ride.vehicle_number|default:"TN 07 AB 1234" }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Route Timings -->
+      <div style="padding: 16px 0; border-bottom: 1px solid #F1F5F9;">
+        <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: 700; color: #1E293B; margin-bottom: 8px;">
+          <span>🟡 {{ ride.departure_time|time:"h:i A"|default:"08:30 AM" }}</span>
+          <span>🟡 12:30 PM</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 13px; color: #64748B;">
+          <span>{{ ride.origin.name|default:"Chennai" }}</span>
+          <span>{{ ride.destination.name|default:"Madurai" }}</span>
+        </div>
+      </div>
+
+      <!-- Driver Rating breakdown bars -->
+      <div class="rating-breakdown-box">
+        <h4 style="font-size: 14px; font-weight: 800; color: #1E293B; margin-bottom: 12px;">Driver Rating</h4>
+        
+        <div class="rating-bar-row">
+          <span>5 ★</span>
+          <div class="rating-bar-track"><div class="rating-bar-fill" style="width: 92%;"></div></div>
+          <span>92%</span>
+        </div>
+        <div class="rating-bar-row">
+          <span>4 ★</span>
+          <div class="rating-bar-track"><div class="rating-bar-fill" style="width: 6%;"></div></div>
+          <span>6%</span>
+        </div>
+        <div class="rating-bar-row">
+          <span>3 ★</span>
+          <div class="rating-bar-track"><div class="rating-bar-fill" style="width: 2%;"></div></div>
+          <span>2%</span>
+        </div>
+        <div class="rating-bar-row">
+          <span>2 ★</span>
+          <div class="rating-bar-track"><div class="rating-bar-fill" style="width: 0%;"></div></div>
+          <span>0%</span>
+        </div>
+        <div class="rating-bar-row">
+          <span>1 ★</span>
+          <div class="rating-bar-track"><div class="rating-bar-fill" style="width: 0%;"></div></div>
+          <span>0%</span>
+        </div>
+      </div>
+
+      <!-- Reviews snippet -->
+      <div>
+        <h4 style="font-size: 14px; font-weight: 800; color: #1E293B; margin-bottom: 8px;">Reviews (320)</h4>
+        <div class="review-compact-card">
+          <img src="/static/tamizh-payanam/images/p2.png" alt="Priya S" class="review-avatar-sm">
+          <div>
+            <div style="font-size: 13px; font-weight: 700; color: #12372A;">Excellent ride!</div>
+            <div style="font-size: 12px; color: #64748B;">Very friendly driver. &bull; Priya S</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+</div>
+{% endblock %}

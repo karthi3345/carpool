@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Ratings &amp; Reviews | TamizhPayanam{% endblock %}
+
+{% block extra_head %}
+<style>
+  :root {
+    --tp-dark: #12372A;
+    --tp-green: #0D5C3A;
+    --tp-gold: #F59E0B;
+    --tp-bg: #F8FAFC;
+    --tp-border: #E2E8F0;
+  }
+
+  body {
+    background-color: var(--tp-bg);
+  }
+
+  .reviews-page-container {
+    max-width: 960px;
+    margin: 32px auto 80px;
+    padding: 0 20px;
+  }
+
+  .reviews-layout-grid {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+
+  @media (max-width: 760px) {
+    .reviews-layout-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Left Score Card (Mockup Screen 8) */
+  .reviews-summary-card {
+    background: #FFFFFF;
+    border: 1.5px solid var(--tp-border);
+    border-radius: 24px;
+    padding: 28px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    text-align: center;
+  }
+
+  .big-score-number {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 52px;
+    font-weight: 900;
+    color: #12372A;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .five-stars-row {
+    color: var(--tp-gold);
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+
+  .total-count-label {
+    font-size: 13px;
+    color: #64748B;
+    margin-bottom: 24px;
+  }
+
+  .rating-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #475569;
+    margin-bottom: 8px;
+  }
+
+  .rating-bar-track {
+    flex: 1;
+    height: 7px;
+    background: #E2E8F0;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .rating-bar-fill {
+    height: 100%;
+    background: var(--tp-gold);
+    border-radius: 4px;
+  }
+
+  /* Right Reviews Feed */
+  .reviews-feed-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .review-item-card {
+    background: #FFFFFF;
+    border: 1.5px solid var(--tp-border);
+    border-radius: 20px;
+    padding: 20px 24px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .reviewer-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid #E2E8F0;
+    flex-shrink: 0;
+  }
+
+  .reviewer-name {
+    font-size: 15.5px;
+    font-weight: 800;
+    color: #12372A;
+    margin-bottom: 2px;
+  }
+
+  .review-stars-mini {
+    color: var(--tp-gold);
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+
+  .review-content-text {
+    font-size: 14px;
+    color: #334155;
+    line-height: 1.5;
+  }
+
+  .review-date-text {
+    font-size: 12px;
+    color: #94A3B8;
+    margin-top: 6px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="reviews-page-container">
+  
+  <div style="margin-bottom: 24px;">
+    <h1 style="font-family: 'Playfair Display', Georgia, serif; font-size: 26px; font-weight: 800; color: #12372A; margin: 0;">
+      Ratings &amp; Reviews
+    </h1>
+  </div>
+
+  <div class="reviews-layout-grid">
+    
+    <!-- Left: Score breakdown (Mockup Screen 8) -->
+    <div class="reviews-summary-card">
+      <div class="big-score-number">4.8</div>
+      <div class="five-stars-row">★★★★★</div>
+      <div class="total-count-label">(1,245 reviews)</div>
+
+      <div>
+        <div class="rating-bar-row">
+          <span>5 ★</span>
+          <div class="rating-bar-track"><div class="rating-bar-fill" style="width: 72%;"></div></div>
+          <span>72%</span>
+        </div>
+        <div class="rating-bar-row">
+          <span>4 ★</span>
+          <div class="rating-bar-track"><div class="rating-bar-fill" style="width: 18%;"></div></div>
+          <span>18%</span>
+        </div>
+        <div class="rating-bar-row">
+          <span>3 ★</span>
+          <div class="rating-bar-track"><div class="rating-bar-fill" style="width: 6%;"></div></div>
+          <span>6%</span>
+        </div>
+        <div class="rating-bar-row">
+          <span>2 ★</span>
+          <div class="rating-bar-track"><div class="rating-bar-fill" style="width: 2%;"></div></div>
+          <span>2%</span>
+        </div>
+        <div class="rating-bar-row">
+          <span>1 ★</span>
+          <div class="rating-bar-track"><div class="rating-bar-fill" style="width: 2%;"></div></div>
+          <span>2%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Reviews Feed (Mockup Screen 8) -->
+    <div class="reviews-feed-container">
+      
+      <!-- Review 1 -->
+      <div class="review-item-card">
+        <img src="/static/tamizh-payanam/images/p2.png" alt="Priya S" class="reviewer-avatar">
+        <div>
+          <div class="reviewer-name">Priya S</div>
+          <div class="review-stars-mini">★★★★★</div>
+          <div class="review-content-text">
+            Excellent ride! Very comfortable journey. Driver was courteous, drove safely on the highway, and stopped for fresh filter coffee.
+          </div>
+          <div class="review-date-text">20 Nov 2026</div>
+        </div>
+      </div>
+
+      <!-- Review 2 -->
+      <div class="review-item-card">
+        <img src="/static/tamizh-payanam/images/p3.png" alt="Arun Kumar" class="reviewer-avatar">
+        <div>
+          <div class="reviewer-name">Arun Kumar</div>
+          <div class="review-stars-mini">★★★★★</div>
+          <div class="review-content-text">
+            Safe and friendly driver. Car was spotlessly clean and spacious. Arrived right on schedule.
+          </div>
+          <div class="review-date-text">18 Nov 2026</div>
+        </div>
+      </div>
+
+      <!-- Review 3 -->
+      <div class="review-item-card">
+        <img src="/static/tamizh-payanam/images/p1.png" alt="Suresh R" class="reviewer-avatar">
+        <div>
+          <div class="reviewer-name">Suresh R</div>
+          <div class="review-stars-mini">★★★★☆</div>
+          <div class="review-content-text">
+            Great carpooling experience from Chennai to Trichy. Highly recommended for daily and weekend travellers.
+          </div>
+          <div class="review-date-text">14 Nov 2026</div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

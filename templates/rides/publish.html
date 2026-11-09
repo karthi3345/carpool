@@ -1,0 +1,1125 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Publish a Ride - Driver & Vehicle Details | TamizhPayanam{% endblock %}
+
+{% block extra_head %}
+<style>
+  :root {
+    --tp-dark: #12372A;
+    --tp-green: #0D5C3A;
+    --tp-green-light: #E8F5E9;
+    --tp-green-border: #C8E6C9;
+    --tp-gold: #F59E0B;
+    --tp-bg: #F8FAFC;
+    --tp-border: #E2E8F0;
+    --tp-maroon: #600704;
+  }
+
+  body {
+    background-color: var(--tp-bg);
+  }
+
+  .publish-page-container {
+    max-width: 1280px;
+    margin: 32px auto 80px;
+    padding: 0 24px;
+  }
+
+  .publish-grid-layout {
+    display: grid;
+    grid-template-columns: 560px 1fr;
+    gap: 36px;
+    align-items: start;
+  }
+
+  @media (max-width: 1024px) {
+    .publish-grid-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Form Card on Left */
+  .publish-form-card {
+    background: #FFFFFF;
+    border: 1.5px solid var(--tp-border);
+    border-radius: 24px;
+    padding: 34px 36px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  }
+
+  .publish-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #E8F5EE;
+    color: #087443;
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 999px;
+    margin-bottom: 12px;
+  }
+
+  .publish-form-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    color: #12372A;
+    margin: 0 0 6px 0;
+  }
+
+  .publish-form-subtitle {
+    font-size: 14px;
+    color: #64748B;
+    margin-bottom: 24px;
+    line-height: 1.45;
+  }
+
+  /* Form Section Headers */
+  .form-section-title {
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #087443;
+    margin: 24px 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .form-section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #E2E8F0;
+  }
+
+  .form-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  @media (max-width: 580px) {
+    .form-row-2 {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .form-field-group {
+    margin-bottom: 14px;
+    position: relative;
+  }
+
+  .field-input-box {
+    display: flex;
+    align-items: center;
+    background: #F8FAFC;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 14px;
+    padding: 10px 14px;
+    transition: all 0.2s ease;
+  }
+
+  .field-input-box:focus-within {
+    border-color: #087443;
+    background: #FFFFFF;
+    box-shadow: 0 0 0 3px rgba(8, 116, 67, 0.12);
+  }
+
+  .field-icon {
+    font-size: 18px;
+    margin-right: 12px;
+    width: 24px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .field-text-wrap {
+    flex-grow: 1;
+    min-width: 0;
+  }
+
+  .field-label-small {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #64748B;
+    margin-bottom: 2px;
+    letter-spacing: 0.03em;
+  }
+
+  .field-input-clean {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: #1E293B;
+    font-family: inherit;
+    padding: 0;
+  }
+
+  .field-input-clean::placeholder {
+    color: #94A3B8;
+    font-weight: 400;
+  }
+
+  /* Amenities Pill Selector */
+  .amenities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+    margin-top: 8px;
+  }
+
+  .amenity-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 12px;
+    background: #F8FAFC;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 12px;
+    cursor: pointer;
+    user-select: none;
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+    transition: all 0.18s ease;
+  }
+
+  .amenity-pill input[type="checkbox"] {
+    display: none;
+  }
+
+  .amenity-pill:hover {
+    border-color: #087443;
+    background: #F0FDF4;
+  }
+
+  .amenity-pill.active {
+    background: #E8F5EE;
+    border-color: #087443;
+    color: #087443;
+    box-shadow: 0 2px 6px rgba(8, 116, 67, 0.12);
+  }
+
+  .amenity-pill .amenity-check-icon {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1.5px solid #CBD5E1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: transparent;
+    flex-shrink: 0;
+  }
+
+  .amenity-pill.active .amenity-check-icon {
+    background: #087443;
+    border-color: #087443;
+    color: #FFFFFF;
+  }
+
+  .publish-submit-btn {
+    width: 100%;
+    margin-top: 24px;
+    background: #087443;
+    color: #FFFFFF;
+    border: none;
+    padding: 15px 24px;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(8, 116, 67, 0.28);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .publish-submit-btn:hover {
+    background: #065430;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(8, 116, 67, 0.35);
+  }
+
+  /* Right Side: Live Ride Preview & Scenic Artwork */
+  .publish-preview-column {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    position: sticky;
+    top: 96px;
+  }
+
+  .live-preview-card {
+    background: #FFFFFF;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 24px;
+    padding: 26px 28px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .live-preview-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, #087443 0%, #FFB800 100%);
+  }
+
+  .preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .preview-badge-live {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #087443;
+    background: #E8F5EE;
+    padding: 4px 10px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .preview-pulse {
+    width: 6px;
+    height: 6px;
+    background: #087443;
+    border-radius: 50%;
+    animation: pulsePreview 1.5s infinite;
+  }
+  @keyframes pulsePreview {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(1.3); }
+  }
+
+  .preview-driver-box {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 18px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #F1F5F9;
+  }
+
+  .preview-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #087443;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  .preview-driver-details b {
+    display: block;
+    font-size: 16px;
+    color: #0F172A;
+  }
+  .preview-driver-details span {
+    font-size: 12px;
+    color: #087443;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .preview-route-banner {
+    background: #F8FAFC;
+    border-radius: 16px;
+    padding: 14px 18px;
+    margin-bottom: 18px;
+  }
+
+  .preview-route-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 16px;
+    font-weight: 800;
+    color: #1E293B;
+  }
+
+  .preview-route-row span.arrow {
+    color: #087443;
+    font-size: 20px;
+  }
+
+  .preview-landmarks {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #64748B;
+    margin-top: 4px;
+  }
+
+  .preview-vehicle-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #FFFDF8;
+    border: 1px solid rgba(230, 220, 205, 0.8);
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+  }
+
+  .preview-vehicle-name {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #1E293B;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .preview-vehicle-plate {
+    background: #FEEF85;
+    color: #1E293B;
+    font-family: monospace;
+    font-size: 12px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 6px;
+    border: 1px solid #E2CA40;
+    letter-spacing: 0.05em;
+  }
+
+  .preview-amenities-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .preview-tag {
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 4px 9px;
+    border-radius: 6px;
+    background: #E8F5EE;
+    color: #087443;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .preview-price-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 14px;
+    border-top: 1px solid #F1F5F9;
+  }
+
+  .preview-seats {
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748B;
+  }
+
+  .preview-fare {
+    font-size: 22px;
+    font-weight: 800;
+    color: #087443;
+  }
+  .preview-fare small {
+    font-size: 13px;
+    color: #64748B;
+    font-weight: 500;
+  }
+
+  /* Scenic Artwork Box */
+  .publish-visual-panel {
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+    height: 220px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  }
+
+  .publish-visual-bg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .publish-visual-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(18, 55, 42, 0.3) 0%, rgba(18, 55, 42, 0.85) 100%);
+  }
+
+  .publish-visual-content {
+    position: absolute;
+    bottom: 20px;
+    left: 24px;
+    right: 24px;
+    color: #FFFFFF;
+  }
+
+  .publish-visual-content b {
+    font-size: 18px;
+    display: block;
+    color: #FDE68A;
+  }
+  .publish-visual-content p {
+    font-size: 13px;
+    color: #E2E8F0;
+    margin: 4px 0 0;
+    line-height: 1.4;
+  }
+
+  .alert-banner-success {
+    background: #ECFDF5;
+    border: 1.5px solid #A7F3D0;
+    color: #065F46;
+    padding: 14px 18px;
+    border-radius: 14px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .alert-banner-error {
+    background: #FEF2F2;
+    border: 1.5px solid #FECACA;
+    color: #991B1B;
+    padding: 14px 18px;
+    border-radius: 14px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="publish-page-container">
+  
+  <div class="publish-grid-layout">
+    
+    <!-- Left: Publish Form Card -->
+    <div class="publish-form-card">
+      <div class="publish-badge">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/></svg>
+        <span>Driver Publishing Portal</span>
+      </div>
+      <h1 class="publish-form-title">Publish a Ride</h1>
+      <div class="publish-form-subtitle">Share your journey, offset fuel costs, and travel with verified passengers across Tamil Nadu.</div>
+
+      {% if success_message %}
+      <div class="alert-banner-success" style="background: #FFFBEB; border: 1.5px solid #FDE047; color: #854D0E; padding: 18px 22px; border-radius: 14px; margin-bottom: 24px;">
+        <div style="display: flex; align-items: flex-start; gap: 14px;">
+          <span style="font-size: 28px; line-height: 1;">🛡️</span>
+          <div>
+            <b style="font-size: 16px; color: #92400E; display: block; margin-bottom: 6px;">{{ success_message }}</b>
+            <div style="font-size: 13.5px; color: #78350F; line-height: 1.6;">
+              Status: <span style="background: #FEF3C7; color: #B45309; padding: 3px 10px; border-radius: 6px; font-weight: 800; border: 1px solid #FCD34D;">UNDER CUSTOMER SUPPORT VERIFICATION</span>
+              <p style="margin: 6px 0 0; font-size: 13px; color: #854D0E;">Our customer support team is auditing your driving licence and route details. You will receive an SMS and in-app notification the moment your ride is approved and made live for passengers.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if error_message %}
+      <div class="alert-banner-error">
+        <b>⚠️ {{ error_message }}</b>
+      </div>
+      {% endif %}
+
+      <form action="/rides/publish/" method="POST" enctype="multipart/form-data" autocomplete="off" id="publishRideForm">
+        {% csrf_token %}
+        
+        <!-- SECTION 1: ROUTE & SCHEDULE -->
+        <div class="form-section-title">
+          <span>1. From Where to Where</span>
+        </div>
+
+        <div class="form-row-2">
+          <!-- From City -->
+          <div class="form-field-group">
+            <div class="field-input-box">
+              <span class="field-icon">📍</span>
+              <div class="field-text-wrap">
+                <label class="field-label-small">From (Departure City)</label>
+                <input type="text" id="id_origin" name="origin_name" class="field-input-clean" placeholder="Enter departure city (e.g. Chennai)" value="{{ form_data.origin_name|default:'' }}" required list="citiesList" autocomplete="off">
+              </div>
+            </div>
+          </div>
+
+          <!-- To City -->
+          <div class="form-field-group">
+            <div class="field-input-box">
+              <span class="field-icon">🎯</span>
+              <div class="field-text-wrap">
+                <label class="field-label-small">To (Destination City)</label>
+                <input type="text" id="id_dest" name="destination_name" class="field-input-clean" placeholder="Enter destination city (e.g. Madurai)" value="{{ form_data.destination_name|default:'' }}" required list="citiesList" autocomplete="off">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <!-- Origin Landmark -->
+          <div class="form-field-group">
+            <div class="field-input-box">
+              <span class="field-icon">📌</span>
+              <div class="field-text-wrap">
+                <label class="field-label-small">Pickup Landmark (Suggested for City)</label>
+                <input type="text" id="id_origin_point" name="origin_point" class="field-input-clean" placeholder="e.g. Koyambedu CMBT / Tambaram" value="{{ form_data.origin_point|default:'' }}" list="originLandmarksList" autocomplete="off">
+                <datalist id="originLandmarksList"></datalist>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dest Landmark -->
+          <div class="form-field-group">
+            <div class="field-input-box">
+              <span class="field-icon">🏁</span>
+              <div class="field-text-wrap">
+                <label class="field-label-small">Drop Landmark (Suggested for City)</label>
+                <input type="text" id="id_dest_point" name="destination_point" class="field-input-clean" placeholder="e.g. Mattuthavani / Gandhipuram" value="{{ form_data.destination_point|default:'' }}" list="destLandmarksList" autocomplete="off">
+                <datalist id="destLandmarksList"></datalist>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <!-- Date -->
+          <div class="form-field-group">
+            <div class="field-input-box">
+              <span class="field-icon">📅</span>
+              <div class="field-text-wrap">
+                <label class="field-label-small">Journey Date</label>
+                <input type="text" id="id_date" name="departure_date" class="field-input-clean" placeholder="e.g. 2026-11-25 or 25 Nov 2026" value="{{ form_data.departure_date|default:'' }}" required>
+              </div>
+            </div>
+          </div>
+
+          <!-- Time -->
+          <div class="form-field-group">
+            <div class="field-input-box">
+              <span class="field-icon">⏰</span>
+              <div class="field-text-wrap">
+                <label class="field-label-small">Departure Time</label>
+                <input type="text" id="id_time" name="departure_time" class="field-input-clean" placeholder="08:00 AM" value="{{ form_data.departure_time|default:'' }}" placeholder="e.g. 07:30 AM" required>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <!-- Available Seats -->
+          <div class="form-field-group">
+            <div class="field-input-box">
+              <span class="field-icon">💺</span>
+              <div class="field-text-wrap">
+                <label class="field-label-small">Available Seats</label>
+                <input type="number" id="id_seats" name="available_seats" class="field-input-clean" placeholder="3" value="{{ form_data.available_seats|default:'' }}" placeholder="e.g. 3" min="1" max="8" required>
+              </div>
+            </div>
+          </div>
+
+          <!-- Price per Seat -->
+          <div class="form-field-group">
+            <div class="field-input-box">
+              <span class="field-icon">₹</span>
+              <div class="field-text-wrap">
+                <label class="field-label-small">Price per Seat (₹)</label>
+                <input type="number" id="id_price" name="price_per_seat" class="field-input-clean" placeholder="450" value="{{ form_data.price_per_seat|default:'' }}" placeholder="e.g. 500" min="50" required>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 2: DRIVER & VEHICLE DETAILS -->
+        <div class="form-section-title">
+          <span>2. Driver Name, Govt ID & Car Details</span>
+        </div>
+
+        <div class="form-row-2">
+          <!-- Driver Name -->
+          <div class="form-field-group">
+            <div class="field-input-box">
+              <span class="field-icon">👤</span>
+              <div class="field-text-wrap">
+                <label class="field-label-small">Driver Full Name</label>
+                <input type="text" id="id_driver_name" name="driver_name" class="field-input-clean" placeholder="e.g. Karthik Raja" value="{{ form_data.driver_name|default:'' }}" placeholder="Enter your full name as on ID" required>
+              </div>
+            </div>
+          </div>
+
+          <!-- Govt ID / DL Number -->
+          <div class="form-field-group">
+            <div class="field-input-box">
+              <span class="field-icon">🛡️</span>
+              <div class="field-text-wrap">
+                <label class="field-label-small">Driving Licence Number (Mandatory RTO DL)</label>
+                <input type="text" id="id_dl" name="driver_license_number" class="field-input-clean" placeholder="e.g. TN-0120180004567" value="{{ form_data.driver_license_number|default:'' }}" placeholder="e.g. TN-0120180004567" required>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <!-- Car Model and Car Name -->
+          <div class="form-field-group">
+            <div class="field-input-box">
+              <span class="field-icon">🚗</span>
+              <div class="field-text-wrap">
+                <label class="field-label-small">Car Model & Car Name</label>
+                <input type="text" id="id_car_model" name="vehicle_model" class="field-input-clean" placeholder="e.g. Maruti Suzuki Dzire" value="{{ form_data.vehicle_model|default:'' }}" placeholder="e.g. Toyota Innova / Hyundai i20" required>
+              </div>
+            </div>
+          </div>
+
+          <!-- Car Number / Plate -->
+          <div class="form-field-group">
+            <div class="field-input-box">
+              <span class="field-icon">🔢</span>
+              <div class="field-text-wrap">
+                <label class="field-label-small">Car Registration Plate</label>
+                <input type="text" id="id_car_number" name="vehicle_number" class="field-input-clean" placeholder="TN-01-AB-1234" value="{{ form_data.vehicle_number|default:'' }}" placeholder="e.g. TN-07-CB-9988" required>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Optional License Upload -->
+        <div class="form-field-group">
+          <div class="field-input-box" style="padding: 8px 14px;">
+            <span class="field-icon">📄</span>
+            <div class="field-text-wrap">
+              <label class="field-label-small">Upload Driving Licence Card (Photo / PDF for Support Verification)</label>
+              <input type="file" name="driver_license_file" class="field-input-clean" style="font-size: 13px;" accept="image/*,.pdf">
+              <small style="color: #64748B; font-size: 11px; margin-top: 2px; display: block;">🔒 Verified securely by Customer Support team. Sensitive details are OCR-masked.</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 3: ALLOWED AMENITIES -->
+        <div class="form-section-title">
+          <span>3. Allowed Amenities & Preferences</span>
+        </div>
+        <p style="font-size: 12.5px; color: #64748B; margin: 0 0 10px;">Select all features allowed during this ride:</p>
+
+        <div class="amenities-grid">
+          <!-- AC -->
+          <label class="amenity-pill active" id="pill_ac">
+            <input type="checkbox" name="has_ac" id="chk_ac" value="1" checked onchange="togglePill(this, 'pill_ac', 'tag_ac')">
+            <span class="amenity-check-icon">✓</span>
+            <span>❄️ AC Allowed</span>
+          </label>
+
+          <!-- USB Charging -->
+          <label class="amenity-pill active" id="pill_usb">
+            <input type="checkbox" name="has_charging" id="chk_usb" value="1" checked onchange="togglePill(this, 'pill_usb', 'tag_usb')">
+            <span class="amenity-check-icon">✓</span>
+            <span>🔋 USB Charging</span>
+          </label>
+
+          <!-- Pet Allowed -->
+          <label class="amenity-pill" id="pill_pet">
+            <input type="checkbox" name="has_pets" id="chk_pet" value="1" onchange="togglePill(this, 'pill_pet', 'tag_pet')">
+            <span class="amenity-check-icon">✓</span>
+            <span>🐾 Pet Allowed</span>
+          </label>
+
+          <!-- Music -->
+          <label class="amenity-pill active" id="pill_music">
+            <input type="checkbox" name="has_music" id="chk_music" value="1" checked onchange="togglePill(this, 'pill_music', 'tag_music')">
+            <span class="amenity-check-icon">✓</span>
+            <span>🎵 Music / Audio</span>
+          </label>
+
+          <!-- Luggage -->
+          <label class="amenity-pill active" id="pill_luggage">
+            <input type="checkbox" name="has_luggage" id="chk_luggage" value="1" checked onchange="togglePill(this, 'pill_luggage', 'tag_luggage')">
+            <span class="amenity-check-icon">✓</span>
+            <span>🧳 Luggage Space</span>
+          </label>
+
+          <!-- Fastag -->
+          <label class="amenity-pill active" id="pill_fastag">
+            <input type="checkbox" name="has_fastag" id="chk_fastag" value="1" checked onchange="togglePill(this, 'pill_fastag', 'tag_fastag')">
+            <span class="amenity-check-icon">✓</span>
+            <span>⚡ Fastag Express</span>
+          </label>
+
+          <!-- Max 2 in back -->
+          <label class="amenity-pill" id="pill_two_back">
+            <input type="checkbox" name="two_in_back" id="chk_two_back" value="1" onchange="togglePill(this, 'pill_two_back', 'tag_two_back')">
+            <span class="amenity-check-icon">✓</span>
+            <span>👥 Max 2 in Back</span>
+          </label>
+        </div>
+
+        <!-- Optional Trip Notes -->
+        <div class="form-field-group" style="margin-top: 14px;">
+          <div class="field-input-box">
+            <span class="field-icon">💬</span>
+            <div class="field-text-wrap">
+              <label class="field-label-small">Trip Notes for Passengers (Optional)</label>
+              <input type="text" name="notes" class="field-input-clean" placeholder="e.g. Smooth highway drive, leaving on time!" value="{{ form_data.notes|default:'Leaving on time. Pleasant conversation and smooth highway drive!' }}">
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="publish-submit-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          Publish Verified Ride
+        </button>
+      </form>
+
+      <datalist id="citiesList">
+        <option value="Chennai">
+        <option value="Madurai">
+        <option value="Coimbatore">
+        <option value="Trichy">
+        <option value="Salem">
+        <option value="Tirunelveli">
+        <option value="Thanjavur">
+        <option value="Rameswaram">
+        <option value="Kanyakumari">
+        <option value="Ooty">
+        <option value="Kodaikanal">
+        <option value="Pondicherry">
+        <option value="Tiruvannamalai">
+        <option value="Vellore">
+        <option value="Erode">
+        <option value="Dindigul">
+        <option value="Hosur">
+      </datalist>
+    </div>
+
+    <!-- Right: Interactive Live Ride Preview & Scenic Artwork -->
+    <div class="publish-preview-column">
+      
+      <!-- Live Card Preview -->
+      <div class="live-preview-card">
+        <div class="preview-header">
+          <div class="preview-badge-live">
+            <span class="preview-pulse"></span>
+            <span>Live Card Preview</span>
+          </div>
+          <span style="font-size: 12px; color: #64748B;">Auto-Updates as you type</span>
+        </div>
+
+        <!-- Driver Info -->
+        <div class="preview-driver-box">
+          <div class="preview-avatar" id="prev_avatar">KR</div>
+          <div class="preview-driver-details">
+            <b id="prev_driver_name">Karthik Raja</b>
+            <span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+              Govt ID Verified (<span id="prev_dl_num">TN-0120180004567</span>)
+            </span>
+          </div>
+        </div>
+
+        <!-- Route Banner -->
+        <div class="preview-route-banner">
+          <div class="preview-route-row">
+            <span id="prev_from_city">Chennai</span>
+            <span class="arrow">&rarr;</span>
+            <span id="prev_to_city">Madurai</span>
+          </div>
+          <div class="preview-landmarks">
+            <span id="prev_from_point">Koyambedu CMBT</span>
+            <span id="prev_to_point">Mattuthavani Bus Stand</span>
+          </div>
+        </div>
+
+        <!-- Vehicle Info -->
+        <div class="preview-vehicle-info">
+          <div class="preview-vehicle-name">
+            <span>🚗</span>
+            <span id="prev_car_model">Maruti Suzuki Dzire VXI</span>
+          </div>
+          <span class="preview-vehicle-plate" id="prev_car_plate">TN-01-AB-1234</span>
+        </div>
+
+        <!-- Allowed Amenities Tags -->
+        <div class="preview-amenities-tags" id="prev_amenities_list">
+          <span class="preview-tag" id="tag_ac">❄️ AC Allowed</span>
+          <span class="preview-tag" id="tag_usb">🔋 USB Charging</span>
+          <span class="preview-tag" id="tag_pet" style="display: none;">🐾 Pet Friendly</span>
+          <span class="preview-tag" id="tag_music">🎵 Music</span>
+          <span class="preview-tag" id="tag_luggage">🧳 Luggage</span>
+          <span class="preview-tag" id="tag_fastag">⚡ Fastag</span>
+          <span class="preview-tag" id="tag_two_back" style="display: none;">👥 Max 2 Back</span>
+        </div>
+
+        <!-- Price & Seats -->
+        <div class="preview-price-box">
+          <div class="preview-seats">
+            <span id="prev_seats_num">3</span> Seats Available &bull; <span id="prev_date_str">Sat, 22 Nov 2026</span>
+          </div>
+          <div class="preview-fare">
+            ₹<span id="prev_fare_num">450</span> <small>/ seat</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scenic Highway Artwork -->
+      <div class="publish-visual-panel">
+        <img src="/static/tamizh-payanam/images/hero.jpg" alt="Let's Travel Together" class="publish-visual-bg" onerror="this.src='/static/images/hero_highway.png'">
+        <div class="publish-visual-overlay"></div>
+        <div class="publish-visual-content">
+          <b>பயணிப்போம்... பகிர்ந்திடுவோம்!</b>
+          <p>Tamil Nadu's 100% verified carpooling community. Safe rides across all 38 districts with instant UPI settlements.</p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function togglePill(checkbox, pillId, tagId) {
+    const pill = document.getElementById(pillId);
+    const tag = document.getElementById(tagId);
+    if (checkbox.checked) {
+      pill.classList.add('active');
+      if (tag) tag.style.display = 'inline-flex';
+    } else {
+      pill.classList.remove('active');
+      if (tag) tag.style.display = 'none';
+    }
+  }
+
+  // Real-time live card preview synchronization
+  function bindInputToText(inputId, targetId, fallback, transform) {
+    const el = document.getElementById(inputId);
+    const target = document.getElementById(targetId);
+    if (!el || !target) return;
+    el.addEventListener('input', function() {
+      let val = el.value.trim() || fallback;
+      if (transform) val = transform(val);
+      target.textContent = val;
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    bindInputToText('id_driver_name', 'prev_driver_name', 'Karthik Raja');
+    bindInputToText('id_driver_name', 'prev_avatar', 'KR', function(v) {
+      const parts = v.trim().split(' ');
+      if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+      return v.substring(0, 2).toUpperCase();
+    });
+    bindInputToText('id_dl', 'prev_dl_num', 'TN-0120180004567');
+    bindInputToText('id_origin', 'prev_from_city', 'Chennai');
+    bindInputToText('id_dest', 'prev_to_city', 'Madurai');
+    bindInputToText('id_origin_point', 'prev_from_point', 'Pickup Landmark');
+    bindInputToText('id_dest_point', 'prev_to_point', 'Drop Landmark');
+
+    // Comprehensive Tamil Nadu City Landmarks Directory
+    const TAMILNADU_CITY_LANDMARKS = {
+      'chennai': [
+        'Koyambedu CMBT Bus Terminus',
+        'Tambaram Sanatorium Bus Stand',
+        'Guindy Kathipara Junction / Metro',
+        'Chennai Central (Puratchi Thalaivar Dr. MGR)',
+        'Perungalathur Bypass (GST Road Stop)',
+        'Vadapalani Metro Station',
+        'T. Nagar Panagal Park',
+        'Velachery MRTS / Phoenix Mall',
+        'Sholinganallur OMR Junction',
+        'Maduravoyal Toll Plaza',
+        'Thiruvanmiyur Bus Depot / ECR',
+        'Airport Metro / Tirusulam'
+      ],
+      'madurai': [
+        'Mattuthavani Integrated Bus Stand (MIBT)',
+        'Periyar Central Bus Stand',
+        'Arapalayam Bus Stand',
+        'Madurai Junction Railway Station',
+        'Goripalayam Thevar Statue',
+        'Kalavasal Junction (Theni Road)',
+        'Viraganoor Ring Road Bypass',
+        'Fathima College Toll Junction'
+      ],
+      'coimbatore': [
+        'Gandhipuram Central Bus Stand',
+        'Singanallur Bus Stand',
+        'Ukkadam Bus Stand',
+        'Coimbatore Junction Railway Station',
+        'Avinashi Road Peelamedu (KMCH)',
+        'Hopes College Bus Stop',
+        'Thudiyalur Mettupalayam Road',
+        'Neelambur Bypass Toll Plaza'
+      ],
+      'trichy': [
+        'Central Bus Stand (Cantonment)',
+        'Chattram Bus Stand (Rockfort)',
+        'Trichy Junction Railway Station',
+        'Palpannai Roundana (Chennai Highway)',
+        'TVS Tollgate / Mannarpuram',
+        'Srirangam Temple Arch (North Gate)'
+      ],
+      'salem': [
+        'New Bus Stand (Meyyanur)',
+        'Old Bus Stand (Town)',
+        'Salem Junction Railway Station',
+        'AVR Roundana (Bangalore Bypass)',
+        'Seelanaickenpatti Bypass Junction',
+        'Kondalampatti Roundana'
+      ],
+      'tirunelveli': [
+        'Vaeinthaankulam New Bus Stand',
+        'Tirunelveli Junction Railway Station',
+        'Vannarpettai Roundana',
+        'Palayamkottai Bus Stand',
+        'Thachanallur Bypass'
+      ],
+      'thanjavur': [
+        'New Bus Stand (Trichy Road)',
+        'Old Bus Stand (Near Big Temple)',
+        'Thanjavur Junction Railway Station',
+        'Medical College Junction'
+      ],
+      'vellore': [
+        'New Bus Stand (Green Circle)',
+        'Katpadi Junction Railway Station',
+        'Vellore Fort Main Gate',
+        'CMC Hospital Out Gate'
+      ],
+      'erode': [
+        'Erode Central Bus Stand',
+        'Erode Junction Railway Station',
+        'Perundurai Toll Plaza Bypass',
+        'Solar Bus Stand'
+      ],
+      'tiruppur': [
+        'Old Bus Stand (Town)',
+        'New Bus Stand (Pushpa Theatre)',
+        'Tiruppur Railway Station',
+        'Palladam Road Junction'
+      ],
+      'kanyakumari': [
+        'Kanyakumari Bus Stand (Beach)',
+        'Nagercoil Vadasery Bus Stand',
+        'Kanyakumari Railway Station'
+      ],
+      'ooty': [
+        'Ooty Central Bus Stand',
+        'Charring Cross Commercial Road',
+        'Botanical Garden Gate'
+      ],
+      'kodaikanal': [
+        'Kodaikanal Lake Bus Terminal',
+        'Seven Roads Junction',
+        'Bryant Park Entrance'
+      ],
+      'tiruvannamalai': [
+        'Tiruvannamalai Central Bus Stand',
+        'Girivalam Path (Chenji Road Junction)',
+        'Annamalaiyar Temple Gopuram Entrance'
+      ],
+      'dindigul': [
+        'Dindigul Central Bus Stand',
+        'Dindigul Bypass Roundana',
+        'Palani Road Bypass'
+      ],
+      'pondicherry': [
+        'Pondicherry New Bus Stand (Maraimalai Adigal)',
+        'East Coast Road (ECR) Toll Gate',
+        'White Town Promenade Beach'
+      ]
+    };
+
+    function updateLandmarksForCity(cityInputId, landmarkInputId, datalistId, prevPointId) {
+      const cityEl = document.getElementById(cityInputId);
+      const pointEl = document.getElementById(landmarkInputId);
+      const listEl = document.getElementById(datalistId);
+      const prevEl = document.getElementById(prevPointId);
+      if (!cityEl || !pointEl || !listEl) return;
+
+      function refreshOptions() {
+        const cityName = cityEl.value.trim().toLowerCase();
+        listEl.innerHTML = '';
+
+        let matchedLandmarks = null;
+        for (const [key, landmarks] of Object.entries(TAMILNADU_CITY_LANDMARKS)) {
+          if (cityName.includes(key) || key.includes(cityName)) {
+            matchedLandmarks = landmarks;
+            break;
+          }
+        }
+
+        if (matchedLandmarks && matchedLandmarks.length > 0) {
+          matchedLandmarks.forEach(function(lm) {
+            const opt = document.createElement('option');
+            opt.value = lm;
+            listEl.appendChild(opt);
+          });
+          // Update placeholder and clear value so driver explicitly chooses/picks their landmark
+          pointEl.placeholder = 'Select/Type landmark in ' + cityEl.value.trim() + ' (e.g. ' + matchedLandmarks[0] + ')';
+          // DO NOT auto-fill value: leave field empty for driver to pick manually
+          pointEl.value = '';
+          if (prevEl) prevEl.textContent = 'Choose Landmark';
+        } else if (cityName.length > 0) {
+          // Generic city fallback
+          const capitalCity = cityEl.value.trim();
+          const generic = [
+            capitalCity + ' Central Bus Stand',
+            capitalCity + ' Railway Station Bypass',
+            capitalCity + ' Toll Plaza Junction'
+          ];
+          generic.forEach(function(lm) {
+            const opt = document.createElement('option');
+            opt.value = lm;
+            listEl.appendChild(opt);
+          });
+          pointEl.placeholder = 'e.g. ' + capitalCity + ' Central Bus Stand';
+        }
+      }
+
+      cityEl.addEventListener('input', refreshOptions);
+      cityEl.addEventListener('change', refreshOptions);
+      // Run once on initial load if city already has a value
+      if (cityEl.value.trim()) {
+        refreshOptions();
+      }
+    }
+
+    updateLandmarksForCity('id_origin', 'id_origin_point', 'originLandmarksList', 'prev_from_point');
+    updateLandmarksForCity('id_dest', 'id_dest_point', 'destLandmarksList', 'prev_to_point');
+    bindInputToText('id_car_model', 'prev_car_model', 'Maruti Suzuki Dzire VXI');
+    bindInputToText('id_car_number', 'prev_car_plate', 'TN-01-AB-1234', function(v) { return v.toUpperCase(); });
+    bindInputToText('id_seats', 'prev_seats_num', '3');
+    bindInputToText('id_date', 'prev_date_str', 'Sat, 22 Nov 2026');
+    bindInputToText('id_price', 'prev_fare_num', '450');
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}ChalRe Tamil Nadu - Miles Better Together | Intercity Carpooling{% endblock %}</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
+  {% block extra_head %}{% endblock %}
+  <style>
+    :root {
+      /* Primary Palette: Heritage Yellow, Warm Gold, White, Ivory */
+      --chalre-yellow: #FFD43B;
+      --chalre-gold: #D4A017;
+      --chalre-ivory: #FFFDF5;
+      --chalre-white: #FFFFFF;
+
+      /* Secondary Palette: Deep Maroon, Temple Bronze, Charcoal, Muted Sand */
+      --chalre-maroon: #722F37;
+      --chalre-bronze: #8C6239;
+      --chalre-charcoal: #242424;
+      --chalre-sand: #E9DFC8;
+
+      /* Brand Dark & System */
+      --chalre-dark: #12372A;
+      --chalre-green: #1B4D3E;
+      --text-heading: #242424;
+      --text-sub: #4A5568;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #F8FAFC;
+      color: #1E293B;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Floating White Navbar Pill matching ChalRe reference */
+    .chalre-nav-wrap {
+      padding: 18px 24px 0;
+      max-width: 1320px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 50;
+    }
+
+    .chalre-nav {
+      background: #FFFFFF;
+      border-radius: 20px;
+      padding: 12px 34px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(18, 55, 42, 0.07);
+      border: 1.5px solid rgba(226, 232, 240, 0.9);
+    }
+
+    .chalre-logo {
+      text-decoration: none;
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--chalre-dark);
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .chalre-logo-tag {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      background: #FFFBEA;
+      color: #B45309;
+      border: 1px solid #FFD000;
+      padding: 2px 7px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .chalre-menu {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .chalre-link {
+      text-decoration: none;
+      color: #2D3748;
+      font-size: 15px;
+      font-weight: 600;
+      transition: color 0.15s ease;
+    }
+
+    .chalre-link:hover {
+      color: var(--chalre-green);
+    }
+
+    .chalre-register-btn {
+      background: var(--chalre-dark);
+      color: #FFFFFF;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 10px 28px;
+      border-radius: 30px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(18, 55, 42, 0.25);
+    }
+
+    .chalre-register-btn:hover {
+      background: #0B251C;
+      transform: translateY(-1px);
+    }
+
+    /* Floating Search Widget */
+    .search-widget-pill {
+      background: #FFFFFF;
+      border-radius: 40px;
+      padding: 6px 10px;
+      box-shadow: 0 12px 36px rgba(18, 55, 42, 0.1);
+      border: 1.5px solid #E2E8F0;
+      display: flex;
+      align-items: center;
+      max-width: 960px;
+      margin: 0 auto;
+      transition: box-shadow 0.2s ease;
+    }
+
+    .search-widget-pill:hover,
+    .search-widget-pill:focus-within {
+      box-shadow: 0 16px 44px rgba(18, 55, 42, 0.14);
+      border-color: #CBD5E1;
+    }
+
+    .search-field {
+      padding: 8px 18px;
+      text-align: left;
+    }
+
+    .search-field input,
+    .search-field select {
+      width: 100%;
+      border: none;
+      outline: none;
+      font-size: 15px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 600;
+      color: #1E293B;
+      background: transparent;
+    }
+
+    .search-field input::placeholder {
+      color: #718096;
+      font-weight: 500;
+    }
+
+    .search-divider {
+      width: 1px;
+      height: 36px;
+      background: #E2E8F0;
+      flex-shrink: 0;
+    }
+
+    .search-submit-btn {
+      background: var(--chalre-dark);
+      color: #FFFFFF;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 15px;
+      border: none;
+      padding: 12px 36px;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(18, 55, 42, 0.3);
+      white-space: nowrap;
+    }
+
+    .search-submit-btn:hover {
+      background: #0B251C;
+      transform: scale(1.02);
+    }
+  </style>
+</head>
+<body>
+
+    <!-- Exact Mockup Floating Navigation: TamizhPayanam -->
+  <div class="chalre-nav-wrap" style="padding-top: 12px; max-width: 1360px; margin: 0 auto; position: relative; z-index: 100;">
+    <nav class="chalre-nav" style="background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(12px); border-radius: 999px; padding: 8px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06); border: 1.5px solid rgba(226, 232, 240, 0.9);">
+      
+      <!-- Brand Logo matching mockup -->
+      <a href="/" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+        <img src="/static/tamizh-payanam/images/logo.png" alt="TamizhPayanam Logo" style="height: 42px; width: auto; object-fit: contain;" onerror="this.src='/static/images/hero_logo.png'">
+        <div>
+          <div style="font-family: 'Playfair Display', Georgia, serif; font-size: 20px; font-weight: 900; color: #12372A; letter-spacing: -0.3px; line-height: 1.1;">
+            Tamizh<span style="color: #D4A017;">Payanam</span>
+          </div>
+          <div style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 10px; font-weight: 600; color: #64748B;">
+            Travel Together. Explore Tamil Nadu
+          </div>
+        </div>
+      </a>
+
+      <!-- Center Nav Links matching mockup -->
+      <div class="chalre-menu" style="display: flex; align-items: center; gap: 28px;">
+        <a href="/" class="chalre-link" style="text-decoration: none; font-size: 14.5px; font-weight: 600; color: #1F2937;">Home</a>
+        <a href="/rides/search/" class="chalre-link" style="text-decoration: none; font-size: 14.5px; font-weight: 600; color: #1F2937;">Rides</a>
+        <a href="/rides/publish/" class="chalre-link" style="text-decoration: none; font-size: 14.5px; font-weight: 600; color: #1F2937;">Publish Ride</a>
+        <a href="/rides/my-rides/" class="chalre-link" style="text-decoration: none; font-size: 14.5px; font-weight: 600; color: #1F2937;">My Rides</a>
+        <a href="/support/help/" class="chalre-link" style="text-decoration: none; font-size: 14.5px; font-weight: 600; color: #1F2937;">Help</a>
+        <a href="/explore/" class="chalre-link" style="text-decoration: none; font-size: 14.5px; font-weight: 600; color: #1F2937;">Explore Map</a>
+      </div>
+
+      <!-- Auth Right Buttons / User Profile Avatar matching mockup -->
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <a href="/support/help/" style="color: #64748B; text-decoration: none; font-size: 18px;" title="Notifications">🔔</a>
+        <a href="/accounts/profile/" style="text-decoration: none; display: flex; align-items: center;" title="My Profile">
+          <img src="/static/tamizh-payanam/images/p4.png" alt="Profile" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid #0D5C3A;">
+        </a>
+        {% if not user.is_authenticated %}
+        <a href="/accounts/login/" style="text-decoration: none; font-size: 13.5px; font-weight: 700; color: #1F2937; background: #FFFFFF; border: 1.5px solid #CBD5E1; padding: 7px 18px; border-radius: 999px;">
+          Login
+        </a>
+        <a href="/accounts/login/" style="text-decoration: none; font-size: 13.5px; font-weight: 700; color: #FFFFFF; background: #0D5C3A; padding: 7px 20px; border-radius: 999px;">
+          Sign Up
+        </a>
+        {% else %}
+        <a href="/accounts/logout/" style="text-decoration: none; font-size: 13px; font-weight: 700; color: #EF4444; padding: 6px 12px;">Logout</a>
+        {% endif %}
+      </div>
+
+    </nav>
+  </div>
+
+  <!-- Page Body -->
+  {% block content %}
+  {% endblock %}
+
+  <!-- Footer -->
+  <!-- Premium Tamil Heritage Inspired Footer -->
+  <footer style="background: #1A1A1A; color: #94A3B8; padding: 50px 32px 36px; margin-top: 60px; position: relative; overflow: hidden;">
+    
+    <!-- Dotted / Dashed Kolam Top Border (Image 2 Match) -->
+    <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: repeating-linear-gradient(90deg, #FDC039 0px, #FDC039 8px, #891A1C 8px, #891A1C 16px); z-index: 10;"></div>
+
+    <div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 40px; padding-bottom: 40px; border-bottom: 1px solid #2D2D2D;">
+      
+      <!-- Brand Story & Cultural Identity -->
+      <div>
+        <div style="font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 800; color: #FFFFFF; margin-bottom: 12px; display: flex; align-items: baseline; gap: 8px;">
+          <span>ChalRe</span>
+          <span style="font-size: 13px; font-weight: 800; color: #FFD43B; font-family: 'Noto Sans Tamil', sans-serif;">தமிழ்நாடு</span>
+        </div>
+        <p style="font-size: 13.5px; line-height: 1.65; color: #A0AEC0; margin-bottom: 16px;">
+          A modern intercity and local carpooling marketplace uniting all 38 districts of Tamil Nadu. Connecting people through shared journeys inspired by Tamil heritage and community trust.
+        </p>
+        <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255, 212, 59, 0.1); border: 1px solid #FFD43B; padding: 4px 12px; border-radius: 20px;">
+          <span style="font-family: 'Noto Sans Tamil', sans-serif; font-size: 11.5px; font-weight: 700; color: #FFD43B;">வணக்கம் &bull; ஒன்றாகப் பயணிப்போம்</span>
+        </div>
+      </div>
+
+      <!-- Quick Navigation & High Frequency Routes -->
+      <div>
+        <h4 style="color: #FFFFFF; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 16px; border-left: 3px solid #FFD43B; padding-left: 10px;">
+          Popular Express Corridors
+        </h4>
+        <ul style="list-style: none; font-size: 13px; display: flex; flex-direction: column; gap: 9px; padding: 0; margin: 0;">
+          <li><a href="/rides/search/?from=Chennai&to=Coimbatore" style="color: #CBD5E1; text-decoration: none; transition: color 0.15s ease;">Chennai &rarr; Coimbatore (NH 544)</a></li>
+          <li><a href="/rides/search/?from=Chennai&to=Madurai" style="color: #CBD5E1; text-decoration: none; transition: color 0.15s ease;">Chennai &rarr; Madurai (Grand Southern Trunk)</a></li>
+          <li><a href="/rides/search/?from=Chennai&to=Trichy" style="color: #CBD5E1; text-decoration: none; transition: color 0.15s ease;">Chennai &rarr; Trichy (NH 45)</a></li>
+          <li><a href="/rides/search/?from=Coimbatore&to=Madurai" style="color: #CBD5E1; text-decoration: none; transition: color 0.15s ease;">Coimbatore &rarr; Madurai</a></li>
+          <li><a href="/rides/search/?from=Salem&to=Chennai" style="color: #CBD5E1; text-decoration: none; transition: color 0.15s ease;">Salem &rarr; Chennai Express</a></li>
+        </ul>
+      </div>
+
+      <!-- Heritage & Pilgrimage Corridors -->
+      <div>
+        <h4 style="color: #FFFFFF; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 16px; border-left: 3px solid #722F37; padding-left: 10px;">
+          Heritage &amp; Pilgrimage
+        </h4>
+        <ul style="list-style: none; font-size: 13px; display: flex; flex-direction: column; gap: 9px; padding: 0; margin: 0;">
+          <li><a href="/rides/search/?to=Thanjavur" style="color: #CBD5E1; text-decoration: none;">Thanjavur Brihadisvara Chola Temple</a></li>
+          <li><a href="/rides/search/?to=Velankanni" style="color: #CBD5E1; text-decoration: none;">Velankanni Sacred Basilica</a></li>
+          <li><a href="/rides/search/?to=Nagore" style="color: #CBD5E1; text-decoration: none;">Nagore Dargah &amp; Masjids</a></li>
+          <li><a href="/rides/search/?to=Tiruvannamalai" style="color: #CBD5E1; text-decoration: none;">Tiruvannamalai Girivalam</a></li>
+          <li><a href="/#tamil-nadu-chronicles" style="color: #FFD43B; text-decoration: none; font-weight: 700;">Cultural Journal &amp; Chronicles &rarr;</a></li>
+        </ul>
+      </div>
+
+      <!-- Trust, Safety & Legal -->
+      <div>
+        <h4 style="color: #FFFFFF; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 16px; border-left: 3px solid #8C6239; padding-left: 10px;">
+          Trust, Safety &amp; Support
+        </h4>
+        <ul style="list-style: none; font-size: 13px; display: flex; flex-direction: column; gap: 9px; padding: 0; margin: 0;">
+          <li><a href="/about/" style="color: #CBD5E1; text-decoration: none;">About ChalRe Tamil Nadu</a></li>
+          <li><a href="/safety/" style="color: #CBD5E1; text-decoration: none;">Driver Approval Workflow &amp; ID Verification</a></li>
+          <li><a href="/help/" style="color: #CBD5E1; text-decoration: none;">Help Centre &amp; 24/7 AI Chatbot</a></li>
+          <li><a href="/terms/" style="color: #CBD5E1; text-decoration: none;">Terms of Service &amp; Zero Interstate Rule</a></li>
+          <li><a href="/privacy/" style="color: #CBD5E1; text-decoration: none;">Privacy Policy &amp; Data Security</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Official Tagline & Bottom Sub-footer -->
+    <div style="max-width: 1200px; margin: 30px auto 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+      
+      <div>
+        <div style="font-family: 'Playfair Display', Georgia, serif; font-size: 17px; font-weight: 800; color: #FFFFFF; margin-bottom: 4px;">
+          &ldquo;One Journey. Many Stories. Tamil Nadu.&rdquo;
+        </div>
+        <div style="font-size: 12px; color: #718096;">
+          &copy; 2026 ChalRe Tamil Nadu. Celebrating 3,000+ years of Tamil civilization and modern mobility.
+        </div>
+      </div>
+
+      <!-- Social Media Icons in Warm Gold -->
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <span style="font-size: 12px; color: #A0AEC0; font-weight: 600;">Follow our journeys:</span>
+        <a href="https://instagram.com" target="_blank" rel="noopener" style="color: #FFD43B; transition: transform 0.15s ease;" title="Instagram">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+        </a>
+        <a href="https://facebook.com" target="_blank" rel="noopener" style="color: #FFD43B; transition: transform 0.15s ease;" title="Facebook">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+        </a>
+        <a href="https://twitter.com" target="_blank" rel="noopener" style="color: #FFD43B; transition: transform 0.15s ease;" title="X (Twitter)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l11.733 16h4.267l-11.733 -16z"></path><path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772"></path></svg>
+        </a>
+        <a href="https://whatsapp.com" target="_blank" rel="noopener" style="color: #FFD43B; transition: transform 0.15s ease;" title="WhatsApp">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+        </a>
+        <a href="https://linkedin.com" target="_blank" rel="noopener" style="color: #FFD43B; transition: transform 0.15s ease;" title="LinkedIn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+        </a>
+      </div>
+
+    </div>
+
+  </footer>
+
+  <!-- Floating ChalRe Support Chatbot Widget -->
+  <div id="chalreSupportWidget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999; font-family: 'Plus Jakarta Sans', sans-serif;">
+    
+    <!-- Collapsed Launcher Button -->
+    <button id="chatbotLauncher" onclick="toggleChatbot()" style="background: #12372A; color: #FFFFFF; border: 2px solid #FFD000; border-radius: 999px; padding: 12px 22px; font-weight: 800; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 28px rgba(18, 55, 42, 0.35); transition: all 0.2s ease;">
+      <span style="position: relative; display: flex; align-items: center;">
+        <span style="font-size: 18px;">💬</span>
+        <span style="position: absolute; top: -3px; right: -3px; width: 8px; height: 8px; background: #10B981; border-radius: 50%; border: 1.5px solid #12372A;"></span>
+      </span>
+      <span>Support Assistant</span>
+    </button>
+
+    <!-- Expanded Chat Window -->
+    <div id="chatbotWindow" style="display: none; width: 370px; height: 500px; background: #FFFFFF; border-radius: 20px; box-shadow: 0 16px 48px rgba(0,0,0,0.22); border: 1.5px solid #E2E8F0; overflow: hidden; flex-direction: column; animation: chatPop 0.25s ease-out;">
+      
+      <!-- Chat Header -->
+      <div style="background: #12372A; color: #FFFFFF; padding: 16px 18px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #FFD000;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="position: relative;">
+            <div style="width: 38px; height: 38px; border-radius: 50%; background: #FFFBEA; color: #12372A; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 15px; border: 2px solid #FFD000;">
+              PS
+            </div>
+            <span style="position: absolute; bottom: 0; right: 0; width: 10px; height: 10px; background: #10B981; border-radius: 50%; border: 2px solid #12372A;"></span>
+          </div>
+          <div>
+            <div style="font-weight: 800; font-size: 14px;">Priya S.</div>
+            <div style="font-size: 11px; color: #FFD000;">Tamil Nadu Support Officer &bull; Online</div>
+          </div>
+        </div>
+        <button onclick="toggleChatbot()" style="background: none; border: none; color: #94A3B8; font-size: 20px; cursor: pointer; padding: 0 4px; line-height: 1;" title="Close">
+          &times;
+        </button>
+      </div>
+
+      <!-- Messages Stream -->
+      <div id="chatMessagesStream" style="flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: #F8FAFC;">
+        <!-- Initial Bot Greeting -->
+        <div style="display: flex; gap: 8px; align-items: flex-start;">
+          <div style="width: 26px; height: 26px; border-radius: 50%; background: #12372A; color: #FFD000; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">PS</div>
+          <div style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 10px 14px; border-radius: 14px; border-top-left-radius: 2px; font-size: 13px; color: #1E293B; line-height: 1.45; box-shadow: 0 1px 4px rgba(0,0,0,0.03);">
+            Vanakkam! Welcome to ChalRe Tamil Nadu Support. How can I assist you with intercity carpooling today?
+          </div>
+        </div>
+
+        <!-- Quick Suggestions -->
+        <div id="chatQuickSuggestions" style="display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0;">
+          <button onclick="sendChatQuick('How to book a ride?')" style="background: #FFFFFF; border: 1px solid #CBD5E1; color: #12372A; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 12px; cursor: pointer;">How to book a ride?</button>
+          <button onclick="sendChatQuick('Driver license verification')" style="background: #FFFFFF; border: 1px solid #CBD5E1; color: #12372A; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 12px; cursor: pointer;">Driver license verification</button>
+          <button onclick="sendChatQuick('Fare negotiation')" style="background: #FFFFFF; border: 1px solid #CBD5E1; color: #12372A; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 12px; cursor: pointer;">Fare negotiation</button>
+          <button onclick="sendChatQuick('Cancellation policy')" style="background: #FFFFFF; border: 1px solid #CBD5E1; color: #12372A; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 12px; cursor: pointer;">Cancellation policy</button>
+        </div>
+      </div>
+
+      <!-- Chat Input Area -->
+      <div style="padding: 12px 14px; background: #FFFFFF; border-top: 1px solid #E2E8F0; display: flex; align-items: center; gap: 8px;">
+        <input type="text" id="chatbotInput" placeholder="Type your question here..." onkeydown="if(event.key==='Enter') sendChatbotMessage()" style="flex: 1; border: 1.5px solid #CBD5E1; border-radius: 999px; padding: 10px 16px; font-size: 13px; outline: none; font-family: inherit;">
+        <button onclick="sendChatbotMessage()" style="background: #12372A; color: #FFD000; border: none; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 15px; font-weight: 800; flex-shrink: 0;">
+          ➔
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <style>
+    @keyframes chatPop {
+      from { opacity: 0; transform: scale(0.95) translateY(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+  </style>
+
+  <script>
+    function toggleChatbot() {
+      const win = document.getElementById('chatbotWindow');
+      const launcher = document.getElementById('chatbotLauncher');
+      if (win.style.display === 'none' || win.style.display === '') {
+        win.style.display = 'flex';
+        launcher.style.display = 'none';
+        setTimeout(() => document.getElementById('chatbotInput').focus(), 100);
+      } else {
+        win.style.display = 'none';
+        launcher.style.display = 'flex';
+      }
+    }
+
+    function sendChatQuick(text) {
+      document.getElementById('chatbotInput').value = text;
+      sendChatbotMessage();
+    }
+
+    function sendChatbotMessage() {
+      const input = document.getElementById('chatbotInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const stream = document.getElementById('chatMessagesStream');
+
+      // Append user bubble
+      const userDiv = document.createElement('div');
+      userDiv.style.cssText = 'display: flex; justify-content: flex-end;';
+      userDiv.innerHTML = `<div style="background: #12372A; color: #FFFFFF; padding: 10px 14px; border-radius: 14px; border-top-right-radius: 2px; font-size: 13px; max-width: 80%; line-height: 1.4;">${text.replace(/</g, '&lt;')}</div>`;
+      stream.appendChild(userDiv);
+      input.value = '';
+      stream.scrollTop = stream.scrollHeight;
+
+      // Typing indicator
+      const typingDiv = document.createElement('div');
+      typingDiv.id = 'botTypingIndicator';
+      typingDiv.style.cssText = 'display: flex; gap: 8px; align-items: center;';
+      typingDiv.innerHTML = `<div style="width: 26px; height: 26px; border-radius: 50%; background: #12372A; color: #FFD000; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center;">PS</div><div style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 8px 12px; border-radius: 12px; font-size: 12px; color: #64748B;">Priya is typing...</div>`;
+      stream.appendChild(typingDiv);
+      stream.scrollTop = stream.scrollHeight;
+
+      // Call Chatbot API
+      fetch('/support/chat/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message: text })
+      })
+      .then(r => r.json())
+      .then(data => {
+        const t = document.getElementById('botTypingIndicator');
+        if (t) t.remove();
+
+        const botDiv = document.createElement('div');
+        botDiv.style.cssText = 'display: flex; gap: 8px; align-items: flex-start;';
+        const formatted = (data.reply || 'Vanakkam! How can I help you?').replace(/\n/g, '<br>');
+        botDiv.innerHTML = `<div style="width: 26px; height: 26px; border-radius: 50%; background: #12372A; color: #FFD000; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">PS</div><div style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 10px 14px; border-radius: 14px; border-top-left-radius: 2px; font-size: 13px; color: #1E293B; line-height: 1.45; box-shadow: 0 1px 4px rgba(0,0,0,0.03);">${formatted}</div>`;
+        stream.appendChild(botDiv);
+        stream.scrollTop = stream.scrollHeight;
+      })
+      .catch(err => {
+        const t = document.getElementById('botTypingIndicator');
+        if (t) t.remove();
+      });
+    }
+  </script>
+
+  <script src="{% static 'js/main.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>
