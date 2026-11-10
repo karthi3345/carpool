@@ -1,3 +1,4 @@
+import re
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -10,17 +11,26 @@ def login_view(request):
         identifier = request.POST.get('username', '').strip()
         password = request.POST.get('password', '').strip()
 
-        # Robust case-insensitive login support by username or email
+        if not identifier or not password:
+            error_message = "Please enter both username/email and password."
+            return render(request, 'accounts/login.html', {
+                'error_message': error_message,
+                'next_url': next_url,
+                'entered_identifier': identifier
+            })
+
         user = None
-        # 1. Try finding user by case-insensitive username or email
+        # 1. Check case-insensitive username match
         matched_user = User.objects.filter(username__iexact=identifier).first()
-        if not matched_user and '@' in identifier:
+        
+        # 2. If not found by username or looks like an email, check case-insensitive email match
+        if not matched_user:
             matched_user = User.objects.filter(email__iexact=identifier).first()
 
         if matched_user:
             user = authenticate(request, username=matched_user.username, password=password)
 
-        # 2. Fallback direct authenticate
+        # 3. Direct authenticate fallback
         if user is None:
             user = authenticate(request, username=identifier, password=password)
 
@@ -42,7 +52,7 @@ def register_view(request):
 
     if request.method == 'POST':
         username = request.POST.get('username', '').strip()
-        email = request.POST.get('email', '').strip()
+        email = request.POST.get('email', '').strip().lower()
         phone_number = request.POST.get('phone_number', '').strip()
         password = request.POST.get('password', '').strip()
         confirm_password = request.POST.get('confirm_password', '').strip()
@@ -55,13 +65,19 @@ def register_view(request):
             'phone_number': phone_number,
         }
 
-        # Validations
+        # Rigorous Validations
         if not username or not email or not phone_number or not password:
             error_message = "All fields (Username, Email ID, Mobile Number, Password) are required."
-        elif password != confirm_password:
-            error_message = "Password and Confirm Password do not match."
+        elif not re.match(r'^[a-zA-Z0-9_]{3,30}$', username):
+            error_message = "Username must be 3-30 characters long and can only contain letters, numbers, and underscores."
+        elif not re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email):
+            error_message = "Please enter a valid email address (e.g. name@example.com)."
+        elif not re.match(r'^[6-9]\d{9}$', phone_number):
+            error_message = "Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9."
         elif len(password) < 6:
             error_message = "Password must be at least 6 characters long."
+        elif password != confirm_password:
+            error_message = "Password and Confirm Password do not match."
         elif not email_otp_verified:
             error_message = "Please verify your Email ID with the 4-digit OTP (dummy OTP 2727)."
         elif not phone_otp_verified:
@@ -78,7 +94,6 @@ def register_view(request):
                 password=password,
                 first_name=username.title()
             )
-            # Ensure password hash is saved and active
             user.set_password(password)
             user.save()
 

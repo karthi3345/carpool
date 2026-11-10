@@ -157,8 +157,8 @@
       {% csrf_token %}
 
       <div class="form-group-login">
-        <label>Username / Email</label>
-        <input type="text" name="username" id="loginUsername" required placeholder="Enter your username or email" class="input-login" autocomplete="username">
+        <label>Username or Email ID</label>
+        <input type="text" name="username" id="loginUsername" required placeholder="Enter username or email ID" value="{{ entered_identifier|default:'' }}" class="input-login" autocomplete="username">
       </div>
 
       <div class="form-group-login">
