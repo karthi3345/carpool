@@ -27,6 +27,26 @@ class CommunityPost(models.Model):
         return self.comments.count()
 
 
+class TravelReel(models.Model):
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='travel_reels', null=True, blank=True)
+    creator_name = models.CharField(max_length=120)
+    creator_avatar = models.CharField(max_length=255, blank=True, default='')
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    video_url = models.URLField(max_length=500)
+    sound_title = models.CharField(max_length=150, default='Original Audio - Highway Beats')
+    route_tag = models.CharField(max_length=100, default='Chennai → Ooty')
+    likes_count = models.PositiveIntegerField(default=120)
+    comments_count = models.PositiveIntegerField(default=24)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.creator_name} - {self.title}"
+
+
 class PostLike(models.Model):
     post = models.ForeignKey(CommunityPost, on_delete=models.CASCADE, related_name='likes')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='post_likes', null=True, blank=True)

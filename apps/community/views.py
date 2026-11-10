@@ -3,7 +3,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
-from .models import CommunityPost, PostLike, PostComment
+from .models import CommunityPost, PostLike, PostComment, TravelReel
 
 def get_user_identifier(request):
     if request.user.is_authenticated:
@@ -19,8 +19,9 @@ def get_author_name(request):
 
 def community_feed_view(request):
     """
-    Facebook-styled Community Feed with posts, comments, likes, media, tags
+    Facebook & Instagram Reels styled Community Feed with posts, comments, likes, media, tags
     """
+    tab = request.GET.get('tab', 'feed') # 'feed' or 'reels'
     tag_filter = request.GET.get('tag', 'all')
     search_query = request.GET.get('q', '').strip()
 
@@ -48,6 +49,8 @@ def community_feed_view(request):
             'comments': p.comments.all()
         })
 
+    reels = TravelReel.objects.all()
+
     tags = [
         'All Posts',
         'Travel Story',
@@ -60,6 +63,8 @@ def community_feed_view(request):
 
     return render(request, 'community/feed.html', {
         'posts': post_list,
+        'reels': reels,
+        'current_tab': tab,
         'current_tag': tag_filter,
         'search_query': search_query,
         'tags': tags,
@@ -139,6 +144,22 @@ def toggle_like_view(request, post_id):
             'total_likes': total_likes
         })
 
+    return JsonResponse({'success': False, 'error': 'Invalid method'}, status=405)
+
+
+@csrf_exempt
+def toggle_reel_like_view(request, reel_id):
+    """
+    Like reel and increment counter via AJAX
+    """
+    if request.method == 'POST':
+        reel = get_object_or_404(TravelReel, id=reel_id)
+        reel.likes_count += 1
+        reel.save()
+        return JsonResponse({
+            'success': True,
+            'likes_count': reel.likes_count
+        })
     return JsonResponse({'success': False, 'error': 'Invalid method'}, status=405)
 
 
