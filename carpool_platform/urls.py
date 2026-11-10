@@ -183,6 +183,7 @@ urlpatterns = [
     path('accounts/', include('apps.accounts.urls')),
     path('bookings/', include('apps.bookings.urls')),
     path('support/', include('apps.support.urls')),
+    path('community/', include('apps.community.urls')),
     path('api/v1/reviews/', include('apps.reviews.urls')),
 ]
 

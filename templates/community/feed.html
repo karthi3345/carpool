@@ -1,0 +1,810 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Travel Community - Share Stories, Tips & Carpool Moments | TamizhPayanam{% endblock %}
+
+{% block extra_head %}
+<style>
+  :root {
+    --fb-bg: #f0f2f5;
+    --fb-card: #ffffff;
+    --fb-primary: #1877f2;
+    --fb-primary-hover: #166fe5;
+    --fb-text: #050505;
+    --fb-subtext: #65676b;
+    --fb-border: #ced0d4;
+    --fb-divider: #e4e6eb;
+    --fb-hover-bg: #f2f2f2;
+    --fb-comment-bg: #f0f2f5;
+    --tp-green: #0D5C3A;
+  }
+
+  body {
+    background-color: var(--fb-bg);
+    color: var(--fb-text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  /* Main Feed Container */
+  .fb-feed-container {
+    max-width: 680px;
+    margin: 24px auto 60px;
+    padding: 0 16px;
+  }
+
+  /* Top Navigation Banner / Community Intro */
+  .fb-community-hero {
+    background: linear-gradient(135deg, #1877f2 0%, #0c56c2 100%);
+    border-radius: 16px;
+    padding: 22px 24px;
+    color: #ffffff;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 14px rgba(24, 119, 242, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .hero-left h1 {
+    font-size: 24px;
+    font-weight: 800;
+    margin: 0 0 6px;
+    letter-spacing: -0.02em;
+  }
+
+  .hero-left p {
+    font-size: 14px;
+    opacity: 0.9;
+    margin: 0;
+    max-width: 440px;
+    line-height: 1.4;
+  }
+
+  .hero-badge-tag {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(8px);
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  /* Filter Tag Pills Bar */
+  .fb-tags-bar {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 12px;
+    margin-bottom: 18px;
+    scrollbar-width: none;
+  }
+
+  .fb-tags-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tag-pill {
+    white-space: nowrap;
+    padding: 8px 16px;
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 600;
+    background: #ffffff;
+    color: var(--fb-subtext);
+    text-decoration: none;
+    border: 1px solid var(--fb-divider);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    transition: all 0.2s;
+  }
+
+  .tag-pill:hover, .tag-pill.active {
+    background: var(--fb-primary);
+    color: #ffffff;
+    border-color: var(--fb-primary);
+  }
+
+  /* Create Post Box (Facebook Post Composer) */
+  .fb-create-post-card {
+    background: var(--fb-card);
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+
+  .composer-top-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .composer-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #e4e6eb;
+    color: #1877f2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .composer-dummy-input {
+    flex: 1;
+    background: var(--fb-hover-bg);
+    border-radius: 24px;
+    padding: 10px 16px;
+    font-size: 15px;
+    color: var(--fb-subtext);
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+  }
+
+  .composer-dummy-input:hover {
+    background: #e4e6eb;
+  }
+
+  .composer-actions-bar {
+    border-top: 1px solid var(--fb-divider);
+    padding-top: 10px;
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .composer-act-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--fb-subtext);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .composer-act-btn:hover {
+    background: var(--fb-hover-bg);
+  }
+
+  /* Full Post Creation Form (Expands or Modal) */
+  .create-post-form-wrap {
+    display: none;
+    margin-top: 12px;
+    border-top: 1px solid var(--fb-divider);
+    padding-top: 14px;
+  }
+
+  .post-textarea {
+    width: 100%;
+    min-height: 90px;
+    border: 1px solid var(--fb-divider);
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 15px;
+    outline: none;
+    resize: vertical;
+    font-family: inherit;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+  }
+
+  .post-textarea:focus {
+    border-color: var(--fb-primary);
+  }
+
+  .form-row-compact {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .compact-input, .compact-select {
+    width: 100%;
+    padding: 9px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--fb-divider);
+    font-size: 13px;
+    outline: none;
+    box-sizing: border-box;
+  }
+
+  .btn-submit-post {
+    margin-top: 12px;
+    width: 100%;
+    background: var(--fb-primary);
+    color: #ffffff;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .btn-submit-post:hover {
+    background: var(--fb-primary-hover);
+  }
+
+  /* Post Card Layout (Facebook Style) */
+  .fb-post-card {
+    background: var(--fb-card);
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+
+  .post-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px 8px;
+  }
+
+  .post-author-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .post-author-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #0070e0;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 17px;
+  }
+
+  .post-author-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--fb-text);
+    line-height: 1.2;
+    text-decoration: none;
+  }
+
+  .post-meta-sub {
+    font-size: 12px;
+    color: var(--fb-subtext);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 2px;
+  }
+
+  .post-tag-badge {
+    background: #e7f3ff;
+    color: var(--fb-primary);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 999px;
+  }
+
+  .post-content-body {
+    padding: 10px 16px 14px;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--fb-text);
+    word-break: break-word;
+  }
+
+  .post-media-container {
+    width: 100%;
+    max-height: 420px;
+    overflow: hidden;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .post-media-container img {
+    width: 100%;
+    height: auto;
+    max-height: 420px;
+    object-fit: cover;
+  }
+
+  /* Stats Counter Bar (Likes count, Comments count) */
+  .post-stats-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    font-size: 13px;
+    color: var(--fb-subtext);
+    border-bottom: 1px solid var(--fb-divider);
+  }
+
+  .likes-count-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .like-circle-icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #1877f2;
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+  }
+
+  /* Post Buttons (Like, Comment, Share) */
+  .post-action-buttons {
+    display: flex;
+    justify-content: space-around;
+    padding: 4px 8px;
+    border-bottom: 1px solid var(--fb-divider);
+  }
+
+  .btn-feed-action {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--fb-subtext);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .btn-feed-action:hover {
+    background: var(--fb-hover-bg);
+  }
+
+  .btn-feed-action.liked {
+    color: var(--fb-primary);
+    font-weight: 700;
+  }
+
+  /* Comments Section */
+  .post-comments-container {
+    padding: 14px 16px;
+    background: #ffffff;
+  }
+
+  .comment-input-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .comment-input-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #e4e6eb;
+    color: #1877f2;
+    font-size: 13px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .comment-composer-wrap {
+    flex: 1;
+    position: relative;
+    display: flex;
+  }
+
+  .comment-input {
+    width: 100%;
+    border-radius: 20px;
+    background: var(--fb-comment-bg);
+    border: 1px solid transparent;
+    padding: 8px 44px 8px 14px;
+    font-size: 13.5px;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+  }
+
+  .comment-input:focus {
+    border-color: #bec3c9;
+    background: #ffffff;
+  }
+
+  .btn-send-comment {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: var(--fb-primary);
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .comment-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .comment-single-item {
+    display: flex;
+    gap: 10px;
+  }
+
+  .comment-bubble {
+    background: var(--fb-comment-bg);
+    border-radius: 16px;
+    padding: 8px 14px;
+    max-width: 88%;
+  }
+
+  .comment-author {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--fb-text);
+  }
+
+  .comment-text {
+    font-size: 13.5px;
+    color: var(--fb-text);
+    margin-top: 2px;
+    line-height: 1.35;
+  }
+
+  .comment-meta {
+    font-size: 11px;
+    color: var(--fb-subtext);
+    margin-left: 14px;
+    margin-top: 3px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="fb-feed-container">
+
+  <!-- Community Hero / Welcome Header -->
+  <div class="fb-community-hero">
+    <div class="hero-left">
+      <h1>TamizhPayanam Community</h1>
+      <p>Connect with fellow travelers across Tamil Nadu! Share highway reviews, route tips, carpool memories, and find verified travel buddies.</p>
+    </div>
+    <div class="hero-badge-tag">
+      🚗 10,000+ TN Commuters
+    </div>
+  </div>
+
+  <!-- Category Tag Filter Bar -->
+  <div class="fb-tags-bar">
+    <a href="/community/" class="tag-pill {% if current_tag == 'all' or not current_tag %}active{% endif %}">All Posts</a>
+    <a href="/community/?tag=Travel+Story" class="tag-pill {% if current_tag == 'Travel Story' %}active{% endif %}">📖 Travel Stories</a>
+    <a href="/community/?tag=Carpool+Buddy" class="tag-pill {% if current_tag == 'Carpool Buddy' %}active{% endif %}">🤝 Carpool Buddies</a>
+    <a href="/community/?tag=Road+Trip" class="tag-pill {% if 'Road' in current_tag %}active{% endif %}">🛣️ Highway & Route Tips</a>
+    <a href="/community/?tag=Bangalore" class="tag-pill {% if 'Bangalore' in current_tag %}active{% endif %}">🏙️ Chennai ⇄ Bangalore</a>
+    <a href="/community/?tag=Ghats" class="tag-pill {% if 'Ghats' in current_tag %}active{% endif %}">⛰️ Western Ghats & Ooty</a>
+  </div>
+
+  <!-- Create Post Card (Facebook status box) -->
+  <div class="fb-create-post-card">
+    <div class="composer-top-row">
+      <div class="composer-avatar">{{ user_name|slice:":1"|upper }}</div>
+      <div class="composer-dummy-input" id="composerTrigger">
+        What's on your travel mind, {{ user_name }}? Share a story, question or highway tip...
+      </div>
+    </div>
+
+    <div class="composer-actions-bar">
+      <button type="button" class="composer-act-btn" onclick="toggleComposerForm()">
+        <span style="color: #45bd62; font-size: 18px;">📷</span> Photo / Media
+      </button>
+      <button type="button" class="composer-act-btn" onclick="toggleComposerForm()">
+        <span style="color: #f7b125; font-size: 18px;">🏷️</span> Topic Tag
+      </button>
+      <button type="button" class="composer-act-btn" onclick="toggleComposerForm()">
+        <span style="color: #1877f2; font-size: 18px;">📍</span> City / Route
+      </button>
+    </div>
+
+    <!-- Expanded Post Creation Form -->
+    <div class="create-post-form-wrap" id="createPostFormWrap">
+      <form action="/community/post/create/" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <textarea name="content" class="post-textarea" placeholder="Share your experience travelling across Tamil Nadu (e.g. scenic pitstops on NH44, carpool etiquette, fastag toll updates)..." required></textarea>
+        
+        <div class="form-row-compact">
+          <div>
+            <label style="font-size: 11px; font-weight: 700; color: #65676b; display: block; margin-bottom: 4px;">YOUR HOMETOWN / DISTRICT</label>
+            <input type="text" name="author_city" class="compact-input" placeholder="e.g. Chennai, Coimbatore, Madurai" value="Chennai, Tamil Nadu" />
+          </div>
+          <div>
+            <label style="font-size: 11px; font-weight: 700; color: #65676b; display: block; margin-bottom: 4px;">SELECT TOPIC TAG</label>
+            <select name="travel_tag" class="compact-select">
+              <option value="Travel Story">📖 Travel Story</option>
+              <option value="Carpool Buddy">🤝 Looking for Carpool Buddy</option>
+              <option value="Road Trip Tips">🛣️ Highway & Route Tips</option>
+              <option value="Chennai to Bangalore">🚗 Chennai ⇄ Bangalore Corridor</option>
+              <option value="Western Ghats Ride">⛰️ Western Ghats / Ooty</option>
+              <option value="Safety & Verification">🛡️ Safety & Travel Advice</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-top: 10px;">
+          <label style="font-size: 11px; font-weight: 700; color: #65676b; display: block; margin-bottom: 4px;">PHOTO URL OR ATTACHMENT (OPTIONAL)</label>
+          <input type="url" name="image_url" class="compact-input" placeholder="Paste an image URL (Unsplash or web link) or upload below" />
+        </div>
+
+        <button type="submit" class="btn-submit-post">Post to Community</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Feed Post List -->
+  <div class="feed-posts-wrapper">
+    {% for item in posts %}
+      <div class="fb-post-card" id="post-card-{{ item.post.id }}">
+        
+        <!-- Post Header -->
+        <div class="post-header">
+          <div class="post-author-wrap">
+            <div class="post-author-avatar">
+              {{ item.post.author_name|slice:":1"|upper }}
+            </div>
+            <div>
+              <a href="#" class="post-author-name">{{ item.post.author_name }}</a>
+              <div class="post-meta-sub">
+                <span>{{ item.post.author_city }}</span> &bull; 
+                <span>{{ item.post.created_at|timesince }} ago</span>
+              </div>
+            </div>
+          </div>
+          <span class="post-tag-badge">{{ item.post.travel_tag }}</span>
+        </div>
+
+        <!-- Post Body Content -->
+        <div class="post-content-body">
+          {{ item.post.content|linebreaksbr }}
+        </div>
+
+        <!-- Optional Post Media -->
+        {% if item.post.image %}
+          <div class="post-media-container">
+            <img src="{{ item.post.image.url }}" alt="Travel photo" loading="lazy" />
+          </div>
+        {% elif item.post.image_url %}
+          <div class="post-media-container">
+            <img src="{{ item.post.image_url }}" alt="Travel photo" loading="lazy" />
+          </div>
+        {% endif %}
+
+        <!-- Likes & Comments Counter Row -->
+        <div class="post-stats-row">
+          <div class="likes-count-badge">
+            <span class="like-circle-icon">👍</span>
+            <span id="like-count-{{ item.post.id }}">{{ item.post.total_likes }}</span>
+          </div>
+          <div>
+            <span id="comment-count-{{ item.post.id }}">{{ item.comments|length }}</span> comments
+          </div>
+        </div>
+
+        <!-- Action Buttons: Like, Comment, Share -->
+        <div class="post-action-buttons">
+          <button type="button" class="btn-feed-action like-btn {% if item.liked_by_me %}liked{% endif %}" onclick="togglePostLike({{ item.post.id }})" id="like-btn-{{ item.post.id }}">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+            </svg>
+            <span id="like-label-{{ item.post.id }}">{% if item.liked_by_me %}Liked{% else %}Like{% endif %}</span>
+          </button>
+
+          <button type="button" class="btn-feed-action" onclick="focusCommentInput({{ item.post.id }})">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            Comment
+          </button>
+
+          <button type="button" class="btn-feed-action" onclick="sharePost({{ item.post.id }})">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="18" cy="5" r="3"></circle>
+              <circle cx="6" cy="12" r="3"></circle>
+              <circle cx="18" cy="19" r="3"></circle>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+            Share
+          </button>
+        </div>
+
+        <!-- Comments Section -->
+        <div class="post-comments-container">
+          
+          <!-- Add Comment Input Box -->
+          <div class="comment-input-row">
+            <div class="comment-input-avatar">{{ user_name|slice:":1"|upper }}</div>
+            <div class="comment-composer-wrap">
+              <input type="text" class="comment-input" id="comment-input-{{ item.post.id }}" placeholder="Write a comment..." onkeydown="handleCommentKey(event, {{ item.post.id }})" />
+              <button type="button" class="btn-send-comment" onclick="submitComment({{ item.post.id }})" title="Post Comment">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Existing Comments List -->
+          <div class="comment-list" id="comment-list-{{ item.post.id }}">
+            {% for c in item.comments %}
+              <div class="comment-single-item">
+                <div class="comment-input-avatar" style="width: 28px; height: 28px; font-size: 11px;">{{ c.author_name|slice:":1"|upper }}</div>
+                <div>
+                  <div class="comment-bubble">
+                    <span class="comment-author">{{ c.author_name }}</span>
+                    <div class="comment-text">{{ c.text }}</div>
+                  </div>
+                  <div class="comment-meta">{{ c.created_at|timesince }} ago</div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+
+        </div>
+
+      </div>
+    {% empty %}
+      <div style="background: #fff; border-radius: 12px; padding: 40px 20px; text-align: center;">
+        <span style="font-size: 48px; display: block; margin-bottom: 12px;">🚗</span>
+        <h3 style="font-size: 20px; font-weight: 800; color: #050505;">No posts yet in this category</h3>
+        <p style="color: #65676b; font-size: 14px; margin-bottom: 20px;">Be the first to share your travel story or carpool tip with the Tamil Nadu community!</p>
+        <button type="button" class="btn-submit-post" style="max-width: 200px; margin: 0 auto;" onclick="toggleComposerForm()">Create a Post</button>
+      </div>
+    {% endfor %}
+  </div>
+
+</div>
+
+<script>
+  function toggleComposerForm() {
+    var wrap = document.getElementById('createPostFormWrap');
+    if (wrap.style.display === 'block') {
+      wrap.style.display = 'none';
+    } else {
+      wrap.style.display = 'block';
+      wrap.querySelector('textarea').focus();
+    }
+  }
+
+  document.getElementById('composerTrigger').addEventListener('click', toggleComposerForm);
+
+  function togglePostLike(postId) {
+    fetch('/community/post/' + postId + '/like/', {
+      method: 'POST',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+      }
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success) {
+        var countEl = document.getElementById('like-count-' + postId);
+        var labelEl = document.getElementById('like-label-' + postId);
+        var btnEl = document.getElementById('like-btn-' + postId);
+        
+        countEl.textContent = data.total_likes;
+        if (data.liked) {
+          btnEl.classList.add('liked');
+          labelEl.textContent = 'Liked';
+        } else {
+          btnEl.classList.remove('liked');
+          labelEl.textContent = 'Like';
+        }
+      }
+    })
+    .catch(function(err) {
+      console.error(err);
+    });
+  }
+
+  function focusCommentInput(postId) {
+    var input = document.getElementById('comment-input-' + postId);
+    if (input) {
+      input.focus();
+    }
+  }
+
+  function handleCommentKey(e, postId) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      submitComment(postId);
+    }
+  }
+
+  function submitComment(postId) {
+    var input = document.getElementById('comment-input-' + postId);
+    var text = input.value.trim();
+    if (!text) return;
+
+    var formData = new FormData();
+    formData.append('text', text);
+
+    fetch('/community/post/' + postId + '/comment/', {
+      method: 'POST',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+      body: formData
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success) {
+        input.value = '';
+        var list = document.getElementById('comment-list-' + postId);
+        var commentItem = document.createElement('div');
+        commentItem.className = 'comment-single-item';
+        commentItem.innerHTML = `
+          <div class="comment-input-avatar" style="width: 28px; height: 28px; font-size: 11px;">${data.author_name.charAt(0).toUpperCase()}</div>
+          <div>
+            <div class="comment-bubble">
+              <span class="comment-author">${data.author_name}</span>
+              <div class="comment-text">${data.text}</div>
+            </div>
+            <div class="comment-meta">Just now</div>
+          </div>
+        `;
+        list.appendChild(commentItem);
+
+        var countEl = document.getElementById('comment-count-' + postId);
+        if (countEl) {
+          countEl.textContent = data.total_comments;
+        }
+      }
+    })
+    .catch(function(err) {
+      console.error(err);
+    });
+  }
+
+  function sharePost(postId) {
+    if (navigator.share) {
+      navigator.share({
+        title: 'TamizhPayanam Travel Community Post',
+        url: window.location.origin + '/community/#post-card-' + postId
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.origin + '/community/#post-card-' + postId);
+      alert('Link to post copied to clipboard!');
+    }
+  }
+</script>
+{% endblock %}
