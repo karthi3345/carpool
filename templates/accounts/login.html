@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Login | ChalRe Tamil Nadu Carpooling{% endblock %}
+{% block title %}Login | TamizhPayanam{% endblock %}
 
 {% block extra_head %}
 <style>
   :root {
-    --chalre-dark: #12372A;
-    --chalre-accent: #FFD000;
-    --chalre-accent-hover: #E5BB00;
+    --tp-dark: #12372A;
+    --tp-green: #0D5C3A;
+    --tp-accent: #FFD000;
   }
 
   .login-page-wrap {
@@ -17,6 +17,7 @@
     align-items: center;
     justify-content: center;
     padding: 40px 20px 60px;
+    background: #F8FAFC;
   }
 
   .login-card {
@@ -35,9 +36,9 @@
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    background: #FFFBEA;
-    border: 1.5px solid var(--chalre-accent);
-    color: var(--chalre-dark);
+    background: #E8F5E9;
+    border: 1.5px solid #0D5C3A;
+    color: #0D5C3A;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -46,31 +47,17 @@
   }
 
   .login-card h2 {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-size: 28px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 26px;
     font-weight: 800;
-    color: var(--chalre-dark);
+    color: #12372A;
     margin: 0 0 6px 0;
   }
 
-  .login-card p {
-    font-size: 14px;
+  .login-card p.subtitle {
+    font-size: 13.5px;
     color: #64748B;
     margin: 0 0 24px 0;
-  }
-
-  .dummy-credential-pill {
-    background: #F8FAFC;
-    border: 1px dashed #CBD5E1;
-    border-radius: 12px;
-    padding: 12px 14px;
-    margin-bottom: 22px;
-    font-size: 13px;
-    color: #334155;
-    text-align: left;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
   }
 
   .form-group-login {
@@ -95,18 +82,18 @@
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 14px;
     font-weight: 600;
-    color: var(--chalre-dark);
+    color: #12372A;
     outline: none;
     transition: all 0.2s ease;
   }
   .input-login:focus {
-    border-color: var(--chalre-dark);
-    box-shadow: 0 0 0 3px rgba(18, 55, 42, 0.1);
+    border-color: #0D5C3A;
+    box-shadow: 0 0 0 3px rgba(13, 92, 58, 0.12);
   }
 
   .btn-login-submit {
     width: 100%;
-    background: var(--chalre-dark);
+    background: #0D5C3A;
     color: #FFFFFF;
     border: none;
     border-radius: 999px;
@@ -116,27 +103,12 @@
     font-weight: 800;
     cursor: pointer;
     transition: all 0.2s ease;
-    margin-top: 6px;
-    box-shadow: 0 4px 14px rgba(18, 55, 42, 0.25);
+    margin-top: 8px;
+    box-shadow: 0 4px 14px rgba(13, 92, 58, 0.25);
   }
   .btn-login-submit:hover {
-    background: #0B251C;
+    background: #084028;
     transform: translateY(-1px);
-  }
-
-  .btn-quick-fill {
-    background: var(--chalre-accent);
-    color: var(--chalre-dark);
-    border: none;
-    border-radius: 6px;
-    padding: 4px 10px;
-    font-size: 11px;
-    font-weight: 800;
-    cursor: pointer;
-    transition: background 0.2s ease;
-  }
-  .btn-quick-fill:hover {
-    background: var(--chalre-accent-hover);
   }
 </style>
 {% endblock %}
@@ -148,59 +120,38 @@
     
     <div class="login-icon-box">🚗</div>
     
-    <h2>Welcome to ChalRe</h2>
-    <p>Sign in to manage your Tamil Nadu carpool rides &amp; chat with drivers</p>
+    <h2>Welcome Back</h2>
+    <p class="subtitle">Sign in to your TamizhPayanam account</p>
 
     {% if error_message %}
-    <div style="background: #FEE2E2; border: 1px solid #F87171; color: #991B1B; padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 600; margin-bottom: 18px; text-align: left;">
+    <div style="background: #FEE2E2; border: 1.5px solid #F87171; color: #991B1B; padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 600; margin-bottom: 18px; text-align: left;">
       ⚠️ {{ error_message }}
     </div>
     {% endif %}
-
-    <!-- Dummy credentials highlight box -->
-    <div class="dummy-credential-pill">
-      <div>
-        <div style="font-weight: 800; color: #12372A;">Demo Login:</div>
-        <div style="font-size: 12px; color: #64748B;">Username: <strong style="color: #12372A;">karthik</strong> &bull; Password: <strong style="color: #12372A;">123</strong></div>
-      </div>
-      <button type="button" class="btn-quick-fill" onclick="quickFill()">Auto Fill</button>
-    </div>
 
     <form method="POST" action="/accounts/login/?next={{ next_url }}">
       {% csrf_token %}
 
       <div class="form-group-login">
         <label>Username / Email</label>
-        <input type="text" name="username" id="loginUsername" required placeholder="karthik" value="karthik" class="input-login">
+        <input type="text" name="username" id="loginUsername" required placeholder="Enter your username or email" class="input-login" autocomplete="username">
       </div>
 
       <div class="form-group-login">
         <label>Password</label>
-        <input type="password" name="password" id="loginPassword" required placeholder="123" value="123" class="input-login">
+        <input type="password" name="password" id="loginPassword" required placeholder="Enter your password" class="input-login" autocomplete="current-password">
       </div>
 
       <button type="submit" class="btn-login-submit">
         Login &rarr;
       </button>
-
-      <!-- 1-Click Instant Login button -->
-      <button type="submit" name="quick_demo" value="1" style="width: 100%; margin-top: 12px; background: #FFFBEA; border: 1.5px solid var(--chalre-accent); color: #B45309; border-radius: 999px; padding: 11px; font-size: 13px; font-weight: 800; cursor: pointer; transition: all 0.2s ease;">
-        ⚡ 1-Click Instant Demo Login
-      </button>
     </form>
 
-    <div style="margin-top: 24px; font-size: 13px; color: #64748B;">
-      Looking for rides? <a href="/rides/search/" style="color: #12372A; font-weight: 700; text-decoration: none;">Search Tamil Nadu Corridors</a>
+    <div style="margin-top: 24px; font-size: 13.5px; color: #64748B;">
+      Don't have an account? <a href="/accounts/register/" style="color: #0D5C3A; font-weight: 800; text-decoration: none;">Sign Up here</a>
     </div>
 
   </div>
 
 </main>
-
-<script>
-  function quickFill() {
-    document.getElementById('loginUsername').value = 'karthik';
-    document.getElementById('loginPassword').value = '123';
-  }
-</script>
 {% endblock %}

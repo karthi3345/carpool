@@ -194,6 +194,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 14px;
+    align-items: stretch;
   }
 
   @media (max-width: 580px) {
@@ -205,6 +206,8 @@
   .form-field-group {
     margin-bottom: 14px;
     position: relative;
+    display: flex;
+    flex-direction: column;
   }
 
   .field-input-box {
@@ -214,6 +217,9 @@
     border: 1.5px solid #E2E8F0;
     border-radius: 14px;
     padding: 10px 14px;
+    height: 100%;
+    min-height: 64px;
+    box-sizing: border-box;
     transition: all 0.2s ease;
   }
 
@@ -828,7 +834,7 @@
               <span class="field-icon">👤</span>
               <div class="field-text-wrap">
                 <label class="field-label-small">Driver Full Name</label>
-                <input type="text" id="id_driver_name" name="driver_name" class="field-input-clean" placeholder="e.g. Karthik Raja" value="{{ form_data.driver_name|default:'' }}" placeholder="Enter your full name as on ID" required>
+                <input type="text" id="id_driver_name" name="driver_name" class="field-input-clean" placeholder="e.g. Karthik Raja" value="{{ form_data.driver_name|default:'' }}" required>
               </div>
             </div>
           </div>
@@ -838,8 +844,8 @@
             <div class="field-input-box">
               <span class="field-icon">🛡️</span>
               <div class="field-text-wrap">
-                <label class="field-label-small">Driving Licence Number (All India Licences Accepted: TN, KA, KL, AP, etc.)</label>
-                <input type="text" id="id_dl" name="driver_license_number" class="field-input-clean" placeholder="e.g. TN-0120180004567 or KA-0120190001234 (All India Licences Accepted)" value="{{ form_data.driver_license_number|default:'' }}" placeholder="e.g. TN-0120180004567 or KA-0120190001234 (All India Licences Accepted)" required>
+                <label class="field-label-small">Driving Licence Number</label>
+                <input type="text" id="id_dl" name="driver_license_number" class="field-input-clean" placeholder="e.g. TN-0120180004567" value="{{ form_data.driver_license_number|default:'' }}" required>
               </div>
             </div>
           </div>
@@ -852,7 +858,7 @@
               <span class="field-icon">🚗</span>
               <div class="field-text-wrap">
                 <label class="field-label-small">Car Model & Car Name</label>
-                <input type="text" id="id_car_model" name="vehicle_model" class="field-input-clean" placeholder="e.g. Maruti Suzuki Dzire" value="{{ form_data.vehicle_model|default:'' }}" placeholder="e.g. Toyota Innova / Hyundai i20" required>
+                <input type="text" id="id_car_model" name="vehicle_model" class="field-input-clean" placeholder="e.g. Maruti Suzuki Dzire" value="{{ form_data.vehicle_model|default:'' }}" required>
               </div>
             </div>
           </div>
@@ -863,7 +869,7 @@
               <span class="field-icon">🔢</span>
               <div class="field-text-wrap">
                 <label class="field-label-small">Car Registration Plate</label>
-                <input type="text" id="id_car_number" name="vehicle_number" class="field-input-clean" placeholder="TN-01-AB-1234" value="{{ form_data.vehicle_number|default:'' }}" placeholder="e.g. TN-07-CB-9988" required>
+                <input type="text" id="id_car_number" name="vehicle_number" class="field-input-clean" placeholder="TN-01-AB-1234" value="{{ form_data.vehicle_number|default:'' }}" required>
               </div>
             </div>
           </div>
@@ -875,8 +881,8 @@
             <div class="field-input-box">
               <span class="field-icon">🆔</span>
               <div class="field-text-wrap">
-                <label class="field-label-small">Government ID Proof Number (Aadhaar / Voter ID / Passport)</label>
-                <input type="text" id="id_govt_num" name="govt_id_number" class="field-input-clean" placeholder="e.g. XXXX-XXXX-4567 or Z1234567" value="{{ form_data.govt_id_number|default:'' }}">
+                <label class="field-label-small">Government ID Proof Number</label>
+                <input type="text" id="id_govt_num" name="govt_id_number" class="field-input-clean" placeholder="Aadhaar / Voter ID / Passport" value="{{ form_data.govt_id_number|default:'' }}">
               </div>
             </div>
           </div>

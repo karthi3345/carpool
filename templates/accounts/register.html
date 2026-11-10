@@ -1,0 +1,397 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sign Up / Register | TamizhPayanam{% endblock %}
+
+{% block extra_head %}
+<style>
+  :root {
+    --tp-dark: #12372A;
+    --tp-green: #0D5C3A;
+    --tp-accent: #FFD000;
+  }
+
+  .signup-page-wrap {
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px 60px;
+    background: #F8FAFC;
+  }
+
+  .signup-card {
+    background: #FFFFFF;
+    border-radius: 24px;
+    border: 1.5px solid #E2E8F0;
+    box-shadow: 0 16px 40px rgba(18, 55, 42, 0.08);
+    max-width: 520px;
+    width: 100%;
+    padding: 38px 36px;
+    position: relative;
+  }
+
+  .signup-icon-box {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #E8F5E9;
+    border: 1.5px solid #0D5C3A;
+    color: #0D5C3A;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    margin: 0 auto 16px;
+  }
+
+  .signup-card h2 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    color: #12372A;
+    margin: 0 0 6px 0;
+    text-align: center;
+  }
+
+  .signup-card p.subtitle {
+    font-size: 13.5px;
+    color: #64748B;
+    margin: 0 0 22px 0;
+    text-align: center;
+  }
+
+  .form-group-signup {
+    text-align: left;
+    margin-bottom: 16px;
+  }
+
+  .form-group-signup label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 6px;
+  }
+
+  .input-signup {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px 14px;
+    border: 1.5px solid #CBD5E1;
+    border-radius: 12px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1E293B;
+    outline: none;
+    transition: all 0.2s ease;
+  }
+  .input-signup:focus {
+    border-color: #0D5C3A;
+    box-shadow: 0 0 0 3px rgba(13, 92, 58, 0.12);
+  }
+
+  .input-with-action {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .btn-action-otp {
+    background: #0D5C3A;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .btn-action-otp:hover {
+    background: #084028;
+  }
+  .btn-action-otp:disabled {
+    background: #CBD5E1;
+    cursor: not-allowed;
+  }
+
+  .otp-eval-box {
+    margin-top: 8px;
+    background: #F0FDF4;
+    border: 1.2px solid #86EFAC;
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: none;
+  }
+
+  .otp-eval-box.active {
+    display: block;
+  }
+
+  .otp-badge-hint {
+    background: #FEF3C7;
+    color: #92400E;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 6px;
+    display: inline-block;
+    margin-bottom: 6px;
+  }
+
+  .btn-signup-submit {
+    width: 100%;
+    background: #0D5C3A;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 999px;
+    padding: 14px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 10px;
+    box-shadow: 0 4px 14px rgba(13, 92, 58, 0.25);
+  }
+  .btn-signup-submit:hover {
+    background: #084028;
+    transform: translateY(-1px);
+  }
+
+  .verified-badge {
+    color: #059669;
+    font-weight: 800;
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="signup-page-wrap">
+  
+  <div class="signup-card">
+    
+    <div class="signup-icon-box">🛡️</div>
+    
+    <h2>Create Your Account</h2>
+    <p class="subtitle">Join Tamil Nadu's 100% verified carpooling community</p>
+
+    {% if error_message %}
+    <div style="background: #FEE2E2; border: 1.5px solid #F87171; color: #991B1B; padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 600; margin-bottom: 18px;">
+      ⚠️ {{ error_message }}
+    </div>
+    {% endif %}
+
+    <form method="POST" action="/accounts/register/" id="signupForm">
+      {% csrf_token %}
+
+      <!-- 1. Username -->
+      <div class="form-group-signup">
+        <label>Username *</label>
+        <input type="text" name="username" id="id_username" class="input-signup" placeholder="Choose a unique username (e.g. karthik_tn)" value="{{ form_data.username|default:'' }}" required autocomplete="username">
+      </div>
+
+      <!-- 2. Email ID + OTP Evaluation -->
+      <div class="form-group-signup">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <label style="margin: 0;">Email ID *</label>
+          <span id="email_verified_label" class="verified-badge" style="display: none;">✓ Verified</span>
+        </div>
+        <div class="input-with-action">
+          <input type="email" name="email" id="id_email" class="input-signup" placeholder="e.g. karthik@example.com" value="{{ form_data.email|default:'' }}" required autocomplete="email">
+          <button type="button" id="btn_send_email_otp" class="btn-action-otp" onclick="sendEmailOTP()">Send OTP</button>
+        </div>
+        
+        <!-- Email OTP Verification Box -->
+        <div id="email_otp_box" class="otp-eval-box">
+          <div class="otp-badge-hint">🔑 Email OTP Hint: Enter <strong>2727</strong></div>
+          <div class="input-with-action">
+            <input type="text" id="id_email_otp" class="input-signup" placeholder="Enter 4-digit OTP" maxlength="6" style="padding: 8px 12px; font-size: 13px;">
+            <button type="button" class="btn-action-otp" style="background: #059669; padding: 8px 14px;" onclick="verifyEmailOTP()">Verify OTP</button>
+          </div>
+          <div id="email_otp_msg" style="font-size: 11.5px; margin-top: 4px; font-weight: 700;"></div>
+        </div>
+        <input type="hidden" name="email_otp_verified" id="email_otp_verified" value="0">
+      </div>
+
+      <!-- 3. Mobile Number + OTP Evaluation -->
+      <div class="form-group-signup">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <label style="margin: 0;">Mobile Number *</label>
+          <span id="phone_verified_label" class="verified-badge" style="display: none;">✓ Verified</span>
+        </div>
+        <div class="input-with-action">
+          <div style="position: relative; flex: 1;">
+            <span style="position: absolute; left: 12px; top: 11px; font-size: 13.5px; font-weight: 700; color: #64748B;">+91</span>
+            <input type="tel" name="phone_number" id="id_phone" class="input-signup" placeholder="9876543210" style="padding-left: 48px;" value="{{ form_data.phone_number|default:'' }}" required maxlength="10" autocomplete="tel">
+          </div>
+          <button type="button" id="btn_send_phone_otp" class="btn-action-otp" onclick="sendPhoneOTP()">Send OTP</button>
+        </div>
+
+        <!-- Phone OTP Verification Box -->
+        <div id="phone_otp_box" class="otp-eval-box">
+          <div class="otp-badge-hint">📱 Mobile OTP Hint: Enter <strong>2727</strong></div>
+          <div class="input-with-action">
+            <input type="text" id="id_phone_otp" class="input-signup" placeholder="Enter 4-digit OTP" maxlength="6" style="padding: 8px 12px; font-size: 13px;">
+            <button type="button" class="btn-action-otp" style="background: #059669; padding: 8px 14px;" onclick="verifyPhoneOTP()">Verify OTP</button>
+          </div>
+          <div id="phone_otp_msg" style="font-size: 11.5px; margin-top: 4px; font-weight: 700;"></div>
+        </div>
+        <input type="hidden" name="phone_otp_verified" id="phone_otp_verified" value="0">
+      </div>
+
+      <!-- 4. Password -->
+      <div class="form-group-signup">
+        <label>Password *</label>
+        <input type="password" name="password" id="id_password" class="input-signup" placeholder="Create a strong password (min 6 characters)" required autocomplete="new-password">
+      </div>
+
+      <!-- 5. Confirm Password -->
+      <div class="form-group-signup">
+        <label>Confirm Password *</label>
+        <input type="password" name="confirm_password" id="id_confirm_password" class="input-signup" placeholder="Repeat your password" required autocomplete="new-password">
+        <div id="password_match_msg" style="font-size: 11.5px; margin-top: 4px; font-weight: 700; display: none;"></div>
+      </div>
+
+      <button type="submit" class="btn-signup-submit" id="btn_submit">
+        Complete Registration &rarr;
+      </button>
+    </form>
+
+    <div style="margin-top: 22px; font-size: 13px; color: #64748B; text-align: center;">
+      Already have an account? <a href="/accounts/login/" style="color: #0D5C3A; font-weight: 800; text-decoration: none;">Login here</a>
+    </div>
+
+  </div>
+
+</main>
+
+<script>
+  const DUMMY_OTP = "2727";
+
+  // Email OTP Flow
+  function sendEmailOTP() {
+    const email = document.getElementById('id_email').value.trim();
+    if (!email || !email.includes('@')) {
+      alert('Please enter a valid Email ID first!');
+      document.getElementById('id_email').focus();
+      return;
+    }
+    const box = document.getElementById('email_otp_box');
+    box.classList.add('active');
+    const msg = document.getElementById('email_otp_msg');
+    msg.style.color = '#0D5C3A';
+    msg.textContent = 'OTP sent to ' + email + '. (Use dummy OTP: 2727)';
+    document.getElementById('btn_send_email_otp').textContent = 'Resend';
+    document.getElementById('id_email_otp').focus();
+  }
+
+  function verifyEmailOTP() {
+    const inputOtp = document.getElementById('id_email_otp').value.trim();
+    const msg = document.getElementById('email_otp_msg');
+    if (inputOtp === DUMMY_OTP) {
+      msg.style.color = '#059669';
+      msg.textContent = '✓ Email OTP 2727 evaluated & verified successfully!';
+      document.getElementById('email_otp_verified').value = '1';
+      document.getElementById('email_verified_label').style.display = 'inline-flex';
+      document.getElementById('id_email').readOnly = true;
+      document.getElementById('btn_send_email_otp').style.display = 'none';
+      setTimeout(() => { document.getElementById('email_otp_box').style.display = 'none'; }, 1500);
+    } else {
+      msg.style.color = '#DC2626';
+      msg.textContent = '❌ Invalid OTP. Please enter 2727 to evaluate.';
+    }
+  }
+
+  // Phone OTP Flow
+  function sendPhoneOTP() {
+    const phone = document.getElementById('id_phone').value.trim();
+    if (!phone || phone.length < 10) {
+      alert('Please enter a valid 10-digit mobile number first!');
+      document.getElementById('id_phone').focus();
+      return;
+    }
+    const box = document.getElementById('phone_otp_box');
+    box.classList.add('active');
+    const msg = document.getElementById('phone_otp_msg');
+    msg.style.color = '#0D5C3A';
+    msg.textContent = 'OTP sent to +91 ' + phone + '. (Use dummy OTP: 2727)';
+    document.getElementById('btn_send_phone_otp').textContent = 'Resend';
+    document.getElementById('id_phone_otp').focus();
+  }
+
+  function verifyPhoneOTP() {
+    const inputOtp = document.getElementById('id_phone_otp').value.trim();
+    const msg = document.getElementById('phone_otp_msg');
+    if (inputOtp === DUMMY_OTP) {
+      msg.style.color = '#059669';
+      msg.textContent = '✓ Mobile OTP 2727 evaluated & verified successfully!';
+      document.getElementById('phone_otp_verified').value = '1';
+      document.getElementById('phone_verified_label').style.display = 'inline-flex';
+      document.getElementById('id_phone').readOnly = true;
+      document.getElementById('btn_send_phone_otp').style.display = 'none';
+      setTimeout(() => { document.getElementById('phone_otp_box').style.display = 'none'; }, 1500);
+    } else {
+      msg.style.color = '#DC2626';
+      msg.textContent = '❌ Invalid OTP. Please enter 2727 to evaluate.';
+    }
+  }
+
+  // Password matching check
+  const pwd = document.getElementById('id_password');
+  const confirmPwd = document.getElementById('id_confirm_password');
+  const matchMsg = document.getElementById('password_match_msg');
+
+  function checkPasswordMatch() {
+    if (!confirmPwd.value) {
+      matchMsg.style.display = 'none';
+      return;
+    }
+    matchMsg.style.display = 'block';
+    if (pwd.value === confirmPwd.value) {
+      matchMsg.style.color = '#059669';
+      matchMsg.textContent = '✓ Passwords match';
+    } else {
+      matchMsg.style.color = '#DC2626';
+      matchMsg.textContent = '❌ Passwords do not match';
+    }
+  }
+
+  pwd.addEventListener('input', checkPasswordMatch);
+  confirmPwd.addEventListener('input', checkPasswordMatch);
+
+  // Form submit validation
+  document.getElementById('signupForm').addEventListener('submit', function(e) {
+    if (pwd.value !== confirmPwd.value) {
+      e.preventDefault();
+      alert('Passwords do not match! Please check again.');
+      confirmPwd.focus();
+      return false;
+    }
+
+    const emailVerified = document.getElementById('email_otp_verified').value === '1';
+    const phoneVerified = document.getElementById('phone_otp_verified').value === '1';
+
+    if (!emailVerified) {
+      e.preventDefault();
+      alert('Please verify your Email ID with OTP (enter dummy OTP 2727).');
+      sendEmailOTP();
+      return false;
+    }
+
+    if (!phoneVerified) {
+      e.preventDefault();
+      alert('Please verify your Mobile Number with OTP (enter dummy OTP 2727).');
+      sendPhoneOTP();
+      return false;
+    }
+  });
+</script>
+{% endblock %}
