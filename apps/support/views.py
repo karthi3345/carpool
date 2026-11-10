@@ -1,3 +1,8 @@
+import json
+import urllib.request
+import urllib.error
+import os
+from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -5,6 +10,47 @@ from django.utils import timezone
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from apps.rides.models import Ride
+
+CLOUDFLARE_ACCOUNT_ID = os.getenv("CLOUDFLARE_ACCOUNT_ID", "7ee7bdd68328812eb2b1e3c56714ce78")
+CLOUDFLARE_API_TOKEN = os.getenv("CLOUDFLARE_API_TOKEN", "")
+CLOUDFLARE_MODEL = "@cf/meta/llama-3.1-8b-instruct"
+
+SYSTEM_PROMPT = (
+    "You are Inba (இன்பா), the official AI Guide and Support Assistant for TamizhPayanam (also known as ChalRe Tamil Nadu), "
+    "a premier intercity carpooling platform connecting all 38 districts of Tamil Nadu.\n\n"
+    "Platform Details:\n"
+    "- Purpose: Safe, affordable, verified intercity carpooling across Tamil Nadu highways (e.g., Chennai - Coimbatore, Madurai, Trichy, Salem, Tirunelveli, Pondicherry).\n"
+    "- Key Features: Instant seat search & booking, driver license & ID manual verification by TN support team, interactive fare negotiation in live driver-passenger chat rooms, "
+    "heritage audio library (Thirukkural, Ponniyin Selvan, Silappathikaram), community travel stories and reels.\n"
+    "- Cancellation policy: Cancel up to 2 hours before trip with zero penalty; automatic seat re-allocation if driver cancels.\n"
+    "- Contact / Human Support: Email support@tamizhpayanam.in, 24/7 Tamil Nadu Support Desk.\n\n"
+    "STRICT BOUNDARY & ESCALATION RULES:\n"
+    "1. You must ONLY answer questions specifically about TamizhPayanam, carpooling, booking rides, publishing trips, driver verification, safety, fares, or Tamil heritage features on this website.\n"
+    "2. If the user asks about ANYTHING ELSE (general coding, politics, recipes, hacking, general knowledge, sports, unrelated trivia), OR if they request refunds, dispute resolution, or to talk to a person, you MUST politely state: "
+    "'I am Inba, specifically dedicated to helping you with the TamizhPayanam carpool platform. For unrelated queries or direct administrative assistance, please contact our human Tamil Nadu Support Team.'\n"
+    "3. Keep responses warm, helpful, culturally respectful (start with 'Vanakkam!'), concise (2-4 sentences or short bullet points), and include bilingual Tamil/English where appropriate."
+)
+
+def query_cloudflare_ai(user_prompt):
+    url = f"https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/run/{CLOUDFLARE_MODEL}"
+    headers = {
+        "Authorization": f"Bearer {CLOUDFLARE_API_TOKEN}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "messages": [
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": user_prompt}
+        ],
+        "max_tokens": 400
+    }
+    
+    req = urllib.request.Request(url, data=json.dumps(payload).encode('utf-8'), headers=headers, method="POST")
+    with urllib.request.urlopen(req, timeout=12) as response:
+        result = json.loads(response.read().decode('utf-8'))
+        if result.get("success") and "result" in result:
+            return result["result"].get("response", "").strip()
+    return None
 
 def support_login_view(request):
     """
@@ -117,80 +163,83 @@ def support_reject_ride(request, ride_id):
 @csrf_exempt
 def support_chatbot_api(request):
     """
-    AI Support Chatbot Assistant for Tamil Nadu Carpool Platform
+    Inba (இன்பா) AI Support Chatbot Assistant powered by Cloudflare Workers AI
+    with fallback and support escalation detection.
     """
     if request.method == 'POST':
-        import json
         try:
             body = json.loads(request.body.decode('utf-8'))
-            user_msg = body.get('message', '').strip().lower()
+            user_msg = body.get('message', '').strip()
         except Exception:
-            user_msg = request.POST.get('message', '').strip().lower()
+            user_msg = request.POST.get('message', '').strip()
 
         if not user_msg:
-            return JsonResponse({'reply': 'Vanakkam! How can I assist you with Tamil Nadu carpooling today?'})
+            return JsonResponse({
+                'reply': 'Vanakkam! I am Inba (இன்பா), your TamizhPayanam AI Guide. How can I assist you with Tamil Nadu intercity carpooling today?',
+                'escalate': False,
+                'agent': 'Inba (TamizhPayanam AI)'
+            })
 
-        if any(w in user_msg for w in ['book', 'reserve', 'ticket', 'seat']):
-            reply = (
-                "Booking a seat is simple and instant:\n"
-                "1. Search your origin & destination on the home or search page.\n"
-                "2. Choose your preferred departure time and driver rating.\n"
-                "3. Click 'Book Seat'. You will instantly enter a live negotiation chat room with the driver!"
-            )
-        elif any(w in user_msg for w in ['login', 'account', 'sign in', 'register']):
-            reply = (
-                "You must be logged in to book seats or chat with drivers. "
-                "You can use our 1-click Demo Login ('karthik' with password '123') or sign up in seconds!"
-            )
-        elif any(w in user_msg for w in ['negotiat', 'bargain', 'offer', 'fare', 'price', 'discount']):
-            reply = (
-                "ChalRe supports interactive fare negotiation! Once booked, you can propose a counter-offer in the chat room. "
-                "Drivers can accept or adjust fares depending on highway tolls."
-            )
-        elif any(w in user_msg for w in ['license', 'licence', 'dl', 'verify', 'verified', 'safe', 'safety']):
-            reply = (
-                "Passenger safety is paramount. Every driver is required to upload a verified Indian Driving License. "
-                "Our optical AI checks credentials, and our Tamil Nadu support team manually audits every driver."
-            )
-        elif any(w in user_msg for w in ['cancel', 'refund', 'cancellation']):
-            reply = (
-                "You can cancel up to 2 hours before departure with zero penalty. "
-                "If a driver cancels, you receive priority seat re-accommodation on the same highway corridor immediately."
-            )
-        elif any(w in user_msg for w in ['route', 'corridor', 'city', 'cities', 'where', 'pickup', 'point']):
-            reply = (
-                "We connect all 38 districts of Tamil Nadu!\n"
-                "• Chennai ➔ Coimbatore (NH 544)\n"
-                "• Chennai ➔ Madurai (GST Road / NH 38)\n"
-                "• Chennai ➔ Trichy (NH 38 via Villupuram)\n"
-                "• Coimbatore ➔ Madurai (NH 83)\n"
-                "• Chennai ➔ Puducherry (ECR)"
-            )
-        elif any(w in user_msg for w in ['driver', 'offer', 'publish', 'host']):
-            reply = (
-                "Traveling between Tamil Nadu cities? Click 'Offer Ride' in the header to publish your trip, specify available seats, and split fuel costs!"
-            )
-        elif any(w in user_msg for w in ['contact', 'phone', 'human', 'officer', 'help', 'agent']):
-            reply = (
-                "Our Tamil Nadu Customer Support Helpdesk is active 24/7. "
-                "Senior Officer Priya S. and our team can be reached anytime via support@chalre.in."
-            )
-        elif any(w in user_msg for w in ['vanakkam', 'hello', 'hi', 'hey', 'start']):
-            reply = (
-                "Vanakkam! Welcome to ChalRe Tamil Nadu Support. "
-                "I can help you with ride bookings, driver safety, fare negotiations, and routes across Tamil Nadu's 38 districts. What would you like to know?"
-            )
-        else:
-            reply = (
-                "Thanks for reaching out! ChalRe is Tamil Nadu's verified intercity carpooling platform. "
-                "You can search seats between all 38 districts, negotiate fares, and ride safely. "
-                "Would you like details on booking a seat, safety verification, or route corridors?"
-            )
+        lower_msg = user_msg.lower()
+
+        # Check if direct human escalation was requested
+        escalate_keywords = ['human', 'officer', 'talk to person', 'real person', 'support team', 'complaint', 'dispute', 'fraud', 'stolen', 'police']
+        is_direct_escalate = any(k in lower_msg for k in escalate_keywords)
+
+        ai_reply = None
+        try:
+            ai_reply = query_cloudflare_ai(user_msg)
+        except Exception as e:
+            ai_reply = None
+
+        if not ai_reply:
+            # High quality local fallback in case of network issue or Cloudflare limits
+            if any(w in lower_msg for w in ['book', 'reserve', 'ticket', 'seat']):
+                ai_reply = (
+                    "Vanakkam! Booking a seat is quick and easy on TamizhPayanam:\n"
+                    "1. Enter your departure and arrival city across any of our 38 Tamil Nadu districts.\n"
+                    "2. Select your date and choose a verified driver.\n"
+                    "3. Click 'Book Seat' to immediately confirm and access the live negotiation chat!"
+                )
+            elif any(w in lower_msg for w in ['license', 'licence', 'dl', 'verify', 'safety', 'safe']):
+                ai_reply = (
+                    "Passenger safety is our highest priority! Every driver's Indian Driving License and Govt ID "
+                    "are manually audited and approved by our Tamil Nadu Support Team before rides can be published."
+                )
+            elif any(w in lower_msg for w in ['price', 'fare', 'cost', 'negotiat', 'bargain']):
+                ai_reply = (
+                    "TamizhPayanam features real-time fare negotiation! Once a seat is requested, riders and drivers "
+                    "can agree on a fair contribution based on tolls and route in the live chat."
+                )
+            elif any(w in lower_msg for w in ['offer', 'publish', 'driver', 'host']):
+                ai_reply = (
+                    "Traveling across Tamil Nadu? Click 'Publish a Ride' in the top bar, upload your driving license for verification, "
+                    "set your seats and pricing, and share fuel costs with fellow travelers!"
+                )
+            elif any(w in lower_msg for w in ['heritage', 'kural', 'story', 'audio']):
+                ai_reply = (
+                    "Visit our Heritage page to explore Tamil culture during your journey! Enjoy daily Thirukkural couplets with moral stories, "
+                    "and listen to bilingual audiobooks of Ponniyin Selvan and Silappathikaram."
+                )
+            elif is_direct_escalate:
+                ai_reply = (
+                    "I understand you wish to speak with our human customer service. Our dedicated Tamil Nadu Support Team "
+                    "led by Officer Priya S. is ready to help you with personalized enquiries."
+                )
+            else:
+                ai_reply = (
+                    "Vanakkam! I am Inba, your TamizhPayanam AI Guide. I can help with finding and publishing rides, "
+                    "driver safety verification, live chat fare negotiation, and Tamil heritage features across all 38 districts of Tamil Nadu."
+                )
+
+        # Determine escalation state
+        escalate = is_direct_escalate or any(term in ai_reply.lower() for term in ['support team', 'priya s', 'escalat', 'support@tamizhpayanam.in', 'decline'])
 
         return JsonResponse({
             'success': True,
-            'reply': reply,
-            'agent': 'Priya S. (ChalRe Support)'
+            'reply': ai_reply,
+            'agent': 'Inba (AI Guide)',
+            'escalate': escalate
         })
 
     return JsonResponse({'error': 'POST required'}, status=405)

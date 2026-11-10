@@ -1,0 +1,249 @@
+<!-- Floating TamizhPayanam Support Chatbot Widget (Powered by Cloudflare AI: Inba / இன்பா) -->
+<div id="chalreSupportWidget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999; font-family: 'Plus Jakarta Sans', sans-serif;">
+  
+  <!-- Collapsed Launcher Button -->
+  <button id="chatbotLauncher" onclick="toggleChatbot()" style="background: #12372A; color: #FFFFFF; border: 2px solid #FFD000; border-radius: 999px; padding: 12px 22px; font-weight: 800; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 28px rgba(18, 55, 42, 0.35); transition: all 0.2s ease;">
+    <span style="position: relative; display: flex; align-items: center;">
+      <span style="font-size: 18px;">✨</span>
+      <span style="position: absolute; top: -3px; right: -3px; width: 8px; height: 8px; background: #10B981; border-radius: 50%; border: 1.5px solid #12372A;"></span>
+    </span>
+    <span>Ask Inba (AI Assistant)</span>
+  </button>
+
+  <!-- Expanded Chat Window -->
+  <div id="chatbotWindow" style="display: none; width: 380px; height: 530px; background: #FFFFFF; border-radius: 20px; box-shadow: 0 16px 48px rgba(0,0,0,0.22); border: 1.5px solid #E2E8F0; overflow: hidden; flex-direction: column; animation: chatPop 0.25s ease-out;">
+    
+    <!-- Chat Header -->
+    <div style="background: #12372A; color: #FFFFFF; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #FFD000;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="position: relative;">
+          <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #FFD43B 0%, #D4A017 100%); color: #12372A; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 15px; border: 2px solid #FFFFFF; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+            இ
+          </div>
+          <span style="position: absolute; bottom: 0; right: 0; width: 10px; height: 10px; background: #10B981; border-radius: 50%; border: 2px solid #12372A;"></span>
+        </div>
+        <div>
+          <div style="font-weight: 800; font-size: 14px; display: flex; align-items: center; gap: 6px;">
+            <span>Inba (இன்பா)</span>
+            <span style="background: rgba(255, 208, 0, 0.2); color: #FFD000; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 700; text-transform: uppercase;">AI Guide</span>
+          </div>
+          <div style="font-size: 11px; color: #E2E8F0;">TamizhPayanam Assistant &bull; Online</div>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 6px;">
+        <!-- Sound Toggle Button -->
+        <button id="chatSoundBtn" onclick="toggleChatSound()" title="Mute/Unmute Chime" style="background: rgba(255,255,255,0.1); border: none; color: #FFD43B; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px;">
+          🔔
+        </button>
+        <button onclick="toggleChatbot()" style="background: none; border: none; color: #94A3B8; font-size: 22px; cursor: pointer; padding: 0 4px; line-height: 1;" title="Close">
+          &times;
+        </button>
+      </div>
+    </div>
+
+    <!-- Human Support Banner -->
+    <div style="background: #FFFBEA; border-bottom: 1px solid #FEF3C7; padding: 6px 14px; display: flex; align-items: center; justify-content: space-between; font-size: 11px;">
+      <span style="color: #92400E; font-weight: 600;">Dedicated Support Team on standby</span>
+      <a href="mailto:support@tamizhpayanam.in?subject=Customer%20Support%20Enquiry%20-%20TamizhPayanam" target="_blank" style="color: #B45309; font-weight: 800; text-decoration: underline; cursor: pointer;">
+        Officer Enquiry &rarr;
+      </a>
+    </div>
+
+    <!-- Messages Stream -->
+    <div id="chatMessagesStream" style="flex: 1; padding: 14px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: #F8FAFC;">
+      <!-- Initial Bot Greeting -->
+      <div style="display: flex; gap: 8px; align-items: flex-start;">
+        <div style="width: 28px; height: 28px; border-radius: 50%; background: #12372A; color: #FFD000; font-size: 12px; font-weight: 900; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">இ</div>
+        <div style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 10px 14px; border-radius: 14px; border-top-left-radius: 2px; font-size: 13px; color: #1E293B; line-height: 1.45; box-shadow: 0 1px 4px rgba(0,0,0,0.03);">
+          Vanakkam! 🙏 I am <strong>Inba (இன்பா)</strong>, your official TamizhPayanam AI Guide. Ask me anything about finding rides, publishing trips, driver verification, or Tamil heritage across all 38 districts!
+        </div>
+      </div>
+
+      <!-- Quick Suggestions -->
+      <div id="chatQuickSuggestions" style="display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0;">
+        <button onclick="sendChatQuick('How does booking and fare negotiation work?')" style="background: #FFFFFF; border: 1px solid #CBD5E1; color: #12372A; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 12px; cursor: pointer;">How to book & negotiate?</button>
+        <button onclick="sendChatQuick('How are drivers verified for safety?')" style="background: #FFFFFF; border: 1px solid #CBD5E1; color: #12372A; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 12px; cursor: pointer;">Driver license safety</button>
+        <button onclick="sendChatQuick('How can I publish a ride to split fuel?')" style="background: #FFFFFF; border: 1px solid #CBD5E1; color: #12372A; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 12px; cursor: pointer;">Publish a ride</button>
+        <button onclick="sendChatQuick('Connect me to human Support Team')" style="background: #FEF3C7; border: 1px solid #FCD34D; color: #92400E; font-size: 11px; font-weight: 800; padding: 5px 10px; border-radius: 12px; cursor: pointer;">📞 Human Support Team</button>
+      </div>
+    </div>
+
+    <!-- Chat Input Area -->
+    <div style="padding: 12px 14px; background: #FFFFFF; border-top: 1px solid #E2E8F0; display: flex; align-items: center; gap: 8px;">
+      <input type="text" id="chatbotInput" placeholder="Ask Inba about TamizhPayanam..." onkeydown="if(event.key==='Enter') sendChatbotMessage()" style="flex: 1; border: 1.5px solid #CBD5E1; border-radius: 999px; padding: 10px 16px; font-size: 13px; outline: none; font-family: inherit;">
+      <button onclick="sendChatbotMessage()" style="background: #12372A; color: #FFD000; border: none; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 15px; font-weight: 800; flex-shrink: 0;" title="Send">
+        ➔
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<style>
+  @keyframes chatPop {
+    from { opacity: 0; transform: scale(0.95) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+</style>
+
+<script>
+  let chatSoundEnabled = true;
+
+  // Web Audio API synthesized soft chime (works on all modern browsers without external asset download)
+  function playChatChime(type = 'in') {
+    if (!chatSoundEnabled) return;
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return;
+      const ctx = new AudioContext();
+      if (ctx.state === 'suspended') {
+        ctx.resume();
+      }
+
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'sine';
+      if (type === 'open') {
+        osc.frequency.setValueAtTime(523.25, now);
+        osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.12);
+        gain.gain.setValueAtTime(0.08, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+      } else if (type === 'out') {
+        osc.frequency.setValueAtTime(440, now);
+        osc.frequency.exponentialRampToValueAtTime(880, now + 0.08);
+        gain.gain.setValueAtTime(0.06, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+      } else {
+        osc.frequency.setValueAtTime(587.33, now);
+        osc.frequency.exponentialRampToValueAtTime(880, now + 0.15);
+        gain.gain.setValueAtTime(0.09, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+      }
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.4);
+    } catch (e) {
+      // Silent catch
+    }
+  }
+
+  function toggleChatSound() {
+    chatSoundEnabled = !chatSoundEnabled;
+    const btn = document.getElementById('chatSoundBtn');
+    if (btn) {
+      btn.textContent = chatSoundEnabled ? '🔔' : '🔕';
+      btn.title = chatSoundEnabled ? 'Mute Chime' : 'Unmute Chime';
+    }
+  }
+
+  function toggleChatbot() {
+    const win = document.getElementById('chatbotWindow');
+    const launcher = document.getElementById('chatbotLauncher');
+    if (!win || !launcher) return;
+    if (win.style.display === 'none' || win.style.display === '') {
+      win.style.display = 'flex';
+      launcher.style.display = 'none';
+      playChatChime('open');
+      setTimeout(() => {
+        const inp = document.getElementById('chatbotInput');
+        if (inp) inp.focus();
+      }, 100);
+    } else {
+      win.style.display = 'none';
+      launcher.style.display = 'flex';
+    }
+  }
+
+  function sendChatQuick(text) {
+    const input = document.getElementById('chatbotInput');
+    if (input) {
+      input.value = text;
+      sendChatbotMessage();
+    }
+  }
+
+  function sendChatbotMessage() {
+    const input = document.getElementById('chatbotInput');
+    if (!input) return;
+    const text = input.value.trim();
+    if (!text) return;
+
+    const stream = document.getElementById('chatMessagesStream');
+    if (!stream) return;
+
+    // Play sent chime
+    playChatChime('out');
+
+    // Append user bubble
+    const userDiv = document.createElement('div');
+    userDiv.style.cssText = 'display: flex; justify-content: flex-end;';
+    userDiv.innerHTML = `<div style="background: #12372A; color: #FFFFFF; padding: 10px 14px; border-radius: 14px; border-top-right-radius: 2px; font-size: 13px; max-width: 80%; line-height: 1.4;">${text.replace(/</g, '&lt;')}</div>`;
+    stream.appendChild(userDiv);
+    input.value = '';
+    stream.scrollTop = stream.scrollHeight;
+
+    // Typing indicator
+    const typingDiv = document.createElement('div');
+    typingDiv.id = 'botTypingIndicator';
+    typingDiv.style.cssText = 'display: flex; gap: 8px; align-items: center;';
+    typingDiv.innerHTML = `<div style="width: 28px; height: 28px; border-radius: 50%; background: #12372A; color: #FFD000; font-size: 12px; font-weight: 900; display: flex; align-items: center; justify-content: center;">இ</div><div style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 8px 12px; border-radius: 12px; font-size: 12px; color: #64748B;">Inba is thinking...</div>`;
+    stream.appendChild(typingDiv);
+    stream.scrollTop = stream.scrollHeight;
+
+    // Call Chatbot API (Cloudflare Workers AI Llama-3.1-8b)
+    fetch('/support/chat/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ message: text })
+    })
+    .then(r => r.json())
+    .then(data => {
+      const t = document.getElementById('botTypingIndicator');
+      if (t) t.remove();
+
+      // Play incoming pleasant chime
+      playChatChime('in');
+
+      const botDiv = document.createElement('div');
+      botDiv.style.cssText = 'display: flex; gap: 8px; align-items: flex-start;';
+      const formatted = (data.reply || 'Vanakkam! How can I assist you?').replace(/\n/g, '<br>');
+      
+      let escalationHtml = '';
+      if (data.escalate) {
+        escalationHtml = `
+          <div style="margin-top: 10px; padding: 10px; background: #FFFBEA; border: 1px solid #FCD34D; border-radius: 10px; font-size: 12px;">
+            <div style="font-weight: 800; color: #92400E; margin-bottom: 4px;">🤝 Need Human Support Team Enquiry?</div>
+            <div style="color: #78350F; margin-bottom: 8px;">Our Tamil Nadu Customer Support Helpdesk will review your specific query:</div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <a href="mailto:support@tamizhpayanam.in?subject=Enquiry%20from%20Chat%3A%20${encodeURIComponent(text)}" style="background: #B45309; color: #FFFFFF; text-decoration: none; padding: 6px 12px; border-radius: 8px; font-weight: 800; font-size: 11px; display: inline-flex; align-items: center; gap: 4px;">
+                ✉️ Email Support Officer
+              </a>
+              <a href="/support/dashboard/" target="_blank" style="background: #FFFFFF; border: 1px solid #D97706; color: #B45309; text-decoration: none; padding: 6px 10px; border-radius: 8px; font-weight: 700; font-size: 11px;">
+                📋 Support Desk
+              </a>
+            </div>
+          </div>
+        `;
+      }
+
+      botDiv.innerHTML = `<div style="width: 28px; height: 28px; border-radius: 50%; background: #12372A; color: #FFD000; font-size: 12px; font-weight: 900; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">இ</div><div style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 10px 14px; border-radius: 14px; border-top-left-radius: 2px; font-size: 13px; color: #1E293B; line-height: 1.45; box-shadow: 0 1px 4px rgba(0,0,0,0.03); max-width: 84%;">${formatted}${escalationHtml}</div>`;
+      stream.appendChild(botDiv);
+      stream.scrollTop = stream.scrollHeight;
+    })
+    .catch(err => {
+      const t = document.getElementById('botTypingIndicator');
+      if (t) t.remove();
+      const errDiv = document.createElement('div');
+      errDiv.style.cssText = 'display: flex; gap: 8px; align-items: flex-start;';
+      errDiv.innerHTML = `<div style="width: 28px; height: 28px; border-radius: 50%; background: #12372A; color: #FFD000; font-size: 12px; font-weight: 900; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">இ</div><div style="background: #FFF1F2; border: 1px solid #FECDD3; padding: 10px 14px; border-radius: 14px; font-size: 12px; color: #9F1239;">Network connection paused. Please reach our human team directly at support@tamizhpayanam.in</div>`;
+      stream.appendChild(errDiv);
+      stream.scrollTop = stream.scrollHeight;
+    });
+  }
+</script>
