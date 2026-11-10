@@ -225,9 +225,11 @@
       <!-- Auth Right Buttons / User Profile Avatar matching mockup -->
       <div style="display: flex; align-items: center; gap: 14px;">
         {% if user.is_authenticated %}
-        <a href="/support/help/" style="color: #64748B; text-decoration: none; font-size: 18px;" title="Notifications">🔔</a>
-        <a href="/accounts/profile/" style="text-decoration: none; display: flex; align-items: center;" title="My Profile">
-          <img src="/static/tamizh-payanam/images/p4.png" alt="Profile" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid #0D5C3A;">
+        <a href="/accounts/profile/?tab=menu" class="profile-badge-avatar-wrap" style="position: relative; width: 38px; height: 38px; border-radius: 50%; background: #e2e8f0; display: inline-flex; align-items: center; justify-content: center; text-decoration: none;" title="My Profile & Notifications">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="#64748b">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          </svg>
+          <span style="position: absolute; top: -3px; right: -3px; background: #E11D48; color: #ffffff; font-size: 11px; font-weight: 800; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1.5px solid #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.15); line-height: 1;">3</span>
         </a>
         <a href="/accounts/logout/" style="text-decoration: none; font-size: 13px; font-weight: 700; color: #EF4444; padding: 6px 12px;">Logout</a>
         {% else %}
