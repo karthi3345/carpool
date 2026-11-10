@@ -16,8 +16,8 @@ env = environ.Env(
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 SECRET_KEY = env('SECRET_KEY', default='django-insecure-carpool-india-platform-yellow-white-secret')
-DEBUG = env('DEBUG')
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
+DEBUG = env('DEBUG', default=False)
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 DJANGO_APPS = [
