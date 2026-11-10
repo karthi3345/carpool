@@ -1,15 +1,13 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}User Profile - Karthik Raja L | TamizhPayanam{% endblock %}
+{% block title %}Profile &amp; Account | TamizhPayanam{% endblock %}
 
 {% block extra_head %}
 <style>
   :root {
-    --tp-dark: #12372A;
-    --tp-green: #0D5C3A;
-    --tp-green-light: #E8F5E9;
-    --tp-gold: #F59E0B;
+    --tp-dark: #071739;
+    --tp-blue: #0066FF;
     --tp-bg: #F8FAFC;
     --tp-border: #E2E8F0;
   }
@@ -18,225 +16,260 @@
     background-color: var(--tp-bg);
   }
 
-  .profile-page-container {
-    max-width: 1040px;
-    margin: 32px auto 80px;
+  .profile-menu-container {
+    max-width: 580px;
+    margin: 36px auto 80px;
     padding: 0 20px;
   }
 
-  .profile-two-card-layout {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 32px;
-    align-items: stretch;
+  /* Top Right Action Pill (Offer a ride + Flag + Profile Avatar badge) */
+  .profile-top-appbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
   }
 
-  @media (max-width: 820px) {
-    .profile-two-card-layout {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  /* Left Menu Card (Mockup Screen 6) */
-  .profile-left-card {
+  .btn-offer-ride {
+    border: 2px solid #0066FF;
+    color: #0066FF;
     background: #FFFFFF;
-    border: 1.5px solid var(--tp-border);
-    border-radius: 24px;
-    padding: 32px 28px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-  }
-
-  .profile-user-header {
-    text-align: center;
-    margin-bottom: 28px;
-    padding-bottom: 20px;
-    border-bottom: 1.5px solid #F1F5F9;
-  }
-
-  .profile-big-avatar {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid #0D5C3A;
-    margin: 0 auto 12px;
-    display: block;
-    box-shadow: 0 4px 14px rgba(13, 92, 58, 0.2);
-  }
-
-  .profile-user-name {
-    font-size: 20px;
+    font-size: 14.5px;
     font-weight: 800;
-    color: #12372A;
-    margin: 0 0 4px 0;
+    padding: 8px 22px;
+    border-radius: 999px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+  .btn-offer-ride:hover {
+    background: #0066FF;
+    color: #FFFFFF;
   }
 
-  .profile-user-email {
-    font-size: 13.5px;
-    color: #64748B;
+  .profile-badge-avatar {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #E2E8F0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94A3B8;
+  }
+  .notification-count-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #DC2626;
+    color: #FFFFFF;
+    font-size: 11px;
+    font-weight: 800;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #FFFFFF;
   }
 
-  /* Menu Items matching mockup */
-  .profile-menu-list {
+  /* Main Menu Card matching exact Reference d5c01b17.png */
+  .profile-menu-card {
+    background: #FFFFFF;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 20px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+  }
+
+  .menu-list-wrap {
     list-style: none;
     padding: 0;
     margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
   }
 
-  .profile-menu-item {
+  .menu-item-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 16px;
-    border-radius: 12px;
+    padding: 20px 24px;
     text-decoration: none;
-    color: #1E293B;
-    font-size: 14.5px;
-    font-weight: 600;
-    transition: all 0.15s ease;
+    color: #071739;
+    font-size: 16px;
+    font-weight: 800;
+    border-bottom: 1px solid #F1F5F9;
+    transition: background 0.15s ease;
+  }
+  .menu-item-row:last-child {
+    border-bottom: none;
+  }
+  .menu-item-row:hover {
+    background: #F8FAFC;
   }
 
-  .profile-menu-item:hover {
-    background: var(--tp-green-light);
-    color: var(--tp-green);
-  }
-
-  .profile-menu-item-left {
+  .menu-item-left {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
   }
 
-  .profile-menu-chevron {
-    color: #94A3B8;
-    font-size: 14px;
-  }
-
-  /* Right Heritage Temple Card (Mockup Screen 6) */
-  .profile-right-heritage-card {
-    background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
-    border: 1.5px solid #FDE68A;
-    border-radius: 24px;
-    overflow: hidden;
-    position: relative;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  .menu-item-icon {
+    width: 26px;
+    height: 26px;
+    color: #475569;
     display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding: 40px;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
   }
 
-  .heritage-temple-bg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: 0.85;
-    mix-blend-mode: multiply;
+  .menu-item-chevron {
+    color: #64748B;
+    font-size: 18px;
+    font-weight: 600;
   }
 
-  .heritage-content-box {
-    position: relative;
-    z-index: 2;
-  }
-
-  .vanakkam-script {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-size: 34px;
-    font-weight: 900;
-    font-style: italic;
-    color: #78350F;
-    line-height: 1.2;
-    margin-bottom: 6px;
+  .inbox-pill-count {
+    background: #DC2626;
+    color: #FFFFFF;
+    font-size: 12px;
+    font-weight: 800;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 6px;
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="profile-page-container">
-  
-  <div class="profile-two-card-layout">
-    
-    <!-- Left: Profile Menu (Mockup Screen 6) -->
-    <div class="profile-left-card">
-      <div class="profile-user-header">
-        <img src="/static/tamizh-payanam/images/p4.png" alt="Karthik Raja L" class="profile-big-avatar" onerror="this.src='/static/images/hero_logo.png'">
-        <h2 class="profile-user-name">Karthik Raja L</h2>
-        <div class="profile-user-email">karthik@gmail.com</div>
-      </div>
+<div class="profile-menu-container">
 
-      <nav class="profile-menu-list">
-        <a href="/rides/my-rides/" class="profile-menu-item">
-          <div class="profile-menu-item-left">
-            <span>🚗</span>
-            <span>My Rides</span>
-          </div>
-          <span class="profile-menu-chevron">&rsaquo;</span>
-        </a>
+  <!-- Top bar matching screenshot d5c01b17.png -->
+  <div class="profile-top-appbar">
+    <!-- Search Icon -->
+    <a href="/rides/search/" style="color: #0066FF; font-size: 20px; text-decoration: none;" title="Search Rides">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+    </a>
 
-        <a href="/rides/my-rides/?tab=bookings" class="profile-menu-item">
-          <div class="profile-menu-item-left">
-            <span>📋</span>
-            <span>My Bookings</span>
-          </div>
-          <span class="profile-menu-chevron">&rsaquo;</span>
-        </a>
+    <!-- Offer a ride button -->
+    <a href="/rides/publish/" class="btn-offer-ride">
+      Offer a ride
+    </a>
 
-        <a href="/reviews/" class="profile-menu-item">
-          <div class="profile-menu-item-left">
-            <span>⭐</span>
-            <span>Ratings &amp; Reviews</span>
-          </div>
-          <span class="profile-menu-chevron">&rsaquo;</span>
-        </a>
+    <!-- Flag icon (India) -->
+    <span style="font-size: 22px; cursor: pointer;" title="India (Tamil Nadu)">🇮🇳</span>
 
-        <a href="/payments/history/" class="profile-menu-item">
-          <div class="profile-menu-item-left">
-            <span>💳</span>
-            <span>Payment History</span>
-          </div>
-          <span class="profile-menu-chevron">&rsaquo;</span>
-        </a>
-
-        <a href="/support/help/" class="profile-menu-item">
-          <div class="profile-menu-item-left">
-            <span>❓</span>
-            <span>Help Centre</span>
-          </div>
-          <span class="profile-menu-chevron">&rsaquo;</span>
-        </a>
-
-        <a href="/accounts/logout/" class="profile-menu-item" style="color: #DC2626;">
-          <div class="profile-menu-item-left">
-            <span>🚪</span>
-            <span>Logout</span>
-          </div>
-          <span class="profile-menu-chevron">&rsaquo;</span>
-        </a>
-      </nav>
+    <!-- Profile Avatar with badge -->
+    <div class="profile-badge-avatar" title="{{ user.username|default:'User' }}">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+      </svg>
+      <span class="notification-count-badge">3</span>
     </div>
+  </div>
 
-    <!-- Right: Temple Artwork Card (Mockup Screen 6) -->
-    <div class="profile-right-heritage-card">
-      <img src="/static/tamizh-payanam/images/hero.jpg" alt="Tamil Nadu Heritage" class="heritage-temple-bg" onerror="this.src='/static/images/hero_highway.png'">
+  <!-- Menu Card matching exact image items -->
+  <div class="profile-menu-card">
+    <div class="menu-list-wrap">
       
-      <div class="heritage-content-box">
-        <div class="vanakkam-script">
-          Vanakkam<br>Tamil Nadu
+      <!-- 1. Your rides -->
+      <a href="/rides/my-rides/" class="menu-item-row">
+        <div class="menu-item-left">
+          <div class="menu-item-icon">
+            <!-- Road / Carpool Two Curves Icon -->
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 20a6 6 0 0 0-6-6 6 6 0 0 0-6 6"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </div>
+          <span>Your rides</span>
         </div>
-        <p style="font-size: 14.5px; color: #78350F; font-weight: 600; margin: 0; line-height: 1.5;">
-          Connecting all 38 districts with community trust, comfort, and shared stories.
-        </p>
-      </div>
-    </div>
+        <span class="menu-item-chevron">&rsaquo;</span>
+      </a>
 
+      <!-- 2. Inbox (3) -->
+      <a href="/support/help/" class="menu-item-row">
+        <div class="menu-item-left">
+          <div class="menu-item-icon">
+            <!-- Chat bubble Icon -->
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </div>
+          <span>Inbox <span class="inbox-pill-count">3</span></span>
+        </div>
+        <span class="menu-item-chevron">&rsaquo;</span>
+      </a>
+
+      <!-- 3. Profile -->
+      <a href="/accounts/profile/" class="menu-item-row">
+        <div class="menu-item-left">
+          <div class="menu-item-icon">
+            <!-- User in circle Icon -->
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <circle cx="12" cy="10" r="3"></circle>
+              <path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662"></path>
+            </svg>
+          </div>
+          <span>Profile</span>
+        </div>
+        <span class="menu-item-chevron">&rsaquo;</span>
+      </a>
+
+      <!-- 4. Transfers -->
+      <a href="/payments/history/" class="menu-item-row">
+        <div class="menu-item-left">
+          <div class="menu-item-icon">
+            <!-- Two coins / Transfers Icon -->
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+              <circle cx="12" cy="12" r="2"></circle>
+              <path d="M6 12h.01M18 12h.01"></path>
+            </svg>
+          </div>
+          <span>Transfers</span>
+        </div>
+        <span class="menu-item-chevron">&rsaquo;</span>
+      </a>
+
+      <!-- 5. Payments & refunds -->
+      <a href="/payments/history/" class="menu-item-row">
+        <div class="menu-item-left">
+          <div class="menu-item-icon">
+            <!-- Bank / Pillars Icon -->
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 21h18M3 10h18M5 10v11M19 10v11M9 10v11M15 10v11M12 3l9 7H3l9-7z"></path>
+            </svg>
+          </div>
+          <span>Payments &amp; refunds</span>
+        </div>
+        <span class="menu-item-chevron">&rsaquo;</span>
+      </a>
+
+      <!-- 6. Log out -->
+      <a href="/accounts/logout/" class="menu-item-row">
+        <div class="menu-item-left">
+          <div class="menu-item-icon">
+            <!-- Circle with X Icon -->
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="15" y1="9" x2="9" y2="15"></line>
+              <line x1="9" y1="9" x2="15" y2="15"></line>
+            </svg>
+          </div>
+          <span>Log out</span>
+        </div>
+        <span class="menu-item-chevron">&rsaquo;</span>
+      </a>
+
+    </div>
   </div>
 
 </div>

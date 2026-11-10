@@ -70,6 +70,9 @@ def explore_map_view(request):
 
 def my_rides_view(request):
     tab = request.GET.get('tab', 'upcoming')
+    # Support 'past' as synonym for 'completed'
+    if tab == 'past':
+        tab = 'completed'
     
     # Exclude all dummy/seeded rides: Only show real rides published by users (which contain driver credentials and ride features)
     all_rides = Ride.objects.filter(notes__contains='Features:').order_by('-id')
@@ -81,12 +84,13 @@ def my_rides_view(request):
         if user_rides.exists():
             all_rides = user_rides
     
-    if tab == 'completed':
+    if tab in ['completed', 'past']:
         rides = all_rides.filter(status='completed')
     elif tab == 'cancelled':
         rides = all_rides.filter(status='cancelled')
     else:
         # upcoming / active / published / pending
+        tab = 'upcoming'
         rides = all_rides.filter(status__in=['published', 'pending', 'active', 'fully_booked'])
         
     cancelled_param = request.GET.get('cancelled') == '1'
