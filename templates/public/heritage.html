@@ -260,6 +260,167 @@
   }
 
   /* Books Grid */
+  /* Daily Chapter & Daily Kural with Story */
+  .daily-kural-container {
+    background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 50%, #FDE68A 100%);
+    border: 2px solid #F59E0B;
+    border-radius: 20px;
+    padding: 24px 28px;
+    margin-bottom: 28px;
+    box-shadow: 0 10px 25px rgba(245, 158, 11, 0.15);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .daily-kural-container::before {
+    content: "\1F4DC";
+    position: absolute;
+    right: 20px;
+    bottom: -15px;
+    font-size: 110px;
+    opacity: 0.12;
+    pointer-events: none;
+  }
+
+  .daily-kural-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .daily-badge-tag {
+    background: #78350F;
+    color: #FEF3C7;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .daily-nav-btns {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-kural-nav {
+    background: #ffffff;
+    border: 1px solid #D97706;
+    color: #92400E;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .btn-kural-nav:hover {
+    background: #D97706;
+    color: #ffffff;
+  }
+
+  .kural-quote-card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 18px 22px;
+    border-left: 5px solid #D97706;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 12px rgba(180, 83, 9, 0.08);
+  }
+
+  .kural-verse-text {
+    font-family: 'Noto Sans Tamil', 'Plus Jakarta Sans', Georgia, serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: #451A03;
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+
+  .kural-meaning-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed #E5E7EB;
+  }
+
+  @media (max-width: 768px) {
+    .kural-meaning-box { grid-template-columns: 1fr; }
+  }
+
+  .meaning-item-tamil {
+    font-size: 13.5px;
+    color: #78350F;
+    line-height: 1.55;
+  }
+
+  .meaning-item-english {
+    font-size: 13.5px;
+    color: #4B5563;
+    line-height: 1.55;
+    font-style: italic;
+  }
+
+  /* Story Illustration Box */
+  .kural-story-box {
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 14px;
+    padding: 16px 20px;
+    border: 1px solid #FCD34D;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .story-icon-bulb {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #FDE68A;
+    color: #B45309;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .story-title {
+    font-size: 14.5px;
+    font-weight: 800;
+    color: #78350F;
+    margin: 0 0 6px;
+  }
+
+  .story-desc {
+    font-size: 13px;
+    color: #451A03;
+    line-height: 1.6;
+    margin: 0 0 8px;
+  }
+
+  .story-lesson-badge {
+    display: inline-block;
+    background: #FEF3C7;
+    border: 1px solid #F59E0B;
+    color: #92400E;
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 6px;
+  }
+
   .books-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
@@ -579,7 +740,168 @@
       align-items: flex-start;
     }
     .heritage-hero h1 { font-size: 28px; }
-    .books-grid { grid-template-columns: 1fr; }
+    /* Daily Chapter & Daily Kural with Story */
+  .daily-kural-container {
+    background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 50%, #FDE68A 100%);
+    border: 2px solid #F59E0B;
+    border-radius: 20px;
+    padding: 24px 28px;
+    margin-bottom: 28px;
+    box-shadow: 0 10px 25px rgba(245, 158, 11, 0.15);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .daily-kural-container::before {
+    content: "\1F4DC";
+    position: absolute;
+    right: 20px;
+    bottom: -15px;
+    font-size: 110px;
+    opacity: 0.12;
+    pointer-events: none;
+  }
+
+  .daily-kural-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .daily-badge-tag {
+    background: #78350F;
+    color: #FEF3C7;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .daily-nav-btns {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-kural-nav {
+    background: #ffffff;
+    border: 1px solid #D97706;
+    color: #92400E;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .btn-kural-nav:hover {
+    background: #D97706;
+    color: #ffffff;
+  }
+
+  .kural-quote-card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 18px 22px;
+    border-left: 5px solid #D97706;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 12px rgba(180, 83, 9, 0.08);
+  }
+
+  .kural-verse-text {
+    font-family: 'Noto Sans Tamil', 'Plus Jakarta Sans', Georgia, serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: #451A03;
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+
+  .kural-meaning-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed #E5E7EB;
+  }
+
+  @media (max-width: 768px) {
+    .kural-meaning-box { grid-template-columns: 1fr; }
+  }
+
+  .meaning-item-tamil {
+    font-size: 13.5px;
+    color: #78350F;
+    line-height: 1.55;
+  }
+
+  .meaning-item-english {
+    font-size: 13.5px;
+    color: #4B5563;
+    line-height: 1.55;
+    font-style: italic;
+  }
+
+  /* Story Illustration Box */
+  .kural-story-box {
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 14px;
+    padding: 16px 20px;
+    border: 1px solid #FCD34D;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .story-icon-bulb {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #FDE68A;
+    color: #B45309;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .story-title {
+    font-size: 14.5px;
+    font-weight: 800;
+    color: #78350F;
+    margin: 0 0 6px;
+  }
+
+  .story-desc {
+    font-size: 13px;
+    color: #451A03;
+    line-height: 1.6;
+    margin: 0 0 8px;
+  }
+
+  .story-lesson-badge {
+    display: inline-block;
+    background: #FEF3C7;
+    border: 1px solid #F59E0B;
+    color: #92400E;
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 6px;
+  }
+
+  .books-grid { grid-template-columns: 1fr; }
     .study-modal-box { padding: 20px; }
   }
 </style>
@@ -639,6 +961,57 @@
     <div class="subtitles-teleprompter" id="subtitlesBox">
       <span class="sub-badge">Subtitle Audio</span>
       <span id="subtitleText">அகர முதல எழுத்தெல்லாம் ஆதி பகவன் முதற்றே உலகு — As the letter 'A' is the first of all letters, so is the Eternal God first in the world.</span>
+    </div>
+  </div>
+
+  <!-- DAILY KURAL & INSPIRATIONAL STORY ISLAND -->
+  <div class="daily-kural-container" id="dailyKuralIsland">
+    <div class="daily-kural-header">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span class="daily-badge-tag">&#127775; Daily Kural with Story &bull; தினமும் ஒரு குறளும் கதையும்</span>
+        <span style="font-size: 12.5px; font-weight: 700; color: #92400E;" id="kuralDayLabel">Today's Wisdom</span>
+      </div>
+      
+      <div class="daily-nav-btns">
+        <button type="button" class="btn-kural-nav" onclick="changeDailyKural(-1)">&larr; Previous</button>
+        <button type="button" class="btn-kural-nav" onclick="playDailyKuralAudio()">&#9654; Listen Subtitle Audio</button>
+        <button type="button" class="btn-kural-nav" onclick="changeDailyKural(1)">Next &rarr;</button>
+      </div>
+    </div>
+
+    <!-- Verse Quote Card -->
+    <div class="kural-quote-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+        <span style="font-size: 12px; font-weight: 800; color: #D97706; text-transform: uppercase;" id="kuralNoBadge">&#2965;&#3009;&#2993;&#2995;&#3021; 1</span>
+        <span style="font-size: 11.5px; color: #9CA3AF;">Thirukkural &bull; Universal Living</span>
+      </div>
+
+      <div class="kural-verse-text" id="dailyKuralTamilText">
+        &#2949;&#2965;&#2992; &#2990;&#3009;&#2984;&#2994; &#2987;&#2996;&#3009;&#2984;&#3021;&#2984;&#3014;&#2994;&#3021;&#2994;&#3006;&#2990;&#3021; &#2966;&#2984;&#3007;<br>&#2986;&#2965;&#2997;&#2985;&#3021; &#2990;&#3009;&#2984;&#2993;&#3021;&#2993;&#3015; &#2989;&#2994;&#2965;&#3009;.
+      </div>
+
+      <div class="kural-meaning-box">
+        <div class="meaning-item-tamil">
+          <strong style="color: #451A03; display: block; margin-bottom: 2px;">&#2980;&#2990;&#3007;&#2996;&#3021; &#2997;&#3007;&#2995;&#2965;&#3021;&#2965;&#2990;&#3021;:</strong>
+          <span id="dailyKuralMeaningTamil">&#2984;&#2996;&#3009;&#2980;&#3021;&#2980;&#3009;&#2965;&#3021;&#2965;&#2995;&#3021; &#2984;&#2994;&#3021;&#2994;&#3006;&#2990;&#3021; '&#2949;' &#2985;&#2989;&#3021;&#2985;&#3009;&#2990;&#3021; &#2984;&#2996;&#3009;&#2980;&#3021;&#2984;&#3016; &#2990;&#3009;&#2984;&#2994;&#3006;&#2965;&#2965;&#3021; &#2965;&#3018;&#2979;&#3021;&#2975;&#3009; &#2980;&#3018;&#2975;&#2994;&#3009;&#2965;&#3007;&#2985;&#3021;&#2993;&#2985;...</span>
+        </div>
+        <div class="meaning-item-english">
+          <strong style="color: #1F2937; display: block; margin-bottom: 2px;">English Meaning:</strong>
+          <span id="dailyKuralMeaningEnglish">As the letter 'A' is the first of all letters, so the Eternal Divine leads this world.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Example Story for Practical Engagement -->
+    <div class="kural-story-box">
+      <div class="story-icon-bulb">&#128161;</div>
+      <div style="flex: 1;">
+        <h4 class="story-title" id="dailyStoryTitle">&#10024; Real-Life Story: The Weaver's Sacred Beginning</h4>
+        <p class="story-desc" id="dailyStoryContent">
+          In an ancient Tamil handloom village along the Kaveri, a master weaver taught his son never to lay the shuttle until the lead thread was set true. Just as every exquisite silk saree draws its strength from the first foundational thread, every action and human connection starts with reverence for the prime source.
+        </p>
+        <span class="story-lesson-badge" id="dailyStoryLesson">&#128204; Moral: Every noble journey starts with humility and a sacred foundation.</span>
+      </div>
     </div>
   </div>
 
@@ -1162,6 +1535,111 @@
       if (discIcon) discIcon.classList.remove('playing');
     }
   }
+
+  
+  // Daily Kurals with Engaging Real-life Stories
+  const dailyKuralData = [
+    {
+      day: "Today's Kural",
+      no: 1,
+      noText: "குறள் 1 (கடவுள் வாழ்த்து)",
+      tamil: "அகர முதல எழுத்தெல்லாம் ஆதி\nபகவன் முதற்றே உலகு.",
+      meaningTamil: "எழுத்துக்கள் எல்லாம் 'அ' என்னும் எழுத்தை முதலாகக் கொண்டு தொடங்குகின்றன; அதுபோல உலகம் ஆதிபகவனாகிய முழுமுதற் கடவுளை முதலாகக் கொண்டு இயங்குகிறது.",
+      meaningEnglish: "As the letter 'A' is the first and foundation of all alphabets, so the Supreme Divine is the eternal origin of this vast universe.",
+      storyTitle: "The Weaver's Sacred Beginning (நெசவாளியின் முதல் நூல்)",
+      storyContent: "In an ancient Tamil handloom village along the Kaveri, a master weaver taught his son never to lay the shuttle until the lead thread was set true. Just as every exquisite silk saree draws its strength from the first foundational thread, every action and human connection starts with reverence for the prime source.",
+      storyLesson: "Moral: Every noble journey starts with humility and a sacred foundation."
+    },
+    {
+      day: "Kindness & Grace",
+      no: 314,
+      noText: "குறள் 314 (இன்னா செய்யாமை)",
+      tamil: "இன்னாசெய்தாரை ஒறுத்தல் அவர்நாண\nநன்னயம் செய்து விடல்.",
+      meaningTamil: "நமக்குத் தீங்கு செய்தவரைத் தண்டிக்கும் சிறந்த வழி, அவர் தம் செயலுக்கு வெட்கப்படும்படியாக அவருக்கு நன்மையைச் செய்து மறந்து விடுவதே ஆகும்.",
+      meaningEnglish: "The supreme punishment for someone who harms you is to shame them with generous kindness, and forget the malice completely.",
+      storyTitle: "The Roadside Mango Orchard (மாந்தோப்பு உழவன்)",
+      storyContent: "A farmer caught a traveler throwing stones to knock mangoes from his trees, breaking a branch. Instead of shouting, the farmer picked the ripest golden mangoes in a basket and handed them to the traveler, saying, 'A stone may give you sour fruit; kindness will always give you sweet ones.' Ashamed, the traveler bowed and tended the broken branch.",
+      storyLesson: "Moral: Respond to bitterness with grace; love turns foes into friends."
+    },
+    {
+      day: "True Companionship",
+      no: 788,
+      noText: "குறள் 788 (நட்பு)",
+      tamil: "உடுக்கை இழந்தவன் கைபோல ஆங்கே\nஇடுக்கண் களைவதாம் நட்பு.",
+      meaningTamil: "ஆடை நழுவும்போது கை உடனே சென்று மானம் காப்பது போல, நண்பனுக்குத் துன்பம் வந்த கணமே ஓடிச்சென்று உதவி செய்வதே உண்மையான நட்பு.",
+      meaningEnglish: "True friendship rushes instantly to wipe away affliction, just as the hand springs instinctively to catch slipping attire.",
+      storyTitle: "The Midnight Flat Tire on NH44 (நெடுஞ்சாலை தோழன்)",
+      storyContent: "Traveling on a stormy night between Salem and Dindigul, Selvam's car broke down in darkness. Without hesitation, his carpool companion Sundar immediately stepped into the pouring rain with a flashlight, helping jack up the wheel in minutes before Selvam could even ask.",
+      storyLesson: "Moral: Real companions act before words are even spoken."
+    },
+    {
+      day: "Perseverance & Hard Work",
+      no: 619,
+      noText: "குறள் 619 (ஆள்வினை உடைமை)",
+      tamil: "தெய்வத்தான் ஆகா தெனினும் முயற்சிதன்\nமெய்வருத்தக் கூலி தரும்.",
+      meaningTamil: "விதியின் வலிமையால் ஒரு காரியம் முடியாது என்றாலும், விடாமுயற்சியோடு தன் உடல் வருந்தி உழைக்கும் உழைப்பானது அதற்குரிய பலனை நிச்சயமாகத் தரும்.",
+      meaningEnglish: "Though destiny may decree a task impossible, persistent labor that strains body and soul will surely yield its rightful reward.",
+      storyTitle: "The Mountain Road Sculptor (பாறை செதுக்கிய தொழிலாளி)",
+      storyContent: "Villagers in the Kolli Hills were cut off from hospitals by a steep rocky slope. When contractors gave up, an elderly stonemason began chiseling the boulder daily with a small hammer. After four years of steady daily blows, a safe pathway opened, saving hundreds of lives.",
+      storyLesson: "Moral: Tireless dedication conquers what destiny thought impossible."
+    }
+  ];
+
+  let currentDailyKuralIndex = 0;
+
+  function renderDailyKuralUI() {
+    const kural = dailyKuralData[currentDailyKuralIndex];
+    if (!kural) return;
+
+    document.getElementById('kuralDayLabel').innerText = kural.day;
+    document.getElementById('kuralNoBadge').innerText = kural.noText;
+    document.getElementById('dailyKuralTamilText').innerHTML = kural.tamil.replace(/\n/g, '<br>');
+    document.getElementById('dailyKuralMeaningTamil').innerText = kural.meaningTamil;
+    document.getElementById('dailyKuralMeaningEnglish').innerText = kural.meaningEnglish;
+    document.getElementById('dailyStoryTitle').innerText = "✨ Real-Life Story: " + kural.storyTitle;
+    document.getElementById('dailyStoryContent').innerText = kural.storyContent;
+    document.getElementById('dailyStoryLesson').innerText = "📌 " + kural.storyLesson;
+  }
+
+  function changeDailyKural(delta) {
+    currentDailyKuralIndex = (currentDailyKuralIndex + delta + dailyKuralData.length) % dailyKuralData.length;
+    renderDailyKuralUI();
+  }
+
+  function playDailyKuralAudio() {
+    const kural = dailyKuralData[currentDailyKuralIndex];
+    if (!kural || !synth) return;
+
+    synth.cancel();
+    document.getElementById('currentTrackTitle').innerText = "Thirukkural " + kural.noText;
+    document.getElementById('currentTrackSub').innerText = kural.meaningEnglish;
+
+    const fullAudioText = `${kural.tamil.replace(/\n/g, ' ')}. ${kural.meaningEnglish}. Story lesson: ${kural.storyLesson}`;
+    const subText = `${kural.tamil.replace(/\n/g, ' ')} — ${kural.meaningEnglish}`;
+    document.getElementById('subtitleText').innerText = subText;
+
+    // Scroll to player
+    document.getElementById('audioMasterIsland').scrollIntoView({ behavior: 'smooth' });
+
+    speechUtterance = new SpeechSynthesisUtterance(fullAudioText);
+    speechUtterance.rate = 0.92;
+    speechUtterance.pitch = 1.0;
+
+    const voices = synth.getVoices();
+    const tamilVoice = voices.find(v => v.lang.includes('ta') || v.lang.includes('en-IN') || v.name.includes('India'));
+    if (tamilVoice) speechUtterance.voice = tamilVoice;
+
+    speechUtterance.onstart = () => setPlayStateUI(true);
+    speechUtterance.onend = () => setPlayStateUI(false);
+    speechUtterance.onerror = () => setPlayStateUI(false);
+
+    synth.speak(speechUtterance);
+  }
+
+  // Auto initialize on load
+  document.addEventListener('DOMContentLoaded', () => {
+    renderDailyKuralUI();
+  });
 
   // Pre-load available voices
   if (synth && synth.onvoiceschanged !== undefined) {
