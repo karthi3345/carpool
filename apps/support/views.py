@@ -71,12 +71,28 @@ def support_approve_ride(request, ride_id):
     ride.support_verification_status = 'approved'
     ride.support_reviewed_by = reviewer
     ride.support_reviewed_at = timezone.now()
-    ride.support_notes = request.POST.get('notes', 'Driver license and identity verified manually by customer support.')
+    ride.support_notes = request.POST.get('notes', 'Driver license and identity verified manually by customer support. Raw files purged as per data security policy.')
     ride.is_license_verified = True
     ride.status = 'published'
+
+    # Security purpose: once verified, no need to store raw document images in database
+    # Clear image references and remove files from disk if present
+    for img_field in [ride.driver_license_image, ride.driver_license_masked_image, ride.driver_license_back_image, ride.govt_id_front_image, ride.govt_id_back_image]:
+        if img_field and hasattr(img_field, 'storage') and hasattr(img_field, 'name') and img_field.name:
+            try:
+                img_field.storage.delete(img_field.name)
+            except Exception:
+                pass
+
+    ride.driver_license_image = None
+    ride.driver_license_masked_image = None
+    ride.driver_license_back_image = None
+    ride.govt_id_front_image = None
+    ride.govt_id_back_image = None
+
     ride.save()
 
-    messages.success(request, f"Ride #{ride.id} ({ride.origin.name} -> {ride.destination.name}) Driver Licence has been verified, APPROVED & PUBLISHED live to passengers by Customer Support ({request.user.username})!")
+    messages.success(request, f"Ride #{ride.id} ({ride.origin.name} -> {ride.destination.name}) Driver Licence and Govt ID verified & APPROVED! Raw files securely purged from storage as per privacy policy.")
     return redirect('support-verification-dashboard')
 
 

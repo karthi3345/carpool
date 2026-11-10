@@ -765,57 +765,40 @@
           </div>
         </div>
 
-        <!-- 4 Verified Document Upload Slots: DL Front/Back & Govt ID Front/Back -->
+        <!-- 2 Verified Document Upload Slots: Driving Licence & Government ID Proof -->
         <div id="document_upload_container" style="background: #F8FAFC; border: 1.5px solid #E2E8F0; border-radius: 16px; padding: 20px; margin-bottom: 22px;">
           <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
             <div style="font-size: 13.5px; font-weight: 800; color: #1E293B; display: flex; align-items: center; gap: 8px;">
-              <span>📁</span> Driver Verification Documents (Mandatory for Support Approval)
+              <span>📁</span> Driver Verification Documents (Govt ID &amp; Driving Licence)
             </div>
-            <span style="font-size: 11.5px; background: #E8F5EE; color: #087443; padding: 3px 10px; border-radius: 20px; font-weight: 700;">🔒 256-Bit Encrypted</span>
+            <span style="font-size: 11.5px; background: #E8F5EE; color: #087443; padding: 3px 10px; border-radius: 20px; font-weight: 700;">🔒 Privacy Protected</span>
           </div>
 
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px;">
             
-            <!-- Slot 1: DL Front -->
+            <!-- Slot 1: Driving Licence (Front) -->
             <div style="background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 12px; padding: 14px;">
-              <label style="font-size: 12px; font-weight: 800; color: #0F172A; display: block; margin-bottom: 4px;">
-                🚗 Driving Licence (Front)
+              <label style="font-size: 12.5px; font-weight: 800; color: #0F172A; display: block; margin-bottom: 4px;">
+                🚗 Driving Licence Photo
               </label>
-              <span style="font-size: 11px; color: #64748B; display: block; margin-bottom: 8px;">Clear photo showing DL Number &amp; Expiry</span>
+              <span style="font-size: 11px; color: #64748B; display: block; margin-bottom: 8px;">Upload photo of your driving licence for support inspection</span>
               <input type="file" name="driver_license_file" class="field-input-clean" style="font-size: 12px; padding: 6px 0;" accept="image/*,.pdf">
             </div>
 
-            <!-- Slot 2: DL Back -->
+            <!-- Slot 2: Govt ID Proof (Aadhaar / Voter ID / Passport) -->
             <div style="background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 12px; padding: 14px;">
-              <label style="font-size: 12px; font-weight: 800; color: #0F172A; display: block; margin-bottom: 4px;">
-                🚗 Driving Licence (Back)
+              <label style="font-size: 12.5px; font-weight: 800; color: #0F172A; display: block; margin-bottom: 4px;">
+                🪪 Government ID Proof
               </label>
-              <span style="font-size: 11px; color: #64748B; display: block; margin-bottom: 8px;">Back side showing RTO address &amp; classes</span>
-              <input type="file" name="driver_license_back_file" class="field-input-clean" style="font-size: 12px; padding: 6px 0;" accept="image/*,.pdf">
-            </div>
-
-            <!-- Slot 3: Govt ID Front -->
-            <div style="background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 12px; padding: 14px;">
-              <label style="font-size: 12px; font-weight: 800; color: #0F172A; display: block; margin-bottom: 4px;">
-                🪪 Government ID (Front)
-              </label>
-              <span style="font-size: 11px; color: #64748B; display: block; margin-bottom: 8px;">Aadhaar / Voter ID / Passport front side</span>
+              <span style="font-size: 11px; color: #64748B; display: block; margin-bottom: 8px;">Aadhaar card / Voter ID / Passport (Single document is enough)</span>
               <input type="file" name="govt_id_front_file" class="field-input-clean" style="font-size: 12px; padding: 6px 0;" accept="image/*,.pdf">
             </div>
 
-            <!-- Slot 4: Govt ID Back -->
-            <div style="background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 12px; padding: 14px;">
-              <label style="font-size: 12px; font-weight: 800; color: #0F172A; display: block; margin-bottom: 4px;">
-                🪪 Government ID (Back)
-              </label>
-              <span style="font-size: 11px; color: #64748B; display: block; margin-bottom: 8px;">Aadhaar / Voter ID back side with address</span>
-              <input type="file" name="govt_id_back_file" class="field-input-clean" style="font-size: 12px; padding: 6px 0;" accept="image/*,.pdf">
-            </div>
-
           </div>
-          <small style="color: #64748B; font-size: 11px; margin-top: 10px; display: block;">
-            All 4 document sides are securely audited by our Customer Support officers prior to making your ride live.
-          </small>
+          <div style="background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 8px; padding: 10px 14px; margin-top: 12px; font-size: 11.5px; color: #1E40AF; display: flex; align-items: center; gap: 8px;">
+            <span>🛡️</span>
+            <span><b>Security Notice:</b> Customer Support inspects your Driving Licence and Govt ID for driver verification. Once verified, files are securely deleted from database storage for maximum user privacy.</span>
+          </div>
         </div>
 
         <!-- SECTION 3: ALLOWED AMENITIES -->
