@@ -117,6 +117,12 @@
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.500a2.500 2.500 0 1 1 0-5 2.500 2.500 0 0 1 0 5z"/></svg>
       <div><label for="from">From</label><input id="from" name="from_city" list="cities" placeholder="Enter departure city" required></div>
     </div>
+    <!-- Interactive Swap Cities Button (Chennai <-> Madurai) -->
+    <button type="button" id="swap-home-cities-btn" title="Swap departure and destination" style="background: #F1F5F9; border: 1.5px solid #CBD5E1; border-radius: 50%; width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #0066FF; transition: all 0.2s ease; margin: auto -12px; z-index: 10; padding: 0; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.06);">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M7 16V4M7 4L3 8M7 4L11 8M17 8V20M17 20L21 16M17 20L13 16"/>
+      </svg>
+    </button>
     <div class="field">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.500a2.500 2.500 0 1 1 0-5 2.500 2.500 0 0 1 0 5z"/></svg>
       <div><label for="to">To</label><input id="to" name="to_city" list="cities" placeholder="Enter destination" required></div>
@@ -230,6 +236,23 @@ $('#search').addEventListener('submit', e => {
   }
   // Let form submit normally to /rides/search/?from_city=...&to_city=...&date=...&passengers=...
 });
+
+/* swap cities button */
+const swapHomeBtn = document.getElementById('swap-home-cities-btn');
+if (swapHomeBtn) {
+  swapHomeBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    const fromEl = document.getElementById('from');
+    const toEl = document.getElementById('to');
+    if (fromEl && toEl) {
+      const temp = fromEl.value;
+      fromEl.value = toEl.value;
+      toEl.value = temp;
+      this.style.transform = 'rotate(180deg)';
+      setTimeout(() => { this.style.transform = 'none'; }, 250);
+    }
+  });
+}
 
 /* placeholder actions – connect to your routes */
 const labels = {login:'Login', register:'Register', publish:'Publish a Ride', heritage:'Our Heritage', explore:'Explore Tamil Nadu', help:'Help'};
