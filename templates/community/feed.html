@@ -208,22 +208,164 @@
   .reels-feed-stream {
     display: flex;
     flex-direction: column;
-    gap: 26px;
+    gap: 30px;
     align-items: center;
+  }
+
+  /* Upload Reel Banner Bar */
+  .reel-upload-banner {
+    width: 100%;
+    max-width: 440px;
+    background: #111827;
+    border: 1.5px dashed #374151;
+    border-radius: 16px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    color: #ffffff;
+    box-sizing: border-box;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+
+  .reel-upload-banner:hover {
+    border-color: #e11d48;
+  }
+
+  .btn-open-reel-modal {
+    background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
+    color: #ffffff;
+    font-size: 13.5px;
+    font-weight: 800;
+    padding: 9px 18px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 12px rgba(225, 29, 72, 0.4);
+    transition: transform 0.15s ease;
+  }
+
+  .btn-open-reel-modal:hover {
+    transform: scale(1.04);
+  }
+
+  /* Reel Upload Modal */
+  .reel-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+
+  .reel-modal-overlay.open {
+    display: flex;
+  }
+
+  .reel-modal-box {
+    background: #18191a;
+    color: #e4e6eb;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 480px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 24px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    border: 1px solid #2d3748;
+    position: relative;
+  }
+
+  .reel-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #2d3748;
+    margin-bottom: 18px;
+  }
+
+  .reel-modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 800;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .reel-modal-close-btn {
+    background: #242526;
+    border: none;
+    color: #b0b3b8;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  .reel-modal-close-btn:hover {
+    background: #3a3b3c;
+    color: #ffffff;
+  }
+
+  .reel-form-group {
+    margin-bottom: 14px;
+  }
+
+  .reel-form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #94a3b8;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .reel-form-input, .reel-form-textarea {
+    width: 100%;
+    background: #242526;
+    border: 1.5px solid #3a3b3c;
+    border-radius: 10px;
+    color: #ffffff;
+    padding: 10px 14px;
+    font-size: 14px;
+    box-sizing: border-box;
+    font-family: inherit;
+    outline: none;
+  }
+
+  .reel-form-input:focus, .reel-form-textarea:focus {
+    border-color: #e11d48;
   }
 
   .reel-player-card {
     background: #000000;
-    border-radius: 18px;
+    border-radius: 20px;
     width: 100%;
     max-width: 440px;
     height: 680px;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.45);
     display: flex;
     align-items: center;
     justify-content: center;
+    border: 1px solid #1a1a1a;
   }
 
   .reel-video-element {
@@ -237,74 +379,88 @@
     position: absolute;
     top: 18px;
     right: 18px;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0,0,0,0.65);
     color: #ffffff;
-    border: none;
+    border: 1.5px solid rgba(255,255,255,0.2);
     border-radius: 50%;
-    width: 38px;
-    height: 38px;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 18px;
     z-index: 10;
     backdrop-filter: blur(8px);
-    transition: transform 0.2s ease;
+    transition: transform 0.2s ease, background 0.2s ease;
   }
 
   .reel-sound-toggle-btn:hover {
     transform: scale(1.1);
+    background: rgba(0,0,0,0.85);
   }
 
-  /* Reel Right Actions Bar (Instagram / TikTok style: Like, Comment, Sound icon) */
+  /* Reel Right Actions Bar matching user screenshot media_1794285515845_478365dd.png */
   .reel-side-actions {
     position: absolute;
-    right: 14px;
+    right: 16px;
     bottom: 90px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 18px;
+    gap: 16px;
     z-index: 10;
   }
 
   .reel-side-btn {
-    background: rgba(255, 255, 255, 0.18);
-    backdrop-filter: blur(8px);
+    background: #2a2b2e;
     border: none;
     color: #ffffff;
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
+    font-size: 22px;
     cursor: pointer;
     transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+
+  .reel-side-btn.btn-heart {
+    color: #ef4444;
+  }
+
+  .reel-side-btn.btn-chat {
+    color: #cbd5e1;
+  }
+
+  .reel-side-btn.btn-share {
+    background: #2563eb;
+    color: #ffffff;
   }
 
   .reel-side-btn:hover {
-    background: rgba(255, 255, 255, 0.35);
     transform: scale(1.1);
   }
 
   .reel-side-count {
     color: #ffffff;
-    font-size: 12px;
-    font-weight: 700;
-    text-shadow: 0 1px 4px rgba(0,0,0,0.8);
-    margin-top: 3px;
+    font-size: 13px;
+    font-weight: 800;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+    margin-top: 4px;
+    text-align: center;
   }
 
-  /* Reel Bottom Caption & Rotating Sound Bar */
+  /* Reel Bottom Caption & Rotating Sound Bar matching reference */
   .reel-bottom-info {
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
-    background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.88) 100%);
+    background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.92) 100%);
     padding: 30px 20px 20px;
     color: #ffffff;
     z-index: 5;
@@ -320,16 +476,18 @@
   }
 
   .reel-author-avatar {
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     background: #0070e0;
     color: #ffffff;
     font-weight: 800;
+    font-size: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1.5px solid #ffffff;
+    border: 2px solid #ffffff;
+    flex-shrink: 0;
   }
 
   .reel-author-name {
@@ -339,17 +497,17 @@
   }
 
   .reel-route-pill {
-    background: rgba(0, 112, 224, 0.85);
+    background: #0070e0;
     color: #ffffff;
     font-size: 11px;
     font-weight: 700;
-    padding: 2px 8px;
+    padding: 3px 10px;
     border-radius: 999px;
   }
 
   .reel-caption-text {
     font-size: 13.5px;
-    line-height: 1.4;
+    line-height: 1.45;
     color: #f1f5f9;
     margin-bottom: 8px;
     pointer-events: auto;
@@ -794,13 +952,18 @@
     <div class="reels-carousel-card">
       <div class="reels-carousel-header">
         <h3><span>🎥</span> Tamil Nadu Travel Reels</h3>
-        <a href="/community/?tab=reels" style="color: #1877f2; font-size: 13px; font-weight: 700; text-decoration: none;">Watch all &rsaquo;</a>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <button type="button" onclick="openReelModal()" style="background: #1877f2; color: #ffffff; border: none; font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 999px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+            <span>+</span> Upload Reel
+          </button>
+          <a href="/community/?tab=reels" style="color: #1877f2; font-size: 13px; font-weight: 700; text-decoration: none;">Watch all &rsaquo;</a>
+        </div>
       </div>
 
       <div class="reels-scroll-row">
         {% for reel in reels %}
           <div class="reel-thumb-card" onclick="location.href='/community/?tab=reels#reel-{{ reel.id }}'">
-            <video class="reel-thumb-video" src="{{ reel.video_url }}" muted playsinline preload="metadata"></video>
+            <video class="reel-thumb-video" src="{{ reel.get_video_src }}" muted playsinline preload="metadata"></video>
             <div class="reel-thumb-overlay">
               <span class="reel-thumb-play-icon">▶</span>
               <div>
@@ -817,10 +980,27 @@
   <!-- VIEW 1: DEDICATED REELS STREAM WITH SOUND -->
   {% if current_tab == 'reels' %}
     <div class="reels-feed-stream">
+
+      <!-- Customer Upload Reel Action Card -->
+      <div class="reel-upload-banner">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 42px; height: 42px; border-radius: 50%; background: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+            🎬
+          </div>
+          <div>
+            <div style="font-weight: 800; font-size: 15px; color: #ffffff;">Create a Travel Reel</div>
+            <div style="font-size: 12px; color: #9ca3af;">Share your road trip video & highway sounds</div>
+          </div>
+        </div>
+        <button type="button" class="btn-open-reel-modal" onclick="openReelModal()">
+          <span>+</span> Upload Reel
+        </button>
+      </div>
+
       {% for reel in reels %}
         <div class="reel-player-card" id="reel-{{ reel.id }}">
           
-          <!-- Sound Toggle Button (Mute / Unmute) -->
+          <!-- Sound Toggle Button (Mute / Unmute) matching reference image -->
           <button type="button" class="reel-sound-toggle-btn" onclick="toggleReelAudio({{ reel.id }})" id="sound-btn-{{ reel.id }}" title="Toggle Sound">
             🔊
           </button>
@@ -829,58 +1009,58 @@
           <video 
             id="video-player-{{ reel.id }}"
             class="reel-video-element" 
-            src="{{ reel.video_url }}" 
+            src="{{ reel.get_video_src }}" 
             loop 
             playsinline 
             onclick="togglePlayPause({{ reel.id }})">
           </video>
 
-          <!-- Side Interaction Actions (Like, Comment, Share) -->
+          <!-- Side Interaction Actions (Like, Comment, Share) matching user screenshot -->
           <div class="reel-side-actions">
-            <!-- Reel Like -->
+            <!-- Reel Like (Circular heart icon with count) -->
             <div style="display: flex; flex-direction: column; align-items: center;">
-              <button type="button" class="reel-side-btn" onclick="likeReel({{ reel.id }})" id="reel-like-btn-{{ reel.id }}" title="Like Reel">
+              <button type="button" class="reel-side-btn btn-heart" onclick="likeReel({{ reel.id }})" id="reel-like-btn-{{ reel.id }}" title="Like Reel">
                 ❤️
               </button>
               <span class="reel-side-count" id="reel-likes-{{ reel.id }}">{{ reel.likes_count }}</span>
             </div>
 
-            <!-- Reel Comments count -->
+            <!-- Reel Comments (Circular chat icon with count) -->
             <div style="display: flex; flex-direction: column; align-items: center;">
-              <button type="button" class="reel-side-btn" title="Comments">
+              <button type="button" class="reel-side-btn btn-chat" title="Comments">
                 💬
               </button>
               <span class="reel-side-count">{{ reel.comments_count }}</span>
             </div>
 
-            <!-- Reel Share -->
+            <!-- Reel Share (Blue circle with share arrow & 'Share' text) -->
             <div style="display: flex; flex-direction: column; align-items: center;">
-              <button type="button" class="reel-side-btn" onclick="shareReel({{ reel.id }})" title="Share">
-                ↗️
+              <button type="button" class="reel-side-btn btn-share" onclick="shareReel({{ reel.id }})" title="Share">
+                ↗
               </button>
-              <span class="reel-side-count">Share</span>
+              <span class="reel-side-count" style="font-size: 11px; text-transform: capitalize;">Share</span>
             </div>
           </div>
 
-          <!-- Bottom Meta & Highway Sound Track Bar -->
+          <!-- Bottom Meta & Highway Sound Track Bar matching reference -->
           <div class="reel-bottom-info">
             <div class="reel-author-tag">
               <div class="reel-author-avatar">{{ reel.creator_name|slice:":1"|upper }}</div>
-              <div>
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                 <span class="reel-author-name">{{ reel.creator_name }}</span>
                 <span class="reel-route-pill">{{ reel.route_tag }}</span>
               </div>
             </div>
 
             <div class="reel-caption-text">
-              <strong>{{ reel.title }}</strong><br>
-              {{ reel.description }}
+              <strong style="color: #ffffff; display: block; font-size: 14.5px; margin-bottom: 2px;">{{ reel.title }}</strong>
+              <span style="color: #cbd5e1;">{{ reel.description }}</span>
             </div>
 
             <!-- Audio Track Badge -->
             <div class="reel-sound-track-bar">
               <span class="sound-disk-rotate">💿</span>
-              <span>{{ reel.sound_title }}</span>
+              <span style="font-weight: 600;">{{ reel.sound_title }}</span>
             </div>
           </div>
 
@@ -1179,6 +1359,17 @@
     });
   }
 
+  // Customer Reel Modal Controls
+  function openReelModal() {
+    var modal = document.getElementById('reelUploadModal');
+    if (modal) modal.classList.add('open');
+  }
+
+  function closeReelModal() {
+    var modal = document.getElementById('reelUploadModal');
+    if (modal) modal.classList.remove('open');
+  }
+
   // Auto-play visible video when in Reels tab
   window.addEventListener('DOMContentLoaded', () => {
     var vids = document.querySelectorAll('.reel-video-element');
@@ -1187,4 +1378,54 @@
     }
   });
 </script>
+
+<!-- Customer Reel Upload Modal -->
+<div class="reel-modal-overlay" id="reelUploadModal" onclick="if(event.target===this) closeReelModal()">
+  <div class="reel-modal-box">
+    <div class="reel-modal-header">
+      <h3><span>🎬</span> Share a Travel Reel</h3>
+      <button type="button" class="reel-modal-close-btn" onclick="closeReelModal()">&times;</button>
+    </div>
+
+    <form action="/community/reel/create/" method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="reel-form-group">
+        <label>Reel Title *</label>
+        <input type="text" name="title" class="reel-form-input" placeholder="e.g. Kodaikanal Ghat Section Sunset Glow 🌲☁️" required />
+      </div>
+
+      <div class="reel-form-group">
+        <label>Route Tag</label>
+        <input type="text" name="route_tag" class="reel-form-input" placeholder="e.g. Batlagundu ➔ Kodaikanal" value="Chennai ➔ Madurai" />
+      </div>
+
+      <div class="reel-form-group">
+        <label>Upload Video File (.mp4, .webm, .mov)</label>
+        <input type="file" name="video_file" accept="video/mp4,video/webm,video/quicktime" class="reel-form-input" style="padding: 6px 10px;" />
+        <div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">Or paste a video link below if you don't have a file ready</div>
+      </div>
+
+      <div class="reel-form-group">
+        <label>Or Video Web URL / Path (Optional)</label>
+        <input type="text" name="video_url" class="reel-form-input" placeholder="https://example.com/video.mp4 or /static/videos/car_drive.mp4" />
+      </div>
+
+      <div class="reel-form-group">
+        <label>Background Soundtrack / Music</label>
+        <input type="text" name="sound_title" class="reel-form-input" placeholder="e.g. Ilayaraja - Chill Flute & Acoustic Beats 🎶" value="Tamil Roadtrip Beats 🎶" />
+      </div>
+
+      <div class="reel-form-group">
+        <label>Story / Description</label>
+        <textarea name="description" rows="3" class="reel-form-textarea" placeholder="Tell travelers about this stretch, scenic view, road quality, or highway pitstops..."></textarea>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+        <button type="button" onclick="closeReelModal()" style="background: transparent; color: #b0b3b8; border: 1px solid #3a3b3c; padding: 10px 18px; border-radius: 999px; font-weight: 700; cursor: pointer;">Cancel</button>
+        <button type="submit" style="background: linear-gradient(135deg, #e11d48 0%, #be123c 100%); color: #ffffff; border: none; padding: 10px 24px; border-radius: 999px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 14px rgba(225, 29, 72, 0.4);">Publish Reel</button>
+      </div>
+    </form>
+  </div>
+</div>
 {% endblock %}
