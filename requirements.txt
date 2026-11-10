@@ -7,3 +7,5 @@ django-celery-results>=2.5.1
 django-environ>=0.11.2
 Pillow>=10.0.0
 razorpay>=1.4.1\n
+
+whitenoise>=6.6.0

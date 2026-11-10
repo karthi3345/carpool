@@ -55,6 +55,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -85,13 +86,24 @@ WSGI_APPLICATION = 'carpool_platform.wsgi.application'
 
 # Database Configuration with PostgreSQL and resilient fallback
 # When PostgreSQL is available via DATABASE_URL or custom credentials, it uses PostgreSQL.
-# If PostgreSQL connection fails in local testing, it falls back to SQLite seamlessly.
+# In serverless/Vercel environments, SQLite in /tmp can be used if no PostgreSQL is configured.
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+if 'DATABASE_URL' in os.environ and os.environ['DATABASE_URL']:
+    try:
+        import dj_database_url
+        DATABASES['default'] = dj_database_url.config(
+            default=os.environ['DATABASE_URL'],
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
+    except ImportError:
+        pass
 
 
 # Password validation
@@ -112,6 +124,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files
 MEDIA_URL = 'media/'

@@ -3,5 +3,6 @@ __pycache__/
 .env
 *.log
 media/licenses/temp/
-
 media/
+staticfiles/
+*.png
