@@ -1,0 +1,636 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Inbox - Messages | TamizhPayanam{% endblock %}
+
+{% block extra_head %}
+<style>
+  :root {
+    --bb-blue: #0070e0;
+    --bb-blue-dark: #0056b3;
+    --bb-text: #054752;
+    --bb-subtext: #708c91;
+    --bb-border: #e6ebed;
+    --bb-bg-subtle: #f8fafb;
+    --bb-unread-badge: #d32f2f;
+  }
+
+  body {
+    background-color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--bb-text);
+  }
+
+  /* Top sub-header bar matching BlaBlaCar / Profile layout */
+  .inbox-top-appbar {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 18px 24px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 20px;
+  }
+
+  .btn-offer-ride-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    border: 1.5px solid var(--bb-blue);
+    border-radius: 9999px;
+    color: var(--bb-blue);
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .btn-offer-ride-outline:hover {
+    background-color: #eef6ff;
+    color: var(--bb-blue);
+  }
+
+  .profile-badge-avatar-wrap {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .inbox-count-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background-color: var(--bb-unread-badge);
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 800;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #ffffff;
+  }
+
+  /* Main Container */
+  .inbox-container {
+    max-width: 960px;
+    margin: 0 auto 80px;
+    padding: 10px 24px;
+  }
+
+  .inbox-header-row {
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .inbox-page-title {
+    font-size: 32px;
+    font-weight: 800;
+    color: #054752;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .inbox-subtitle {
+    font-size: 14px;
+    color: var(--bb-subtext);
+    margin-top: 4px;
+  }
+
+  /* Layout Columns */
+  .inbox-grid-layout {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 28px;
+    min-height: 540px;
+  }
+
+  @media (max-width: 860px) {
+    .inbox-grid-layout {
+      grid-template-columns: 1fr;
+    }
+    .inbox-conversation-pane {
+      display: none;
+    }
+  }
+
+  /* Left Column: Thread List */
+  .inbox-threads-card {
+    background: #ffffff;
+    border: 1px solid var(--bb-border);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(5, 71, 82, 0.04);
+    display: flex;
+    flex-direction: column;
+    height: 600px;
+  }
+
+  .threads-card-header {
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--bb-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #ffffff;
+  }
+
+  .threads-card-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #054752;
+  }
+
+  .threads-card-badge {
+    background: #eef6ff;
+    color: var(--bb-blue);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 999px;
+  }
+
+  .threads-scroll-area {
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  .thread-item-row {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    gap: 14px;
+    border-bottom: 1px solid var(--bb-border);
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.15s ease;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .thread-item-row:hover {
+    background-color: #f7f9fa;
+  }
+
+  .thread-item-row.active {
+    background-color: #f0f7ff;
+    border-left: 4px solid var(--bb-blue);
+  }
+
+  .thread-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #e6ebed;
+    color: #054752;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 17px;
+    flex-shrink: 0;
+    border: 1.5px solid #d8e2e5;
+  }
+
+  .thread-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .thread-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 3px;
+  }
+
+  .thread-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #054752;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .thread-time {
+    font-size: 12px;
+    color: var(--bb-subtext);
+    flex-shrink: 0;
+    margin-left: 8px;
+  }
+
+  .thread-route {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--bb-blue);
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .thread-snippet {
+    font-size: 13px;
+    color: #557077;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+  }
+
+  .thread-unread-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background-color: var(--bb-unread-badge);
+    flex-shrink: 0;
+    margin-left: 6px;
+  }
+
+  /* Right Column: Chat View Pane */
+  .inbox-conversation-pane {
+    background: #ffffff;
+    border: 1px solid var(--bb-border);
+    border-radius: 20px;
+    box-shadow: 0 4px 18px rgba(5, 71, 82, 0.04);
+    display: flex;
+    flex-direction: column;
+    height: 600px;
+    overflow: hidden;
+  }
+
+  .conv-top-bar {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--bb-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #ffffff;
+  }
+
+  .conv-user-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .conv-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: #054752;
+    margin: 0;
+  }
+
+  .conv-route-badge {
+    font-size: 12px;
+    color: var(--bb-subtext);
+    font-weight: 600;
+  }
+
+  .conv-action-btn {
+    padding: 8px 18px;
+    background: var(--bb-blue);
+    color: #ffffff;
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+
+  .conv-action-btn:hover {
+    background: var(--bb-blue-dark);
+    color: #ffffff;
+  }
+
+  .conv-messages-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    background: #fbfcfc;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .conv-bubble-row {
+    display: flex;
+    flex-direction: column;
+    max-width: 75%;
+  }
+
+  .conv-bubble-row.mine {
+    align-self: flex-end;
+    align-items: flex-end;
+  }
+
+  .conv-bubble-row.theirs {
+    align-self: flex-start;
+    align-items: flex-start;
+  }
+
+  .conv-bubble-sender {
+    font-size: 11px;
+    font-weight: 700;
+    color: #708c91;
+    margin-bottom: 4px;
+    padding: 0 4px;
+  }
+
+  .conv-bubble {
+    padding: 12px 18px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.45;
+    word-break: break-word;
+  }
+
+  .conv-bubble-row.mine .conv-bubble {
+    background: var(--bb-blue);
+    color: #ffffff;
+    border-bottom-right-radius: 4px;
+  }
+
+  .conv-bubble-row.theirs .conv-bubble {
+    background: #ffffff;
+    color: #054752;
+    border: 1px solid var(--bb-border);
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+  }
+
+  .conv-bubble-time {
+    font-size: 10px;
+    color: #94a3b8;
+    margin-top: 3px;
+    padding: 0 4px;
+  }
+
+  .conv-bottom-composer {
+    padding: 16px 20px;
+    border-top: 1px solid var(--bb-border);
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .composer-input {
+    flex: 1;
+    border: 1.5px solid var(--bb-border);
+    border-radius: 9999px;
+    padding: 11px 20px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .composer-input:focus {
+    border-color: var(--bb-blue);
+  }
+
+  .composer-send-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--bb-blue);
+    color: #ffffff;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+
+  .composer-send-btn:hover {
+    background: var(--bb-blue-dark);
+  }
+
+  /* Empty state matching BlaBlaCar empty state pattern */
+  .inbox-empty-card {
+    background: #ffffff;
+    border: 1px solid var(--bb-border);
+    border-radius: 24px;
+    padding: 60px 30px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 4px 20px rgba(5, 71, 82, 0.04);
+  }
+
+  .inbox-empty-illustration {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .empty-bubble-glow {
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    background: radial-gradient(circle, #e0f2fe 0%, #ffffff 70%);
+    border-radius: 50%;
+  }
+
+  .inbox-empty-headline {
+    font-size: 24px;
+    font-weight: 800;
+    color: #054752;
+    margin-bottom: 10px;
+  }
+
+  .inbox-empty-sub {
+    font-size: 15px;
+    color: var(--bb-subtext);
+    max-width: 420px;
+    line-height: 1.5;
+    margin-bottom: 28px;
+  }
+
+  .btn-find-ride-pill {
+    background: var(--bb-blue);
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 13px 32px;
+    border-radius: 9999px;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.2s ease, transform 0.1s ease;
+  }
+
+  .btn-find-ride-pill:hover {
+    background: var(--bb-blue-dark);
+    color: #ffffff;
+    transform: translateY(-1px);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="inbox-top-appbar">
+  <!-- Search Icon -->
+  <a href="/rides/search/" style="color: #0070e0; font-size: 20px; text-decoration: none;" title="Search Rides">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0070e0" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+  </a>
+
+  <!-- Offer a ride button -->
+  <a href="/rides/publish/" class="btn-offer-ride-outline">
+    Offer a ride
+  </a>
+
+  <!-- Flag icon (India) -->
+  <span style="font-size: 22px; cursor: pointer;" title="India (Tamil Nadu)">🇮🇳</span>
+
+  <!-- Profile Avatar with badge -->
+  <a href="/accounts/profile/" class="profile-badge-avatar-wrap" title="My Profile">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+    </svg>
+    <span class="inbox-count-badge">3</span>
+  </a>
+</div>
+
+<div class="inbox-container">
+  <div class="inbox-header-row">
+    <div>
+      <h1 class="inbox-page-title">Inbox</h1>
+      <div class="inbox-subtitle">Communicate with your drivers & co-passengers across Tamil Nadu</div>
+    </div>
+  </div>
+
+  {% if threads %}
+    <div class="inbox-grid-layout">
+      <!-- Left Column: Message Threads List -->
+      <div class="inbox-threads-card">
+        <div class="threads-card-header">
+          <h3>Active Conversations</h3>
+          <span class="threads-card-badge">{{ threads_count }} Chats</span>
+        </div>
+
+        <div class="threads-scroll-area">
+          {% for t in threads %}
+            <a href="/messages/list/?code={{ t.booking.booking_code }}" class="thread-item-row {% if active_thread and active_thread.booking.booking_code == t.booking.booking_code %}active{% endif %}">
+              <div class="thread-avatar">
+                {{ t.other_party_name|slice:":1"|upper }}
+              </div>
+              <div class="thread-info">
+                <div class="thread-title-row">
+                  <span class="thread-name">{{ t.other_party_name }}</span>
+                  <span class="thread-time">{{ t.last_time|date:"d M" }}</span>
+                </div>
+                <div class="thread-route">{{ t.route }}</div>
+                <div class="thread-snippet">{{ t.last_message }}</div>
+              </div>
+              {% if t.has_unread %}
+                <span class="thread-unread-dot" title="Pending confirmation"></span>
+              {% endif %}
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Right Column: Conversation Preview / Interactive Panel -->
+      <div class="inbox-conversation-pane">
+        {% if active_thread %}
+          <div class="conv-top-bar">
+            <div class="conv-user-header">
+              <div class="thread-avatar" style="width: 42px; height: 42px; font-size: 15px;">
+                {{ active_thread.other_party_name|slice:":1"|upper }}
+              </div>
+              <div>
+                <h4 class="conv-title">{{ active_thread.other_party_name }} ({{ active_thread.other_party_role }})</h4>
+                <span class="conv-route-badge">{{ active_thread.route }} &bull; Booking #{{ active_thread.booking.booking_code }}</span>
+              </div>
+            </div>
+            <a href="{{ active_thread.chat_url }}" class="conv-action-btn">
+              Full Chat & Actions
+            </a>
+          </div>
+
+          <div class="conv-messages-body" id="convMessagesBody">
+            {% for m in active_thread.booking.messages.all %}
+              <div class="conv-bubble-row {% if m.sender_name == user.get_full_name or m.sender_name == user.username or m.sender_type == 'passenger' and not user.is_authenticated %}mine{% else %}theirs{% endif %}">
+                <span class="conv-bubble-sender">{{ m.sender_name }} ({{ m.get_sender_type_display }})</span>
+                <div class="conv-bubble">
+                  {{ m.text }}
+                </div>
+                <span class="conv-bubble-time">{{ m.created_at|date:"h:i A" }}</span>
+              </div>
+            {% empty %}
+              <div style="text-align: center; color: #94a3b8; margin: auto;">
+                No messages yet. Send a message to coordinate your journey!
+              </div>
+            {% endfor %}
+          </div>
+
+          <!-- Bottom Composer Quick Reply -->
+          <form class="conv-bottom-composer" action="/bookings/{{ active_thread.booking.booking_code }}/send-message/" method="POST">
+            {% csrf_token %}
+            <input type="text" name="message" class="composer-input" placeholder="Type a message to {{ active_thread.other_party_name }}..." required />
+            <button type="submit" class="composer-send-btn" title="Send Message">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  {% else %}
+    <!-- Empty State matching BlaBlaCar inbox zero state -->
+    <div class="inbox-empty-card">
+      <div class="inbox-empty-illustration">
+        <div class="empty-bubble-glow"></div>
+        <svg width="76" height="76" viewBox="0 0 24 24" fill="none" stroke="#0070e0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="position: relative; z-index: 2;">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          <line x1="8" y1="10" x2="16" y2="10" stroke="#0070e0" stroke-width="2"></line>
+          <line x1="8" y1="14" x2="13" y2="14" stroke="#0070e0" stroke-width="2"></line>
+        </svg>
+      </div>
+
+      <h2 class="inbox-empty-headline">No messages yet</h2>
+      <p class="inbox-empty-sub">
+        When you book a ride or offer a ride across Tamil Nadu, your conversations with drivers and passengers will appear here.
+      </p>
+
+      <a href="/rides/search/" class="btn-find-ride-pill">
+        Search a ride
+      </a>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+  // Auto scroll conversation to bottom
+  window.addEventListener('DOMContentLoaded', function() {
+    var body = document.getElementById('convMessagesBody');
+    if (body) {
+      body.scrollTop = body.scrollHeight;
+    }
+  });
+</script>
+{% endblock %}

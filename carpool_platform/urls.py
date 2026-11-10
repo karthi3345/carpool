@@ -8,6 +8,8 @@ from datetime import date
 from apps.locations.models import City
 from apps.rides.models import Ride
 from apps.reviews.models import PassengerReview
+from django.db.models import Q
+from apps.bookings.models import Booking
 
 def home_preview(request):
     popular_cities = City.objects.filter(state='Tamil Nadu', is_popular=True)[:8]
@@ -103,6 +105,54 @@ def my_rides_view(request):
 def user_profile_view(request):
     return render(request, 'accounts/profile.html')
 
+def inbox_messages_view(request):
+    # Support both list view and active conversation view
+    tab = request.GET.get('tab', 'all')
+    active_code = request.GET.get('code')
+    
+    threads = []
+    if request.user.is_authenticated:
+        user_name = (request.user.get_full_name() or request.user.username).strip()
+        user_threads_qs = Booking.objects.filter(
+            Q(passenger=request.user) |
+            Q(passenger_name__icontains=user_name) |
+            Q(ride__driver_name__icontains=user_name)
+        ).distinct().order_by('-updated_at')
+    else:
+        # For guest/demo view, show recent booking conversation threads
+        user_threads_qs = Booking.objects.filter(messages__isnull=False).distinct().order_by('-updated_at')[:5]
+
+    for b in user_threads_qs:
+        last_msg = b.messages.order_by('-created_at').first()
+        # Identify the other party
+        is_user_driver = request.user.is_authenticated and (user_name.lower() in b.ride.driver_name.lower())
+        other_party_name = b.passenger_name if is_user_driver else b.ride.driver_name
+        other_party_role = "Passenger" if is_user_driver else "Driver"
+        
+        threads.append({
+            'booking': b,
+            'other_party_name': other_party_name,
+            'other_party_role': other_party_role,
+            'route': f"{b.ride.origin.name} → {b.ride.destination.name}",
+            'last_message': last_msg.text if last_msg else "Conversation initiated",
+            'last_time': last_msg.created_at if last_msg else b.created_at,
+            'has_unread': b.status == 'pending',
+            'chat_url': f"/bookings/{b.booking_code}/chat/",
+        })
+
+    active_thread = None
+    if active_code:
+        active_thread = next((t for t in threads if t['booking'].booking_code == active_code), None)
+    if not active_thread and threads:
+        active_thread = threads[0]
+
+    return render(request, 'messages/inbox.html', {
+        'threads': threads,
+        'active_thread': active_thread,
+        'threads_count': len(threads),
+        'current_tab': tab
+    })
+
 def payment_history_view(request):
     return render(request, 'payments/history.html')
 
@@ -121,6 +171,8 @@ urlpatterns = [
     path('explore/', explore_map_view, name='explore_map'),
     path('rides/my-rides/', my_rides_view, name='my-rides'),
     path('accounts/profile/', user_profile_view, name='user-profile'),
+    path('messages/list/', inbox_messages_view, name='messages-list'),
+    path('messages/', inbox_messages_view, name='messages-inbox'),
     path('payments/history/', payment_history_view, name='payment-history'),
     path('reviews/', reviews_list_view, name='reviews-list'),
     path('support/help/', help_center_view, name='help-center'),
