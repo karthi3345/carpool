@@ -84,9 +84,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'carpool_platform.wsgi.application'
 
-# Database Configuration with PostgreSQL and resilient fallback
-# When PostgreSQL is available via DATABASE_URL or custom credentials, it uses PostgreSQL.
-# In serverless/Vercel environments, SQLite in /tmp can be used if no PostgreSQL is configured.
+# Database Configuration with PostgreSQL (via DATABASE_URL or POSTGRES_URL) and fallback
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -94,15 +92,18 @@ DATABASES = {
     }
 }
 
-if 'DATABASE_URL' in os.environ and os.environ['DATABASE_URL']:
+# Vercel Postgres provides POSTGRES_URL or DATABASE_URL
+database_url = os.getenv('DATABASE_URL') or os.getenv('POSTGRES_URL') or os.getenv('POSTGRES_PRISMA_URL')
+if database_url:
     try:
         import dj_database_url
         DATABASES['default'] = dj_database_url.config(
-            default=os.environ['DATABASE_URL'],
+            default=database_url,
             conn_max_age=600,
             conn_health_checks=True,
+            ssl_require=True if 'vercel' in database_url or 'supabase' in database_url or 'neon' in database_url or 'aws' in database_url else False
         )
-    except ImportError:
+    except Exception:
         pass
 
 

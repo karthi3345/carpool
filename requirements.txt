@@ -9,3 +9,5 @@ Pillow>=10.0.0
 razorpay>=1.4.1\n
 
 whitenoise>=6.6.0
+
+dj-database-url>=2.1.0
