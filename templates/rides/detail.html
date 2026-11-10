@@ -1,374 +1,517 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Ride Details - {{ ride.origin.name }} to {{ ride.destination.name }} | TamizhPayanam{% endblock %}
+{% block title %}Ride from {{ ride.origin.name }} to {{ ride.destination.name }} on {{ ride.departure_date|date:"l, d F" }} | TamizhPayanam{% endblock %}
 
 {% block extra_head %}
 <style>
   :root {
-    --tp-dark: #12372A;
-    --tp-green: #0D5C3A;
-    --tp-green-light: #E8F5E9;
-    --tp-green-border: #C8E6C9;
-    --tp-gold: #F59E0B;
-    --tp-bg: #F8FAFC;
-    --tp-card-bg: #FFFFFF;
-    --tp-border: #E2E8F0;
+    --bb-blue: #0070e0;
+    --bb-blue-dark: #0056b3;
+    --bb-text: #054752;
+    --bb-subtext: #708c91;
+    --bb-dark-header: #054752;
+    --bb-border: #e2e8f0;
+    --bb-green: #00875a;
   }
 
   body {
-    background-color: var(--tp-bg);
+    background-color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--bb-text);
   }
 
-  .detail-page-container {
-    max-width: 1240px;
-    margin: 24px auto 80px;
-    padding: 0 24px;
+  .bb-ride-detail-page {
+    max-width: 680px;
+    margin: 18px auto 90px;
+    padding: 0 16px;
   }
 
-  .back-link-bar {
+  /* Back Button Bar */
+  .bb-back-bar {
     margin-bottom: 20px;
   }
 
-  .back-btn {
+  .bb-back-btn {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    font-size: 14px;
+    color: var(--bb-blue);
+    font-size: 15px;
     font-weight: 700;
-    color: #334155;
     text-decoration: none;
-    transition: color 0.15s ease;
+    transition: opacity 0.15s ease;
   }
 
-  .back-btn:hover {
-    color: var(--tp-green);
+  .bb-back-btn:hover {
+    opacity: 0.85;
+    text-decoration: underline;
   }
 
-  .detail-two-col-layout {
-    display: grid;
-    grid-template-columns: 1fr 380px;
-    gap: 32px;
-    align-items: start;
+  /* Page Title */
+  .bb-detail-page-title {
+    font-size: 30px;
+    font-weight: 800;
+    color: var(--bb-dark-header);
+    margin: 0 0 4px 0;
+    letter-spacing: -0.02em;
   }
 
-  @media (max-width: 960px) {
-    .detail-two-col-layout {
-      grid-template-columns: 1fr;
-    }
+  .bb-date-subtext {
+    font-size: 15px;
+    color: #64748b;
+    margin-bottom: 28px;
+    font-weight: 600;
   }
 
-  /* Left Main Card */
-  .detail-main-card {
-    background: #FFFFFF;
-    border: 1.5px solid var(--tp-border);
-    border-radius: 24px;
-    overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  /* Section Card Container */
+  .bb-detail-card {
+    background: #ffffff;
+    border-radius: 18px;
+    margin-bottom: 24px;
   }
 
-  .car-hero-banner {
-    width: 100%;
-    height: 320px;
-    background: linear-gradient(135deg, #E2E8F0 0%, #CBD5E1 100%);
+  /* Itinerary Timeline Vertical Flow */
+  .bb-itinerary-box {
     position: relative;
-    overflow: hidden;
+    padding: 4px 0;
+  }
+
+  .bb-itinerary-stop {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    position: relative;
+    margin-bottom: 22px;
+  }
+
+  .bb-stop-time-col {
+    width: 65px;
+    flex-shrink: 0;
+    text-align: right;
+  }
+
+  .bb-stop-time {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--bb-dark-header);
+    line-height: 1.1;
+  }
+
+  .bb-stop-duration {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--bb-subtext);
+    margin-top: 14px;
+    display: block;
+  }
+
+  .bb-timeline-axis {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    padding-top: 4px;
+  }
+
+  .bb-axis-circle {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 3.5px solid var(--bb-dark-header);
+    background: #ffffff;
+    box-sizing: border-box;
+  }
+
+  .bb-axis-circle.dest {
+    border-color: var(--bb-blue);
+    background: var(--bb-blue);
+  }
+
+  .bb-axis-line {
+    width: 2.5px;
+    height: 48px;
+    background: #cbd5e1;
+    margin: 4px 0;
+  }
+
+  .bb-stop-info {
+    flex: 1;
+    padding-top: 1px;
+  }
+
+  .bb-stop-city {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--bb-dark-header);
+    line-height: 1.2;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .bb-stop-landmark {
+    font-size: 13.5px;
+    color: var(--bb-subtext);
+    margin-top: 3px;
+    line-height: 1.35;
+  }
+
+  .bb-divider {
+    height: 1px;
+    background: #edf2f7;
+    margin: 22px 0;
+  }
+
+  /* Price summary row */
+  .bb-price-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 0;
+  }
+
+  .bb-price-passenger-label {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--bb-dark-header);
+  }
+
+  .bb-price-val {
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--bb-dark-header);
+    letter-spacing: -0.5px;
+  }
+
+  /* Driver Section */
+  .bb-driver-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .bb-driver-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .bb-driver-avatar {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #e2e8f0;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  .bb-driver-name {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--bb-dark-header);
+    margin: 0 0 4px 0;
+  }
+
+  .bb-driver-rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #475569;
+  }
+
+  .bb-driver-rating svg {
+    color: #f59e0b;
+    fill: #f59e0b;
+  }
+
+  /* Preference list items */
+  .bb-preference-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .bb-pref-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: #334155;
+  }
+
+  .bb-pref-icon {
+    width: 24px;
+    height: 24px;
+    color: #64748b;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
-  .car-hero-banner img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  /* Driver note / message box */
+  .bb-driver-note-box {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 14px;
+    color: #334155;
+    line-height: 1.5;
+    margin: 16px 0 20px;
+    border-left: 3.5px solid var(--bb-blue);
   }
 
-  .detail-inner-padding {
-    padding: 30px 32px 36px;
-  }
-
-  .section-h2 {
-    font-size: 19px;
-    font-weight: 800;
-    color: #12372A;
-    margin: 0 0 16px 0;
-  }
-
-  /* Pill bar for ride stats */
-  .ride-stats-pill-row {
+  /* CO2 Environment Savings Box */
+  .bb-co2-box {
+    background: #eefaf3;
+    border: 1px solid #b7ebd0;
+    border-radius: 14px;
+    padding: 16px 18px;
     display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-bottom: 28px;
+    align-items: flex-start;
+    gap: 14px;
+    margin-top: 24px;
   }
 
-  .stat-pill {
-    display: inline-flex;
+  .bb-co2-icon {
+    width: 24px;
+    height: 24px;
+    color: var(--bb-green);
+    flex-shrink: 0;
+  }
+
+  .bb-co2-text {
+    font-size: 13px;
+    color: #166534;
+    line-height: 1.45;
+  }
+
+  /* Sticky Bottom Booking Appbar */
+  .bb-bottom-cta-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    border-top: 1.5px solid #e2e8f0;
+    padding: 14px 20px;
+    z-index: 200;
+    box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .bb-bottom-cta-inner {
+    max-width: 680px;
+    margin: 0 auto;
+    display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 8px 18px;
+    gap: 14px;
+  }
+
+  .btn-bb-negotiate {
+    flex: 1;
+    background: #ffffff;
+    color: var(--bb-blue);
+    border: 1.5px solid var(--bb-blue);
+    padding: 13px 20px;
     border-radius: 999px;
-    font-size: 13.5px;
-    font-weight: 700;
-  }
-
-  .pill-green {
-    background: var(--tp-green-light);
-    color: var(--tp-green);
-    border: 1px solid var(--tp-green-border);
-  }
-
-  .pill-yellow {
-    background: #FEF3C7;
-    color: #92400E;
-    border: 1px solid #FDE68A;
-  }
-
-  .driver-bio-box {
-    background: #F8FAFC;
-    border: 1px solid #E2E8F0;
-    border-radius: 16px;
-    padding: 18px 22px;
-    margin-bottom: 32px;
-    font-size: 14.5px;
-    color: #475569;
-    line-height: 1.6;
-  }
-
-  .book-now-full-btn {
-    display: block;
-    width: 100%;
-    background: var(--tp-green);
-    color: #FFFFFF;
+    font-size: 15px;
+    font-weight: 800;
     text-align: center;
     text-decoration: none;
-    font-size: 16px;
-    font-weight: 800;
-    padding: 16px 24px;
-    border-radius: 999px;
-    box-shadow: 0 4px 18px rgba(13, 92, 58, 0.3);
-    transition: all 0.2s ease;
-    border: none;
     cursor: pointer;
+    transition: all 0.15s ease;
   }
 
-  .book-now-full-btn:hover {
-    background: #09472C;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(13, 92, 58, 0.4);
+  .btn-bb-negotiate:hover {
+    background: #f0f7ff;
   }
 
-  /* Right Sidebar Card */
-  .detail-sidebar-card {
-    background: #FFFFFF;
-    border: 1.5px solid var(--tp-border);
-    border-radius: 24px;
-    padding: 28px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  .btn-bb-book {
+    flex: 1.4;
+    background: var(--bb-blue);
+    color: #ffffff;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 999px;
+    font-size: 15.5px;
+    font-weight: 800;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 112, 224, 0.35);
+    transition: all 0.15s ease;
   }
 
-  .sidebar-driver-header {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 20px;
-    padding-bottom: 18px;
-    border-bottom: 1px solid #F1F5F9;
-  }
-
-  .sidebar-avatar {
-    width: 68px;
-    height: 68px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #E2E8F0;
-  }
-
-  .rating-breakdown-box {
-    margin: 24px 0;
-  }
-
-  .rating-bar-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 12px;
-    color: #64748B;
-    margin-bottom: 8px;
-  }
-
-  .rating-bar-track {
-    flex: 1;
-    height: 6px;
-    background: #E2E8F0;
-    border-radius: 4px;
-    overflow: hidden;
-  }
-
-  .rating-bar-fill {
-    height: 100%;
-    background: var(--tp-gold);
-    border-radius: 4px;
-  }
-
-  /* Review item */
-  .review-compact-card {
-    background: #F8FAFC;
-    border: 1px solid #E2E8F0;
-    border-radius: 14px;
-    padding: 14px 16px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-top: 14px;
-  }
-
-  .review-avatar-sm {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    object-fit: cover;
+  .btn-bb-book:hover {
+    background: var(--bb-blue-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(0, 112, 224, 0.45);
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="detail-page-container">
+<div class="bb-ride-detail-page">
   
-  <div class="back-link-bar">
-    <a href="/rides/search/?from={{ ride.origin.name }}&to={{ ride.destination.name }}" class="back-btn">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-      <span>Back to Results</span>
+  <!-- Return to previous page button -->
+  <div class="bb-back-bar">
+    <a href="/rides/search/?from={{ ride.origin.name }}&to={{ ride.destination.name }}" class="bb-back-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      <span>Return to previous page</span>
     </a>
   </div>
 
-  <div class="detail-two-col-layout">
-    
-    <!-- Left Main Column (matching mockup screen 2) -->
-    <div class="detail-main-card">
-      <div class="car-hero-banner">
-        <img src="/static/tamizh-payanam/images/hero.jpg" alt="Ride Car Banner" onerror="this.src='/static/images/hero_highway.png'">
+  <!-- Header: Date of Travel -->
+  <h1 class="bb-detail-page-title">Ride details</h1>
+  <div class="bb-date-subtext">{{ ride.departure_date|date:"l, d F Y" }}</div>
+
+  <!-- Itinerary Card (BlaBlaCar vertical dot-line stops) -->
+  <div class="bb-detail-card">
+    <div class="bb-itinerary-box">
+      
+      <!-- Departure Stop -->
+      <div class="bb-itinerary-stop">
+        <div class="bb-stop-time-col">
+          <div class="bb-stop-time">{{ ride.departure_time|time:"H:i"|default:"08:30" }}</div>
+          <span class="bb-stop-duration">3h30</span>
+        </div>
+        <div class="bb-timeline-axis">
+          <div class="bb-axis-circle"></div>
+          <div class="bb-axis-line"></div>
+        </div>
+        <div class="bb-stop-info">
+          <div class="bb-stop-city">
+            <span>{{ ride.origin.name }}</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0070e0" stroke-width="2.5" stroke-linecap="round"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
+          </div>
+          <div class="bb-stop-landmark">{{ ride.origin_point|default:ride.origin.name }}</div>
+        </div>
       </div>
 
-      <div class="detail-inner-padding">
-        <h2 class="section-h2">Ride Details</h2>
-        
-        <div class="ride-stats-pill-row">
-          <span class="stat-pill pill-green">
-            <span>💺</span> {{ ride.available_seats|default:3 }} Seats Left
-          </span>
-          <span class="stat-pill pill-yellow">
-            <span>🏷️</span> ₹{{ ride.price_per_seat|floatformat:0|default:"350" }} / seat
-          </span>
-          <span class="stat-pill pill-green">
-            <span>✓</span> Verified Driver
-          </span>
+      <!-- Arrival Stop -->
+      <div class="bb-itinerary-stop" style="margin-bottom: 0;">
+        <div class="bb-stop-time-col">
+          <div class="bb-stop-time">12:30</div>
         </div>
+        <div class="bb-timeline-axis">
+          <div class="bb-axis-circle dest"></div>
+        </div>
+        <div class="bb-stop-info">
+          <div class="bb-stop-city">
+            <span>{{ ride.destination.name }}</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0070e0" stroke-width="2.5" stroke-linecap="round"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
+          </div>
+          <div class="bb-stop-landmark">{{ ride.destination_point|default:ride.destination.name }}</div>
+        </div>
+      </div>
 
-        <h3 class="section-h2" style="font-size: 17px;">About Driver</h3>
-        <div class="driver-bio-box">
-          Safe driver with 7+ years experience. Always on time! AC vehicle with comfortable legroom. No smoking inside.
-        </div>
+    </div>
 
-        {% if ride.status == 'cancelled' %}
-        <div style="background: #FEE2E2; border: 1.5px solid #FCA5A5; color: #991B1B; padding: 14px 18px; border-radius: 12px; margin-top: 14px; text-align: center; font-weight: 700;">
-          ⚠️ THIS RIDE HAS BEEN CANCELLED BY THE DRIVER
-          {% if ride.support_notes %}
-          <div style="font-size: 12.5px; font-weight: normal; margin-top: 4px; color: #7F1D1D;">Reason: {{ ride.support_notes }}</div>
-          {% endif %}
+    <div class="bb-divider"></div>
+
+    <!-- Total price for 1 passenger -->
+    <div class="bb-price-row">
+      <span class="bb-price-passenger-label">1 passenger</span>
+      <span class="bb-price-val">₹{{ ride.price_per_seat|floatformat:0 }}<span style="font-size: 18px; font-weight: 700;">.00</span></span>
+    </div>
+
+    <div class="bb-divider"></div>
+
+    <!-- Driver Card Profile -->
+    <a href="#" class="bb-driver-row">
+      <div class="bb-driver-left">
+        <img src="/static/tamizh-payanam/images/p{{ ride.id|default:1|divisibleby:3|yesno:'2,1' }}.png" alt="{{ ride.driver_name }}" class="bb-driver-avatar" onerror="this.src='/static/tamizh-payanam/images/p1.png'">
+        <div>
+          <h3 class="bb-driver-name">{{ ride.driver_name|default:"Karthik Raja" }}</h3>
+          <div class="bb-driver-rating">
+            <svg width="15" height="15" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <span>5/5 &bull; 5 ratings</span>
+          </div>
         </div>
-        {% else %}
-        <div style="display: flex; gap: 12px; align-items: center; margin-top: 16px;">
-          <form action="/bookings/create/" method="POST" style="flex: 1;">
-            {% csrf_token %}
-            <input type="hidden" name="ride_id" value="{{ ride.id|default:1 }}">
-            <input type="hidden" name="seats" value="1">
-            <button type="submit" class="book-now-full-btn">
-              Book Ride Now
-            </button>
-          </form>
-          <a href="/rides/{{ ride.id }}/cancel/" style="background: #FFFFFF; color: #DC2626; border: 1.5px solid #FCA5A5; font-size: 14px; font-weight: 700; padding: 12px 18px; border-radius: 999px; text-decoration: none; white-space: nowrap;">
-            Cancel Ride
-          </a>
-        </div>
-        {% endif %}
+      </div>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+    </a>
+
+    <!-- Driver message / note -->
+    <div class="bb-driver-note-box">
+      "{{ ride.notes|default:'Ride is 100% confirmed as scheduled. Clean AC vehicle with comfortable seats. Please book in advance!' }}"
+    </div>
+
+    <!-- Ride Amenities & Preferences -->
+    <ul class="bb-preference-list">
+      <li class="bb-pref-item">
+        <span class="bb-pref-icon">⚡</span>
+        <span>Your booking will be confirmed instantly</span>
+      </li>
+      <li class="bb-pref-item">
+        <span class="bb-pref-icon">❄️</span>
+        <span>Air conditioning</span>
+      </li>
+      <li class="bb-pref-item">
+        <span class="bb-pref-icon">🔌</span>
+        <span>USB power socket</span>
+      </li>
+      <li class="bb-pref-item">
+        <span class="bb-pref-icon">🐾</span>
+        <span>I’d prefer not to travel with pets</span>
+      </li>
+      <li class="bb-pref-item">
+        <span class="bb-pref-icon">🚗</span>
+        <span style="text-transform: uppercase;">{{ ride.vehicle_model|default:'MARUTI SWIFT DZIRE' }} &bull; {{ ride.vehicle_number|default:'TN-58-AX-9912' }}</span>
+      </li>
+    </ul>
+
+    <!-- CO2 Impact calculation matching BlaBlaCar trip details -->
+    <div class="bb-co2-box">
+      <svg class="bb-co2-icon" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2a9 9 0 0 1 9 9c0 4.1-2.8 7.6-6.6 8.7l-.4.1c-.5.1-1-.2-1.1-.7-.1-.4.1-.9.6-1 3.2-.9 5.5-3.8 5.5-7.1A7 7 0 0 0 12 4C8.1 4 5 7.1 5 11c0 2.5 1.3 4.8 3.3 6.1.4.3.5.8.3 1.2-.2.4-.7.6-1.1.4C4.8 17.1 3 14.2 3 11a9 9 0 0 1 9-9z"/>
+      </svg>
+      <div class="bb-co2-text">
+        <strong>By choosing this trip, you will help avoid ≈24.2 kg of CO₂.</strong> A total of 9.8 kg CO₂ emissions are associated with this shared booking (71% less than travelling alone by private car).
       </div>
     </div>
 
-    <!-- Right Sidebar Column (matching mockup screen 2) -->
-    <aside class="detail-sidebar-card">
-      <div class="sidebar-driver-header">
-        <img src="/static/tamizh-payanam/images/p1.png" alt="Driver" class="sidebar-avatar">
-        <div>
-          <h3 style="font-size: 18px; font-weight: 800; color: #12372A; margin: 0 0 4px 0;">
-            {{ ride.driver_name|default:"Raja Kumar" }}
-          </h3>
-          <div style="font-size: 13px; font-weight: 700; color: #D97706; margin-bottom: 3px;">
-            ★ {{ ride.driver_rating|default:"4.8" }} <span style="color: #64748B; font-weight: 500;">(320 reviews)</span>
-          </div>
-          <div style="font-size: 12px; color: #64748B;">
-            {{ ride.vehicle_model|default:"Toyota Innova" }} &bull; {{ ride.vehicle_number|default:"TN 07 AB 1234" }}
-          </div>
-        </div>
-      </div>
+    <!-- Report Ride Link -->
+    <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #edf2f7;">
+      <a href="/support/help/" style="color: #64748b; font-size: 13.5px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1zM4 22v-7"/></svg>
+        <span>Report ride</span>
+      </a>
+    </div>
 
-      <!-- Route Timings -->
-      <div style="padding: 16px 0; border-bottom: 1px solid #F1F5F9;">
-        <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: 700; color: #1E293B; margin-bottom: 8px;">
-          <span>🟡 {{ ride.departure_time|time:"h:i A"|default:"08:30 AM" }}</span>
-          <span>🟡 12:30 PM</span>
-        </div>
-        <div style="display: flex; justify-content: space-between; font-size: 13px; color: #64748B;">
-          <span>{{ ride.origin.name|default:"Chennai" }}</span>
-          <span>{{ ride.destination.name|default:"Madurai" }}</span>
-        </div>
-      </div>
+  </div>
 
-      <!-- Driver Rating breakdown bars -->
-      <div class="rating-breakdown-box">
-        <h4 style="font-size: 14px; font-weight: 800; color: #1E293B; margin-bottom: 12px;">Driver Rating</h4>
-        
-        <div class="rating-bar-row">
-          <span>5 ★</span>
-          <div class="rating-bar-track"><div class="rating-bar-fill" style="width: 92%;"></div></div>
-          <span>92%</span>
-        </div>
-        <div class="rating-bar-row">
-          <span>4 ★</span>
-          <div class="rating-bar-track"><div class="rating-bar-fill" style="width: 6%;"></div></div>
-          <span>6%</span>
-        </div>
-        <div class="rating-bar-row">
-          <span>3 ★</span>
-          <div class="rating-bar-track"><div class="rating-bar-fill" style="width: 2%;"></div></div>
-          <span>2%</span>
-        </div>
-        <div class="rating-bar-row">
-          <span>2 ★</span>
-          <div class="rating-bar-track"><div class="rating-bar-fill" style="width: 0%;"></div></div>
-          <span>0%</span>
-        </div>
-        <div class="rating-bar-row">
-          <span>1 ★</span>
-          <div class="rating-bar-track"><div class="rating-bar-fill" style="width: 0%;"></div></div>
-          <span>0%</span>
-        </div>
-      </div>
+</div>
 
-      <!-- Reviews snippet -->
-      <div>
-        <h4 style="font-size: 14px; font-weight: 800; color: #1E293B; margin-bottom: 8px;">Reviews (320)</h4>
-        <div class="review-compact-card">
-          <img src="/static/tamizh-payanam/images/p2.png" alt="Priya S" class="review-avatar-sm">
-          <div>
-            <div style="font-size: 13px; font-weight: 700; color: #12372A;">Excellent ride!</div>
-            <div style="font-size: 12px; color: #64748B;">Very friendly driver. &bull; Priya S</div>
-          </div>
-        </div>
-      </div>
-    </aside>
-
+<!-- Sticky Bottom CTA Bar with Negotiate and Book Actions -->
+<div class="bb-bottom-cta-bar">
+  <div class="bb-bottom-cta-inner">
+    <a href="/bookings/chat/{{ ride.id }}/" class="btn-bb-negotiate">
+      Negotiate
+    </a>
+    
+    <form action="/bookings/create/" method="POST" style="flex: 1.4; margin: 0;">
+      {% csrf_token %}
+      <input type="hidden" name="ride_id" value="{{ ride.id }}">
+      <input type="hidden" name="seats" value="1">
+      <input type="hidden" name="pickup_point" value="{{ ride.origin_point|default:ride.origin.name }}">
+      <input type="hidden" name="dropoff_point" value="{{ ride.destination_point|default:ride.destination.name }}">
+      <button type="submit" class="btn-bb-book" style="width: 100%;">
+        Book
+      </button>
+    </form>
   </div>
 </div>
 {% endblock %}
