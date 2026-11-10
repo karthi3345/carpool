@@ -7,21 +7,28 @@ def login_view(request):
     next_url = request.GET.get('next', '/')
 
     if request.method == 'POST':
-        username = request.POST.get('username', '').strip()
+        identifier = request.POST.get('username', '').strip()
         password = request.POST.get('password', '').strip()
 
-        # Support login by username or email
-        user = authenticate(request, username=username, password=password)
-        if user is None and '@' in username:
-            user_by_email = User.objects.filter(email__iexact=username).first()
-            if user_by_email:
-                user = authenticate(request, username=user_by_email.username, password=password)
+        # Robust case-insensitive login support by username or email
+        user = None
+        # 1. Try finding user by case-insensitive username or email
+        matched_user = User.objects.filter(username__iexact=identifier).first()
+        if not matched_user and '@' in identifier:
+            matched_user = User.objects.filter(email__iexact=identifier).first()
+
+        if matched_user:
+            user = authenticate(request, username=matched_user.username, password=password)
+
+        # 2. Fallback direct authenticate
+        if user is None:
+            user = authenticate(request, username=identifier, password=password)
 
         if user is not None:
             login(request, user)
             return redirect(next_url)
         else:
-            error_message = "Invalid username/email or password. Please check your credentials and try again."
+            error_message = "Invalid username/email or password. Please verify your credentials and try again."
 
     return render(request, 'accounts/login.html', {
         'error_message': error_message,
@@ -64,15 +71,23 @@ def register_view(request):
         elif User.objects.filter(email__iexact=email).exists():
             error_message = f"An account with email '{email}' already exists. Please log in instead."
         else:
-            # Create user account
+            # Create user account with explicit password hashing
             user = User.objects.create_user(
                 username=username,
                 email=email,
                 password=password,
                 first_name=username.title()
             )
-            # Log the new user in directly
-            login(request, user)
+            # Ensure password hash is saved and active
+            user.set_password(password)
+            user.save()
+
+            # Authenticate and login the new registered user directly
+            auth_user = authenticate(request, username=username, password=password)
+            if auth_user:
+                login(request, auth_user)
+            else:
+                login(request, user)
             return redirect('/')
 
     return render(request, 'accounts/register.html', {
