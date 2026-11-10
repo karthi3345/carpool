@@ -328,10 +328,6 @@
   <!-- User Profile Hero Banner -->
   <div class="profile-user-hero">
     <div class="profile-hero-left">
-      <div class="profile-hero-avatar" title="Change profile photo">
-        {{ user.first_name|default:user.username|slice:":1"|upper }}
-        <div class="avatar-add-icon">&#43;</div>
-      </div>
       <div>
         <h1 class="profile-hero-name">{{ user.get_full_name|default:user.username|title }}</h1>
         <div class="profile-hero-rating">
