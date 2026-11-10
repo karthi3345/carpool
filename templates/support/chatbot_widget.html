@@ -1,56 +1,56 @@
 <!-- Floating TamizhPayanam Support Chatbot Widget (Powered by Cloudflare AI: Inba / இன்பா) -->
-<div id="chalreSupportWidget" style="position: fixed !important; bottom: 24px !important; right: 24px !important; z-index: 2147483647 !important; font-family: 'Plus Jakarta Sans', sans-serif !important; display: block !important;">
+<div id="chalreSupportWidget" class="inba-widget-container">
   
   <!-- Collapsed Launcher Button -->
-  <button id="chatbotLauncher" onclick="toggleChatbot()" style="background: #12372A !important; color: #FFFFFF !important; border: 2px solid #FFD000 !important; border-radius: 999px !important; padding: 12px 22px !important; font-weight: 800 !important; font-size: 14px !important; cursor: pointer !important; display: flex !important; align-items: center !important; gap: 10px !important; box-shadow: 0 10px 28px rgba(18, 55, 42, 0.45) !important; transition: all 0.2s ease !important; outline: none !important;">
-    <span style="position: relative; display: flex; align-items: center;">
-      <span style="font-size: 18px;">✨</span>
-      <span style="position: absolute; top: -3px; right: -3px; width: 8px; height: 8px; background: #10B981; border-radius: 50%; border: 1.5px solid #12372A;"></span>
+  <button id="chatbotLauncher" onclick="toggleChatbot()" class="inba-launcher-btn" aria-label="Open Inba AI Assistant">
+    <span class="inba-launcher-icon-wrap">
+      <span class="inba-sparkle-icon">✨</span>
+      <span class="inba-online-dot"></span>
     </span>
-    <span style="letter-spacing: 0.2px;">Ask Inba (AI Assistant)</span>
+    <span class="inba-launcher-label">Ask Inba <span class="inba-badge-ai">AI</span></span>
   </button>
 
   <!-- Expanded Chat Window -->
-  <div id="chatbotWindow" style="display: none; width: 380px; height: 530px; background: #FFFFFF; border-radius: 20px; box-shadow: 0 16px 48px rgba(0,0,0,0.22); border: 1.5px solid #E2E8F0; overflow: hidden; flex-direction: column; animation: chatPop 0.25s ease-out;">
+  <div id="chatbotWindow" class="inba-window" style="display: none;">
     
     <!-- Chat Header -->
-    <div style="background: #12372A; color: #FFFFFF; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #FFD000;">
+    <div class="inba-header">
       <div style="display: flex; align-items: center; gap: 10px;">
         <div style="position: relative;">
-          <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #FFD43B 0%, #D4A017 100%); color: #12372A; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 15px; border: 2px solid #FFFFFF; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+          <div class="inba-avatar">
             இ
           </div>
           <span style="position: absolute; bottom: 0; right: 0; width: 10px; height: 10px; background: #10B981; border-radius: 50%; border: 2px solid #12372A;"></span>
         </div>
         <div>
-          <div style="font-weight: 800; font-size: 14px; display: flex; align-items: center; gap: 6px;">
+          <div style="font-weight: 800; font-size: 14px; display: flex; align-items: center; gap: 6px; line-height: 1.2;">
             <span>Inba (இன்பா)</span>
             <span style="background: rgba(255, 208, 0, 0.2); color: #FFD000; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 700; text-transform: uppercase;">AI Guide</span>
           </div>
-          <div style="font-size: 11px; color: #E2E8F0;">TamizhPayanam Assistant &bull; Online</div>
+          <div style="font-size: 11px; color: #E2E8F0; margin-top: 2px;">TamizhPayanam Assistant &bull; Online</div>
         </div>
       </div>
       <div style="display: flex; align-items: center; gap: 6px;">
         <!-- Sound Toggle Button -->
-        <button id="chatSoundBtn" onclick="toggleChatSound()" title="Mute/Unmute Chime" style="background: rgba(255,255,255,0.1); border: none; color: #FFD43B; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px;">
+        <button id="chatSoundBtn" onclick="toggleChatSound()" title="Mute/Unmute Chime" style="background: rgba(255,255,255,0.12); border: none; color: #FFD43B; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px;">
           🔔
         </button>
-        <button onclick="toggleChatbot()" style="background: none; border: none; color: #94A3B8; font-size: 22px; cursor: pointer; padding: 0 4px; line-height: 1;" title="Close">
+        <button onclick="toggleChatbot()" class="inba-close-btn" title="Close">
           &times;
         </button>
       </div>
     </div>
 
     <!-- Human Support Banner -->
-    <div style="background: #FFFBEA; border-bottom: 1px solid #FEF3C7; padding: 6px 14px; display: flex; align-items: center; justify-content: space-between; font-size: 11px;">
-      <span style="color: #92400E; font-weight: 600;">Dedicated Support Team on standby</span>
-      <a href="mailto:support@tamizhpayanam.in?subject=Customer%20Support%20Enquiry%20-%20TamizhPayanam" target="_blank" style="color: #B45309; font-weight: 800; text-decoration: underline; cursor: pointer;">
+    <div style="background: #FFFBEA; border-bottom: 1px solid #FEF3C7; padding: 7px 14px; display: flex; align-items: center; justify-content: space-between; font-size: 11px; flex-shrink: 0;">
+      <span style="color: #92400E; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Support Team on standby</span>
+      <a href="mailto:support@tamizhpayanam.in?subject=Customer%20Support%20Enquiry%20-%20TamizhPayanam" target="_blank" style="color: #B45309; font-weight: 800; text-decoration: underline; cursor: pointer; flex-shrink: 0; margin-left: 8px;">
         Officer Enquiry &rarr;
       </a>
     </div>
 
     <!-- Messages Stream -->
-    <div id="chatMessagesStream" style="flex: 1; padding: 14px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: #F8FAFC;">
+    <div id="chatMessagesStream" style="flex: 1; padding: 14px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: #F8FAFC; -webkit-overflow-scrolling: touch;">
       <!-- Initial Bot Greeting -->
       <div style="display: flex; gap: 8px; align-items: flex-start;">
         <div style="width: 28px; height: 28px; border-radius: 50%; background: #12372A; color: #FFD000; font-size: 12px; font-weight: 900; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">இ</div>
@@ -61,17 +61,17 @@
 
       <!-- Quick Suggestions -->
       <div id="chatQuickSuggestions" style="display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0;">
-        <button onclick="sendChatQuick('How does booking and fare negotiation work?')" style="background: #FFFFFF; border: 1px solid #CBD5E1; color: #12372A; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 12px; cursor: pointer;">How to book & negotiate?</button>
-        <button onclick="sendChatQuick('How are drivers verified for safety?')" style="background: #FFFFFF; border: 1px solid #CBD5E1; color: #12372A; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 12px; cursor: pointer;">Driver license safety</button>
-        <button onclick="sendChatQuick('How can I publish a ride to split fuel?')" style="background: #FFFFFF; border: 1px solid #CBD5E1; color: #12372A; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 12px; cursor: pointer;">Publish a ride</button>
-        <button onclick="sendChatQuick('Connect me to human Support Team')" style="background: #FEF3C7; border: 1px solid #FCD34D; color: #92400E; font-size: 11px; font-weight: 800; padding: 5px 10px; border-radius: 12px; cursor: pointer;">📞 Human Support Team</button>
+        <button onclick="sendChatQuick('How does booking and fare negotiation work?')" style="background: #FFFFFF; border: 1px solid #CBD5E1; color: #12372A; font-size: 11px; font-weight: 700; padding: 6px 10px; border-radius: 12px; cursor: pointer;">How to book & negotiate?</button>
+        <button onclick="sendChatQuick('How are drivers verified for safety?')" style="background: #FFFFFF; border: 1px solid #CBD5E1; color: #12372A; font-size: 11px; font-weight: 700; padding: 6px 10px; border-radius: 12px; cursor: pointer;">Driver license safety</button>
+        <button onclick="sendChatQuick('How can I publish a ride to split fuel?')" style="background: #FFFFFF; border: 1px solid #CBD5E1; color: #12372A; font-size: 11px; font-weight: 700; padding: 6px 10px; border-radius: 12px; cursor: pointer;">Publish a ride</button>
+        <button onclick="sendChatQuick('Connect me to human Support Team')" style="background: #FEF3C7; border: 1px solid #FCD34D; color: #92400E; font-size: 11px; font-weight: 800; padding: 6px 10px; border-radius: 12px; cursor: pointer;">📞 Human Support Team</button>
       </div>
     </div>
 
     <!-- Chat Input Area -->
-    <div style="padding: 12px 14px; background: #FFFFFF; border-top: 1px solid #E2E8F0; display: flex; align-items: center; gap: 8px;">
-      <input type="text" id="chatbotInput" placeholder="Ask Inba about TamizhPayanam..." onkeydown="if(event.key==='Enter') sendChatbotMessage()" style="flex: 1; border: 1.5px solid #CBD5E1; border-radius: 999px; padding: 10px 16px; font-size: 13px; outline: none; font-family: inherit;">
-      <button onclick="sendChatbotMessage()" style="background: #12372A; color: #FFD000; border: none; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 15px; font-weight: 800; flex-shrink: 0;" title="Send">
+    <div class="inba-input-bar">
+      <input type="text" id="chatbotInput" placeholder="Ask Inba about TamizhPayanam..." onkeydown="if(event.key==='Enter') sendChatbotMessage()" style="flex: 1; border: 1.5px solid #CBD5E1; border-radius: 999px; padding: 10px 16px; font-size: 14px; outline: none; font-family: inherit; background: #F8FAFC;">
+      <button onclick="sendChatbotMessage()" style="background: #12372A; color: #FFD000; border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; font-weight: 800; flex-shrink: 0;" title="Send">
         ➔
       </button>
     </div>
@@ -81,8 +81,179 @@
 
 <style>
   @keyframes chatPop {
-    from { opacity: 0; transform: scale(0.95) translateY(10px); }
+    from { opacity: 0; transform: scale(0.96) translateY(12px); }
     to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .inba-widget-container {
+    position: fixed !important;
+    bottom: 24px !important;
+    right: 24px !important;
+    z-index: 2147483647 !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    display: block !important;
+  }
+
+  .inba-launcher-btn {
+    background: #12372A !important;
+    color: #FFFFFF !important;
+    border: 2px solid #FFD000 !important;
+    border-radius: 999px !important;
+    padding: 12px 20px !important;
+    font-weight: 800 !important;
+    font-size: 14px !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    box-shadow: 0 10px 28px rgba(18, 55, 42, 0.45) !important;
+    transition: all 0.2s ease !important;
+    outline: none !important;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .inba-launcher-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 34px rgba(18, 55, 42, 0.55) !important;
+  }
+
+  .inba-launcher-icon-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .inba-sparkle-icon {
+    font-size: 18px;
+  }
+
+  .inba-online-dot {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 8px;
+    height: 8px;
+    background: #10B981;
+    border-radius: 50%;
+    border: 1.5px solid #12372A;
+  }
+
+  .inba-launcher-label {
+    letter-spacing: 0.2px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .inba-badge-ai {
+    background: #FFD000;
+    color: #12372A;
+    font-size: 10px;
+    font-weight: 900;
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+
+  .inba-window {
+    width: 380px;
+    height: 540px;
+    background: #FFFFFF;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.28);
+    border: 1.5px solid #E2E8F0;
+    overflow: hidden;
+    flex-direction: column;
+    animation: chatPop 0.25s ease-out;
+  }
+
+  .inba-header {
+    background: #12372A;
+    color: #FFFFFF;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 2px solid #FFD000;
+    flex-shrink: 0;
+  }
+
+  .inba-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FFD43B 0%, #D4A017 100%);
+    color: #12372A;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 15px;
+    border: 2px solid #FFFFFF;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+
+  .inba-close-btn {
+    background: none;
+    border: none;
+    color: #94A3B8;
+    font-size: 26px;
+    cursor: pointer;
+    padding: 0 6px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .inba-input-bar {
+    padding: 12px 14px;
+    background: #FFFFFF;
+    border-top: 1px solid #E2E8F0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  /* MOBILE SPECIFIC RESPONSIVE ADAPTATIONS */
+  @media (max-width: 640px) {
+    .inba-widget-container {
+      bottom: 16px !important;
+      right: 16px !important;
+      left: auto !important;
+    }
+
+    /* Floating Pill stays nicely compact and clean without blocking core buttons */
+    .inba-launcher-btn {
+      padding: 10px 16px !important;
+      font-size: 13px !important;
+      box-shadow: 0 8px 24px rgba(18, 55, 42, 0.45) !important;
+    }
+
+    /* Fullscreen Modal or Bottom-Sheet Feel on Mobile for high ergonomics */
+    .inba-window {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      width: 100vw !important;
+      height: 100dvh !important;
+      max-height: 100dvh !important;
+      border-radius: 0 !important;
+      border: none !important;
+      z-index: 2147483647 !important;
+    }
+
+    .inba-header {
+      padding: 14px 16px !important;
+      padding-top: max(14px, env(safe-area-inset-top)) !important;
+    }
+
+    .inba-input-bar {
+      padding-bottom: max(14px, env(safe-area-inset-bottom)) !important;
+    }
   }
 </style>
 
