@@ -221,19 +221,19 @@
 
       <!-- Auth Right Buttons / User Profile Avatar matching mockup -->
       <div style="display: flex; align-items: center; gap: 14px;">
+        {% if user.is_authenticated %}
         <a href="/support/help/" style="color: #64748B; text-decoration: none; font-size: 18px;" title="Notifications">🔔</a>
         <a href="/accounts/profile/" style="text-decoration: none; display: flex; align-items: center;" title="My Profile">
           <img src="/static/tamizh-payanam/images/p4.png" alt="Profile" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid #0D5C3A;">
         </a>
-        {% if not user.is_authenticated %}
+        <a href="/accounts/logout/" style="text-decoration: none; font-size: 13px; font-weight: 700; color: #EF4444; padding: 6px 12px;">Logout</a>
+        {% else %}
         <a href="/accounts/login/" style="text-decoration: none; font-size: 13.5px; font-weight: 700; color: #1F2937; background: #FFFFFF; border: 1.5px solid #CBD5E1; padding: 7px 18px; border-radius: 999px;">
           Login
         </a>
-        <a href="/accounts/login/" style="text-decoration: none; font-size: 13.5px; font-weight: 700; color: #FFFFFF; background: #0D5C3A; padding: 7px 20px; border-radius: 999px;">
+        <a href="/accounts/register/" style="text-decoration: none; font-size: 13.5px; font-weight: 700; color: #FFFFFF; background: #0D5C3A; padding: 7px 20px; border-radius: 999px;">
           Sign Up
         </a>
-        {% else %}
-        <a href="/accounts/logout/" style="text-decoration: none; font-size: 13px; font-weight: 700; color: #EF4444; padding: 6px 12px;">Logout</a>
         {% endif %}
       </div>
 
