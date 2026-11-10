@@ -1154,15 +1154,106 @@
   }
 
   function shareReel(reelId) {
+    var shareUrl = window.location.origin + '/community/?tab=reels#reel-' + reelId;
     if (navigator.share) {
       navigator.share({
         title: 'TamizhPayanam Travel Reel',
-        url: window.location.origin + '/community/?tab=reels#reel-' + reelId
+        text: 'Check out this travel reel on TamizhPayanam!',
+        url: shareUrl
+      }).catch(function(err) {});
+    } else {
+      copyToClipboardFallback(shareUrl, 'Reel link copied to clipboard!');
+    }
+  }
+
+  // Share Community Post
+  function sharePost(postId) {
+    var postCard = document.getElementById('post-card-' + postId);
+    var authorName = 'TamizhPayanam Post';
+    var textSnippet = 'Check out this travel story on TamizhPayanam!';
+    if (postCard) {
+      var authorEl = postCard.querySelector('.post-author-name');
+      var bodyEl = postCard.querySelector('.post-content-body');
+      if (authorEl) authorName = authorEl.innerText.trim();
+      if (bodyEl) textSnippet = bodyEl.innerText.trim().slice(0, 100) + '...';
+    }
+
+    var shareUrl = window.location.origin + '/community/?tab=feed#post-card-' + postId;
+
+    if (navigator.share) {
+      navigator.share({
+        title: authorName + ' on TamizhPayanam',
+        text: textSnippet,
+        url: shareUrl
+      }).catch(function(err) {
+        // Fallback if user cancels or share fails
+        copyToClipboardFallback(shareUrl, 'Post link copied to clipboard!');
       });
     } else {
-      navigator.clipboard.writeText(window.location.origin + '/community/?tab=reels#reel-' + reelId);
-      alert('Reel link copied to clipboard!');
+      copyToClipboardFallback(shareUrl, 'Post link copied to clipboard!');
     }
+  }
+
+  function copyToClipboardFallback(text, successMsg) {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(function() {
+        showShareToast(successMsg);
+      }).catch(function() {
+        fallbackExecCopy(text, successMsg);
+      });
+    } else {
+      fallbackExecCopy(text, successMsg);
+    }
+  }
+
+  function fallbackExecCopy(text, successMsg) {
+    var textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    textArea.style.left = "-999999px";
+    textArea.style.top = "-999999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+      document.execCommand('copy');
+      showShareToast(successMsg);
+    } catch (err) {
+      alert(successMsg);
+    }
+    document.body.removeChild(textArea);
+  }
+
+  function showShareToast(message) {
+    var toast = document.getElementById('community-share-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'community-share-toast';
+      toast.style.position = 'fixed';
+      toast.style.bottom = '28px';
+      toast.style.left = '50%';
+      toast.style.transform = 'translateX(-50%)';
+      toast.style.background = '#1e293b';
+      toast.style.color = '#ffffff';
+      toast.style.padding = '12px 24px';
+      toast.style.borderRadius = '999px';
+      toast.style.fontSize = '14px';
+      toast.style.fontWeight = '700';
+      toast.style.boxShadow = '0 10px 25px rgba(0,0,0,0.3)';
+      toast.style.zIndex = '99999';
+      toast.style.display = 'flex';
+      toast.style.alignItems = 'center';
+      toast.style.gap = '8px';
+      toast.style.transition = 'all 0.3s ease';
+      document.body.appendChild(toast);
+    }
+    toast.innerHTML = '<span>🔗</span> ' + message;
+    toast.style.opacity = '1';
+    toast.style.pointerEvents = 'auto';
+    setTimeout(function() {
+      toast.style.opacity = '0';
+      toast.style.pointerEvents = 'none';
+    }, 2800);
   }
 
   // Post interactions
