@@ -49,7 +49,7 @@ def community_feed_view(request):
             'comments': p.comments.all()
         })
 
-    reels = TravelReel.objects.all()
+    reels = TravelReel.objects.all().order_by('-created_at')
 
     tags = [
         'All Posts',
@@ -116,6 +116,40 @@ def create_post_view(request):
         return redirect('/community/')
 
     return redirect('/community/')
+
+
+@csrf_exempt
+def create_reel_view(request):
+    """
+    Every customer can upload and create a travel Reel (video with sound)
+    """
+    if request.method == 'POST':
+        title = request.POST.get('title', '').strip()
+        description = request.POST.get('description', '').strip()
+        route_tag = request.POST.get('route_tag', '').strip() or 'Tamil Nadu Drive'
+        sound_title = request.POST.get('sound_title', '').strip() or 'Original Sound - Highway Beats 🎵'
+        video_url = request.POST.get('video_url', '').strip() or '/static/videos/car_drive.mp4'
+        video_file = request.FILES.get('video_file')
+        creator_name = get_author_name(request)
+
+        user = request.user if request.user.is_authenticated else None
+
+        reel = TravelReel.objects.create(
+            creator=user,
+            creator_name=creator_name,
+            title=title or 'Scenic Tamil Nadu Drive',
+            description=description,
+            route_tag=route_tag,
+            sound_title=sound_title,
+            video_url=video_url,
+            video_file=video_file,
+            likes_count=1,
+            comments_count=0
+        )
+
+        return redirect('/community/?tab=reels#reel-' + str(reel.id))
+
+    return redirect('/community/?tab=reels')
 
 
 @csrf_exempt

@@ -45,6 +45,60 @@
   .flatpickr-months .flatpickr-next-month svg {
     fill: #fff !important;
   }
+
+  /* Search Bar Strict Single Line Proper Alignment */
+  @media (min-width: 900px) {
+    .search {
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      height: 76px !important;
+      padding: 6px 10px 6px 16px !important;
+      border-radius: 999px !important;
+      box-sizing: border-box !important;
+      background: #FFFFFF !important;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12) !important;
+      gap: 0 !important;
+    }
+    .search .field {
+      flex: 1 1 0 !important;
+      min-width: 0 !important;
+      height: 48px !important;
+      padding: 0 16px !important;
+      border-right: 1px solid #ECE2D6 !important;
+      border-bottom: none !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 12px !important;
+      box-sizing: border-box !important;
+    }
+    .search .field:last-of-type,
+    .search .field.no-divider {
+      border-right: none !important;
+    }
+    .search #swap-home-cities-btn {
+      position: relative !important;
+      margin: 0 -18px !important;
+      z-index: 15 !important;
+      flex-shrink: 0 !important;
+    }
+    .search .find {
+      flex-shrink: 0 !important;
+      width: auto !important;
+      min-width: 170px !important;
+      height: 58px !important;
+      margin: 0 0 0 10px !important;
+      padding: 0 24px !important;
+      border-radius: 999px !important;
+      font-size: 16px !important;
+      font-weight: 800 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 8px !important;
+      box-shadow: 0 4px 14px rgba(212, 160, 23, 0.35) !important;
+    }
+  }
 </style>
 </head>
 <body>

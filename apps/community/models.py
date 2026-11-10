@@ -33,7 +33,8 @@ class TravelReel(models.Model):
     creator_avatar = models.CharField(max_length=255, blank=True, default='')
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
-    video_url = models.URLField(max_length=500)
+    video_file = models.FileField(upload_to='travel_reels/', null=True, blank=True)
+    video_url = models.CharField(max_length=500, default='/static/videos/car_drive.mp4')
     sound_title = models.CharField(max_length=150, default='Original Audio - Highway Beats')
     route_tag = models.CharField(max_length=100, default='Chennai → Ooty')
     likes_count = models.PositiveIntegerField(default=120)
@@ -45,6 +46,12 @@ class TravelReel(models.Model):
 
     def __str__(self):
         return f"{self.creator_name} - {self.title}"
+
+    @property
+    def get_video_src(self):
+        if self.video_file:
+            return self.video_file.url
+        return self.video_url
 
 
 class PostLike(models.Model):
