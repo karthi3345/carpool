@@ -1,276 +1,622 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Profile &amp; Account | TamizhPayanam{% endblock %}
+{% block title %}About you & Account | TamizhPayanam Profile{% endblock %}
 
 {% block extra_head %}
 <style>
   :root {
-    --tp-dark: #071739;
-    --tp-blue: #0066FF;
-    --tp-bg: #F8FAFC;
-    --tp-border: #E2E8F0;
+    --bb-blue: #0070e0;
+    --bb-blue-dark: #0056b3;
+    --bb-dark: #054752;
+    --bb-subtext: #708c91;
+    --bb-border: #e6ebed;
+    --bb-bg-subtle: #f8fafb;
+    --bb-danger: #d32f2f;
   }
 
   body {
-    background-color: var(--tp-bg);
+    background-color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--bb-dark);
   }
 
-  .profile-menu-container {
-    max-width: 580px;
-    margin: 36px auto 80px;
-    padding: 0 20px;
-  }
-
-  /* Top Right Action Pill (Offer a ride + Flag + Profile Avatar badge) */
+  /* Sub App-bar */
   .profile-top-appbar {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 16px 20px 8px;
     display: flex;
     justify-content: flex-end;
     align-items: center;
     gap: 16px;
-    margin-bottom: 24px;
   }
 
-  .btn-offer-ride {
-    border: 2px solid #0066FF;
-    color: #0066FF;
-    background: #FFFFFF;
-    font-size: 14.5px;
-    font-weight: 800;
-    padding: 8px 22px;
-    border-radius: 999px;
+  .btn-offer-ride-outline {
+    border: 1.5px solid var(--bb-blue);
+    color: var(--bb-blue);
+    background: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 7px 18px;
+    border-radius: 9999px;
     text-decoration: none;
     transition: all 0.2s ease;
   }
-  .btn-offer-ride:hover {
-    background: #0066FF;
-    color: #FFFFFF;
+  .btn-offer-ride-outline:hover {
+    background: #eef6ff;
+    color: var(--bb-blue);
   }
 
-  .profile-badge-avatar {
+  .profile-badge-avatar-wrap {
     position: relative;
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    background: #E2E8F0;
+    background: #e2e8f0;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #94A3B8;
+    color: #64748b;
+    text-decoration: none;
   }
-  .notification-count-badge {
+
+  .profile-count-badge {
     position: absolute;
     top: -4px;
     right: -4px;
-    background: #DC2626;
-    color: #FFFFFF;
+    background: var(--bb-danger);
+    color: #ffffff;
     font-size: 11px;
     font-weight: 800;
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px solid #FFFFFF;
+    border: 2px solid #ffffff;
   }
 
-  /* Main Menu Card matching exact Reference d5c01b17.png */
-  .profile-menu-card {
-    background: #FFFFFF;
-    border: 1.5px solid #E2E8F0;
-    border-radius: 20px;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
-    overflow: hidden;
+  /* Container */
+  .profile-hub-container {
+    max-width: 780px;
+    margin: 0 auto 80px;
+    padding: 12px 20px;
   }
 
-  .menu-list-wrap {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  .menu-item-row {
+  /* User Info Hero */
+  .profile-user-hero {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 24px;
-    text-decoration: none;
-    color: #071739;
-    font-size: 16px;
-    font-weight: 800;
-    border-bottom: 1px solid #F1F5F9;
-    transition: background 0.15s ease;
-  }
-  .menu-item-row:last-child {
-    border-bottom: none;
-  }
-  .menu-item-row:hover {
-    background: #F8FAFC;
+    margin-bottom: 24px;
+    padding: 6px 0;
   }
 
-  .menu-item-left {
+  .profile-hero-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .profile-hero-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #e6ebed;
+    color: #054752;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: 800;
+    border: 2px solid #d8e2e5;
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+  }
+
+  .profile-hero-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .avatar-add-icon {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--bb-blue);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    border: 2px solid #ffffff;
+  }
+
+  .profile-hero-name {
+    font-size: 28px;
+    font-weight: 800;
+    color: #054752;
+    margin: 0 0 4px;
+    letter-spacing: -0.02em;
+  }
+
+  .profile-hero-rating {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: #708c91;
+    font-weight: 600;
+  }
+
+  /* Tab Navigation: About you vs Account */
+  .profile-tabs-header {
+    display: flex;
+    border-bottom: 2px solid #edf2f4;
+    margin-bottom: 30px;
+    gap: 36px;
+  }
+
+  .profile-tab-btn {
+    padding: 12px 0 14px;
+    font-size: 17px;
+    font-weight: 700;
+    color: #708c91;
+    text-decoration: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .profile-tab-btn:hover {
+    color: #054752;
+  }
+
+  .profile-tab-btn.active {
+    color: var(--bb-blue);
+    border-bottom-color: var(--bb-blue);
+  }
+
+  /* Section Groups */
+  .profile-section-group {
+    margin-bottom: 36px;
+  }
+
+  .section-group-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: #054752;
+    margin: 0 0 16px;
+    letter-spacing: -0.01em;
+  }
+
+  /* Rows list */
+  .profile-action-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--bb-border);
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.15s ease;
+    cursor: pointer;
+  }
+
+  .profile-action-row:hover {
+    background-color: #fafbfc;
+  }
+
+  .row-left-content {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .row-action-title {
+    font-size: 15.5px;
+    font-weight: 700;
+    color: #054752;
+  }
+
+  .row-action-title.highlight-blue {
+    color: var(--bb-blue);
+  }
+
+  .row-action-sub {
+    font-size: 13.5px;
+    color: #708c91;
+  }
+
+  .row-right-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #94a3b8;
+  }
+
+  .status-badge-verified {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #16a34a;
+    background: #e8f5e9;
+    padding: 3px 10px;
+    border-radius: 999px;
+  }
+
+  .status-badge-pending {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #d97706;
+    background: #fef3c7;
+    padding: 3px 10px;
+    border-radius: 999px;
+  }
+
+  .chevron-right-icon {
+    font-size: 20px;
+    color: #94a3b8;
+    line-height: 1;
+  }
+
+  /* Vehicles mini card */
+  .vehicle-item-box {
+    background: #f8fafb;
+    border: 1.5px solid var(--bb-border);
+    border-radius: 14px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .vehicle-info-left {
     display: flex;
     align-items: center;
     gap: 16px;
   }
 
-  .menu-item-icon {
-    width: 26px;
-    height: 26px;
-    color: #475569;
+  .vehicle-icon-wrap {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: #ffffff;
+    border: 1px solid var(--bb-border);
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
+    font-size: 20px;
   }
 
-  .menu-item-chevron {
-    color: #64748B;
-    font-size: 18px;
-    font-weight: 600;
-  }
-
-  .inbox-pill-count {
-    background: #DC2626;
-    color: #FFFFFF;
-    font-size: 12px;
-    font-weight: 800;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
+  /* Logout link */
+  .btn-logout-row {
+    color: var(--bb-blue);
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: none;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    margin-left: 6px;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .btn-logout-row:hover {
+    text-decoration: underline;
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="profile-menu-container">
+<!-- Top App Bar -->
+<div class="profile-top-appbar">
+  <!-- Search Icon -->
+  <a href="/rides/search/" style="color: #0070e0; font-size: 20px; text-decoration: none;" title="Search Rides">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0070e0" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+  </a>
 
-  <!-- Top bar matching screenshot d5c01b17.png -->
-  <div class="profile-top-appbar">
-    <!-- Search Icon -->
-    <a href="/rides/search/" style="color: #0066FF; font-size: 20px; text-decoration: none;" title="Search Rides">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
-    </a>
+  <!-- Offer a ride button -->
+  <a href="/rides/publish/" class="btn-offer-ride-outline">
+    Offer a ride
+  </a>
 
-    <!-- Offer a ride button -->
-    <a href="/rides/publish/" class="btn-offer-ride">
-      Offer a ride
-    </a>
+  <!-- Flag icon (India) -->
+  <span style="font-size: 22px; cursor: pointer;" title="India (Tamil Nadu)">🇮🇳</span>
 
-    <!-- Flag icon (India) -->
-    <span style="font-size: 22px; cursor: pointer;" title="India (Tamil Nadu)">🇮🇳</span>
+  <!-- Profile Avatar with badge -->
+  <a href="/accounts/profile/?tab=menu" class="profile-badge-avatar-wrap" title="User Menu">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+    </svg>
+    <span class="profile-count-badge">3</span>
+  </a>
+</div>
 
-    <!-- Profile Avatar with badge -->
-    <div class="profile-badge-avatar" title="{{ user.username|default:'User' }}">
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-      </svg>
-      <span class="notification-count-badge">3</span>
+<div class="profile-hub-container">
+
+  <!-- User Profile Hero Banner -->
+  <div class="profile-user-hero">
+    <div class="profile-hero-left">
+      <div class="profile-hero-avatar" title="Change profile photo">
+        {{ user.first_name|default:user.username|slice:":1"|upper }}
+        <div class="avatar-add-icon">&#43;</div>
+      </div>
+      <div>
+        <h1 class="profile-hero-name">{{ user.get_full_name|default:user.username|title }}</h1>
+        <div class="profile-hero-rating">
+          <span style="color: #f59e0b; font-size: 15px;">&#9733;</span>
+          <span>4.9 / 5 &bull; Experienced Carpooler</span>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Menu Card matching exact image items -->
-  <div class="profile-menu-card">
-    <div class="menu-list-wrap">
+  <!-- Tabs: About you vs Account (Matching BlaBlaCar Profile tabs) -->
+  <div class="profile-tabs-header">
+    <a href="/accounts/profile/?tab=about" class="profile-tab-btn {% if active_tab == 'about' %}active{% endif %}">
+      About you
+    </a>
+    <a href="/accounts/profile/?tab=account" class="profile-tab-btn {% if active_tab == 'account' %}active{% endif %}">
+      Account
+    </a>
+  </div>
+
+  <!-- TAB 1: About You View -->
+  {% if active_tab == 'about' %}
+    <div class="tab-pane-content" id="pane-about-you">
       
-      <!-- 1. Your rides -->
-      <a href="/rides/my-rides/" class="menu-item-row">
-        <div class="menu-item-left">
-          <div class="menu-item-icon">
-            <!-- Road / Carpool Two Curves Icon -->
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M18 20a6 6 0 0 0-6-6 6 6 0 0 0-6 6"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
+      <!-- Section 1: Verify your profile -->
+      <div class="profile-section-group">
+        <h2 class="section-group-title">Verify your profile</h2>
+        
+        <!-- Verify Govt ID -->
+        <a href="/rides/publish/" class="profile-action-row">
+          <div class="row-left-content">
+            <span class="row-action-title highlight-blue">Verify your Govt ID proof</span>
+            <span class="row-action-sub">Aadhaar, Driving Licence or Passport</span>
           </div>
-          <span>Your rides</span>
-        </div>
-        <span class="menu-item-chevron">&rsaquo;</span>
-      </a>
+          <div class="row-right-status">
+            <span class="status-badge-verified">Verified</span>
+            <span class="chevron-right-icon">&rsaquo;</span>
+          </div>
+        </a>
 
-      <!-- 2. Inbox (3) -->
-      <a href="/messages/list/" class="menu-item-row">
-        <div class="menu-item-left">
-          <div class="menu-item-icon">
-            <!-- Chat bubble Icon -->
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-            </svg>
+        <!-- Confirm Phone -->
+        <div class="profile-action-row">
+          <div class="row-left-content">
+            <span class="row-action-title">Confirm phone number</span>
+            <span class="row-action-sub">+91 {{ phone_number }}</span>
           </div>
-          <span>Inbox <span class="inbox-pill-count">3</span></span>
+          <div class="row-right-status">
+            <span class="status-badge-verified">&#10003; Verified</span>
+            <span class="chevron-right-icon">&rsaquo;</span>
+          </div>
         </div>
-        <span class="menu-item-chevron">&rsaquo;</span>
-      </a>
 
-      <!-- 3. Profile -->
-      <a href="/accounts/profile/" class="menu-item-row">
-        <div class="menu-item-left">
-          <div class="menu-item-icon">
-            <!-- User in circle Icon -->
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <circle cx="12" cy="10" r="3"></circle>
-              <path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662"></path>
-            </svg>
+        <!-- Confirm Email -->
+        <div class="profile-action-row">
+          <div class="row-left-content">
+            <span class="row-action-title">Confirm email address</span>
+            <span class="row-action-sub">{{ user.email|default:'karthikrajapm12@gmail.com' }}</span>
           </div>
-          <span>Profile</span>
+          <div class="row-right-status">
+            <span class="status-badge-verified">&#10003; Verified</span>
+            <span class="chevron-right-icon">&rsaquo;</span>
+          </div>
         </div>
-        <span class="menu-item-chevron">&rsaquo;</span>
-      </a>
+      </div>
 
-      <!-- 4. Transfers -->
-      <a href="/payments/history/" class="menu-item-row">
-        <div class="menu-item-left">
-          <div class="menu-item-icon">
-            <!-- Two coins / Transfers Icon -->
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="6" width="20" height="12" rx="2"></rect>
-              <circle cx="12" cy="12" r="2"></circle>
-              <path d="M6 12h.01M18 12h.01"></path>
-            </svg>
-          </div>
-          <span>Transfers</span>
-        </div>
-        <span class="menu-item-chevron">&rsaquo;</span>
-      </a>
+      <!-- Section 2: About you Details -->
+      <div class="profile-section-group">
+        <h2 class="section-group-title">About you</h2>
 
-      <!-- 5. Payments & refunds -->
-      <a href="/payments/history/" class="menu-item-row">
-        <div class="menu-item-left">
-          <div class="menu-item-icon">
-            <!-- Bank / Pillars Icon -->
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 21h18M3 10h18M5 10v11M19 10v11M9 10v11M15 10v11M12 3l9 7H3l9-7z"></path>
-            </svg>
+        <a href="#" class="profile-action-row">
+          <div class="row-left-content">
+            <span class="row-action-title highlight-blue">Add a mini bio</span>
+            <span class="row-action-sub">Tell co-passengers about your travel habits, hobbies and playlists</span>
           </div>
-          <span>Payments &amp; refunds</span>
-        </div>
-        <span class="menu-item-chevron">&rsaquo;</span>
-      </a>
+          <div class="row-right-status">
+            <span class="chevron-right-icon">&rsaquo;</span>
+          </div>
+        </a>
 
-      <!-- 6. Log out -->
-      <a href="/accounts/logout/" class="menu-item-row">
-        <div class="menu-item-left">
-          <div class="menu-item-icon">
-            <!-- Circle with X Icon -->
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="15" y1="9" x2="9" y2="15"></line>
-              <line x1="9" y1="9" x2="15" y2="15"></line>
-            </svg>
+        <a href="#" class="profile-action-row">
+          <div class="row-left-content">
+            <span class="row-action-title highlight-blue">Travel preferences</span>
+            <span class="row-action-sub">Chattiness, music on highway, smoking policy, pet friendliness</span>
           </div>
-          <span>Log out</span>
+          <div class="row-right-status">
+            <span class="chevron-right-icon">&rsaquo;</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Section 3: Vehicles -->
+      <div class="profile-section-group">
+        <h2 class="section-group-title">Vehicles</h2>
+        
+        <!-- Active Car Card -->
+        <div class="vehicle-item-box">
+          <div class="vehicle-info-left">
+            <div class="vehicle-icon-wrap">🚗</div>
+            <div>
+              <div style="font-size: 15px; font-weight: 800; color: #054752;">Maruti Suzuki Dzire (White)</div>
+              <div style="font-size: 12.5px; color: #708c91; margin-top: 2px;">TN-01-AB-1234 &bull; 4 Seats with AC</div>
+            </div>
+          </div>
+          <span style="font-size: 12px; font-weight: 700; color: #0070e0; cursor: pointer;">Edit</span>
         </div>
-        <span class="menu-item-chevron">&rsaquo;</span>
-      </a>
+
+        <a href="/rides/publish/" class="profile-action-row">
+          <div class="row-left-content">
+            <span class="row-action-title highlight-blue">&#43; Add a vehicle</span>
+          </div>
+          <div class="row-right-status">
+            <span class="chevron-right-icon">&rsaquo;</span>
+          </div>
+        </a>
+      </div>
 
     </div>
-  </div>
+  {% endif %}
+
+  <!-- TAB 2: Account View -->
+  {% if active_tab == 'account' %}
+    <div class="tab-pane-content" id="pane-account">
+      
+      <!-- Section 1: Ratings & Reviews -->
+      <div class="profile-section-group">
+        <h2 class="section-group-title">Ratings & Reviews</h2>
+
+        <a href="/reviews/" class="profile-action-row">
+          <div class="row-left-content">
+            <span class="row-action-title">Ratings you've received</span>
+            <span class="row-action-sub">See reviews from drivers and passengers</span>
+          </div>
+          <div class="row-right-status">
+            <span style="font-weight: 700; color: #054752;">14 reviews</span>
+            <span class="chevron-right-icon">&rsaquo;</span>
+          </div>
+        </a>
+
+        <a href="/reviews/" class="profile-action-row">
+          <div class="row-left-content">
+            <span class="row-action-title">Ratings you've given</span>
+            <span class="row-action-sub">Feedback you left for other travelers</span>
+          </div>
+          <div class="row-right-status">
+            <span class="chevron-right-icon">&rsaquo;</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Section 2: Financial & Payments -->
+      <div class="profile-section-group">
+        <h2 class="section-group-title">Money & Transfers</h2>
+
+        <a href="/payments/history/" class="profile-action-row">
+          <div class="row-left-content">
+            <span class="row-action-title">Transfers</span>
+            <span class="row-action-sub">Bank accounts (UPI / IMPS) & payout transfers</span>
+          </div>
+          <div class="row-right-status">
+            <span class="chevron-right-icon">&rsaquo;</span>
+          </div>
+        </a>
+
+        <a href="/payments/history/" class="profile-action-row">
+          <div class="row-left-content">
+            <span class="row-action-title">Payments & refunds</span>
+            <span class="row-action-sub">Booking payment receipts & refund history</span>
+          </div>
+          <div class="row-right-status">
+            <span class="chevron-right-icon">&rsaquo;</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Section 3: Account Settings & Log out -->
+      <div class="profile-section-group">
+        <h2 class="section-group-title">Account settings</h2>
+
+        <a href="#" class="profile-action-row">
+          <div class="row-left-content">
+            <span class="row-action-title">Change password</span>
+            <span class="row-action-sub">Update your account security password</span>
+          </div>
+          <div class="row-right-status">
+            <span class="chevron-right-icon">&rsaquo;</span>
+          </div>
+        </a>
+
+        <a href="#" class="profile-action-row">
+          <div class="row-left-content">
+            <span class="row-action-title">Communication preferences</span>
+            <span class="row-action-sub">SMS notifications, emails & ride alerts</span>
+          </div>
+          <div class="row-right-status">
+            <span class="chevron-right-icon">&rsaquo;</span>
+          </div>
+        </a>
+
+        <div style="margin-top: 24px;">
+          <a href="/accounts/logout/" class="btn-logout-row">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            Log out
+          </a>
+        </div>
+      </div>
+
+    </div>
+  {% endif %}
+
+  <!-- TAB 3: Full Menu View (if requested via ?tab=menu) -->
+  {% if active_tab == 'menu' %}
+    <div class="profile-section-group" style="margin-top: 10px;">
+      <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 18px; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,0.03);">
+        <a href="/rides/my-rides/" class="profile-action-row" style="padding: 18px 24px;">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <span style="font-size: 20px;">🛣️</span>
+            <span class="row-action-title">Your rides</span>
+          </div>
+          <span class="chevron-right-icon">&rsaquo;</span>
+        </a>
+        <a href="/messages/list/" class="profile-action-row" style="padding: 18px 24px;">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <span style="font-size: 20px;">💬</span>
+            <span class="row-action-title">Inbox</span>
+          </div>
+          <span class="chevron-right-icon">&rsaquo;</span>
+        </a>
+        <a href="/accounts/profile/?tab=about" class="profile-action-row" style="padding: 18px 24px;">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <span style="font-size: 20px;">👤</span>
+            <span class="row-action-title">Profile (About you & Account)</span>
+          </div>
+          <span class="chevron-right-icon">&rsaquo;</span>
+        </a>
+        <a href="/payments/history/" class="profile-action-row" style="padding: 18px 24px;">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <span style="font-size: 20px;">💳</span>
+            <span class="row-action-title">Transfers</span>
+          </div>
+          <span class="chevron-right-icon">&rsaquo;</span>
+        </a>
+        <a href="/payments/history/" class="profile-action-row" style="padding: 18px 24px;">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <span style="font-size: 20px;">🏦</span>
+            <span class="row-action-title">Payments & refunds</span>
+          </div>
+          <span class="chevron-right-icon">&rsaquo;</span>
+        </a>
+        <a href="/accounts/logout/" class="profile-action-row" style="padding: 18px 24px; border-bottom: none;">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <span style="font-size: 20px;">🚪</span>
+            <span class="row-action-title" style="color: #dc2626;">Log out</span>
+          </div>
+          <span class="chevron-right-icon" style="color: #dc2626;">&rsaquo;</span>
+        </a>
+      </div>
+    </div>
+  {% endif %}
 
 </div>
 {% endblock %}

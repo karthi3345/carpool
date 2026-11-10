@@ -103,7 +103,15 @@ def my_rides_view(request):
     })
 
 def user_profile_view(request):
-    return render(request, 'accounts/profile.html')
+    tab = request.GET.get('tab', 'about')
+    phone_number = "8610177637"
+    if request.user.is_authenticated:
+        # Check if user profile has phone or fallback to session phone
+        phone_number = getattr(request.user, 'phone', phone_number)
+    return render(request, 'accounts/profile.html', {
+        'active_tab': tab,
+        'phone_number': phone_number,
+    })
 
 def inbox_messages_view(request):
     # Support both list view and active conversation view
