@@ -99,6 +99,83 @@
       box-shadow: 0 4px 14px rgba(212, 160, 23, 0.35) !important;
     }
   }
+
+  /* Exact Hero Action Buttons: Publish a Ride & Know More */
+  .hero-actions {
+    position: absolute !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    bottom: 24px !important;
+    top: auto !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 18px !important;
+    z-index: 20 !important;
+    width: auto !important;
+  }
+
+  .hero-actions .btn-publish-exact {
+    background: #50070B !important; /* Deep rich maroon */
+    color: #FFFFFF !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 15.5px !important;
+    font-weight: 800 !important;
+    height: 52px !important;
+    min-height: 52px !important;
+    padding: 0 30px !important;
+    border-radius: 999px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    text-decoration: none !important;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25) !important;
+    transition: all 0.2s ease !important;
+    border: none !important;
+    white-space: nowrap !important;
+  }
+  .hero-actions .btn-publish-exact:hover {
+    background: #3B0407 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.32) !important;
+  }
+  .hero-actions .btn-publish-exact svg {
+    width: 20px !important;
+    height: 20px !important;
+    fill: currentColor !important;
+    flex-shrink: 0 !important;
+  }
+
+  .hero-actions .btn-know-exact {
+    background: rgba(254, 226, 199, 0.65) !important; /* Frosted warm peach */
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    border: 1.5px solid rgba(139, 46, 34, 0.45) !important;
+    color: #4A0E13 !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 15.5px !important;
+    font-weight: 800 !important;
+    height: 52px !important;
+    min-height: 52px !important;
+    padding: 0 28px !important;
+    border-radius: 999px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    text-decoration: none !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12) !important;
+    transition: all 0.2s ease !important;
+    white-space: nowrap !important;
+  }
+  .hero-actions .btn-know-exact:hover {
+    background: rgba(255, 255, 255, 0.9) !important;
+    border-color: #50070B !important;
+    color: #3B0407 !important;
+    transform: translateY(-1px) !important;
+  }
+
 </style>
 </head>
 <body>
@@ -210,9 +287,18 @@
   </datalist>
 
   <div class="hero-actions">
-    <a href="/rides/publish/" class="btn btn-maroon" style="text-decoration:none;">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 11l1.600-4.500A2 2 0 0 1 8.500 5h7a2 2 0 0 1 1.900 1.500L19 11a2 2 0 0 1 2 2v4h-2v2h-3v-2H8v2H5v-2H3v-4a2 2 0 0 1 2-2zm2.200 0h9.600l-1-3H8.200zM6.500 14a1.200 1.200 0 1 0 0 2.400 1.200 1.200 0 0 0 0-2.400zm11 0a1.200 1.200 0 1 0 0 2.400 1.200 1.200 0 0 0 0-2.400z"/></svg>Publish a Ride</a>
-    <a class="btn btn-ghost" href="#heritage">Know More <span aria-hidden="true">→</span></a>
+    <a href="/rides/publish/" class="btn-publish-exact">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 17h14M5 17a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.5l1.5-3h8l1.5 3H19a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2M5 17l-.5 2M19 17l.5 2"/>
+        <circle cx="7.5" cy="13.5" r="1.5" fill="currentColor"/>
+        <circle cx="16.5" cy="13.5" r="1.5" fill="currentColor"/>
+      </svg>
+      <span>Publish a Ride</span>
+    </a>
+    <a class="btn-know-exact" href="#heritage">
+      <span>Know More</span>
+      <span aria-hidden="true">&rarr;</span>
+    </a>
   </div>
 </section>
 <section class="strip" id="heritage">
