@@ -70,15 +70,24 @@ def explore_map_view(request):
 
 def my_rides_view(request):
     tab = request.GET.get('tab', 'upcoming')
-    all_rides = Ride.objects.all().order_by('-id')
+    
+    # Exclude all dummy/seeded rides: Only show real rides published by users (which contain driver credentials and ride features)
+    all_rides = Ride.objects.filter(notes__contains='Features:').order_by('-id')
+    
+    # If the user is logged in, optionally filter by user's name if matching rides exist
+    if request.user.is_authenticated:
+        user_name = (request.user.get_full_name() or request.user.username).strip().lower()
+        user_rides = all_rides.filter(driver_name__icontains=user_name)
+        if user_rides.exists():
+            all_rides = user_rides
     
     if tab == 'completed':
-        rides = all_rides.filter(status='completed')[:15]
+        rides = all_rides.filter(status='completed')
     elif tab == 'cancelled':
-        rides = all_rides.filter(status='cancelled')[:15]
+        rides = all_rides.filter(status='cancelled')
     else:
-        # upcoming / active
-        rides = all_rides.filter(status__in=['published', 'pending', 'fully_booked'])[:15]
+        # upcoming / active / published / pending
+        rides = all_rides.filter(status__in=['published', 'pending', 'active', 'fully_booked'])
         
     cancelled_param = request.GET.get('cancelled') == '1'
     return render(request, 'rides/my_rides.html', {
