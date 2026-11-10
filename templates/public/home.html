@@ -7,6 +7,45 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/static/tamizh-payanam/style.css">
+<!-- Flatpickr Datepicker CSS -->
+<link rel="stylesheet" href="/static/vendor/flatpickr/flatpickr.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<style>
+  .flatpickr-calendar {
+    border-radius: 16px !important;
+    box-shadow: 0 16px 36px rgba(13, 92, 58, 0.16) !important;
+    border: 1.5px solid #E2E8F0 !important;
+    font-family: inherit !important;
+  }
+  .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange,
+  .flatpickr-day.selected:focus, .flatpickr-day.selected:hover {
+    background: #0D5C3A !important;
+    border-color: #0D5C3A !important;
+    font-weight: 700 !important;
+  }
+  .flatpickr-day.today {
+    border-color: #F59E0B !important;
+  }
+  .flatpickr-day:hover {
+    background: #E8F5E9 !important;
+  }
+  .flatpickr-months .flatpickr-month {
+    background: #0D5C3A !important;
+    color: #fff !important;
+    fill: #fff !important;
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+  }
+  .flatpickr-current-month .flatpickr-monthDropdown-months,
+  .flatpickr-current-month input.cur-year {
+    color: #fff !important;
+    font-weight: 800 !important;
+  }
+  .flatpickr-months .flatpickr-prev-month svg,
+  .flatpickr-months .flatpickr-next-month svg {
+    fill: #fff !important;
+  }
+</style>
 </head>
 <body>
 
@@ -1003,6 +1042,38 @@ function toggleFaq(element) {
       });
 
       updateUI();
+    })();
+
+    // Journey Date Flatpickr Calendar
+    (function() {
+      const dateInput = document.getElementById('date');
+      function initHomeCalendar() {
+        if (typeof flatpickr !== 'undefined' && dateInput) {
+          flatpickr(dateInput, {
+            dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "D, d M Y",
+            minDate: "today",
+            defaultDate: "today",
+            theme: "material_green"
+          });
+        }
+      }
+
+      if (typeof flatpickr === 'undefined') {
+        const script = document.createElement('script');
+        script.src = "/static/vendor/flatpickr/flatpickr.min.js";
+        script.onload = initHomeCalendar;
+        script.onerror = function() {
+          const cdnScript = document.createElement('script');
+          cdnScript.src = "https://cdn.jsdelivr.net/npm/flatpickr";
+          cdnScript.onload = initHomeCalendar;
+          document.head.appendChild(cdnScript);
+        };
+        document.head.appendChild(script);
+      } else {
+        initHomeCalendar();
+      }
     })();
   </script>
 

@@ -258,10 +258,16 @@
               <div class="secure-document-card" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 12px; text-align: center; position: relative;">
                 <div style="font-size: 12px; font-weight: 800; color: #1e293b; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
                   <span>🚗 DL Front (Protected)</span>
-                  <span style="font-size: 10px; color: #DC2626; font-weight: 700;">🔒 No Screenshot</span>
+                  {% if ride.driver_license_masked_image %}
+                    <button type="button" onclick="openDocPreview('{{ ride.driver_license_masked_image.url }}', 'Driving Licence (Front) - Ride #{{ ride.id }}')" style="background: #0D5C3A; color: #FFFFFF; border: none; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 4px; cursor: pointer;">🔍 Preview</button>
+                  {% elif ride.driver_license_image %}
+                    <button type="button" onclick="openDocPreview('{{ ride.driver_license_image.url }}', 'Driving Licence (Front) - Ride #{{ ride.id }}')" style="background: #0D5C3A; color: #FFFFFF; border: none; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 4px; cursor: pointer;">🔍 Preview</button>
+                  {% else %}
+                    <span style="font-size: 10px; color: #DC2626; font-weight: 700;">🔒 No Screenshot</span>
+                  {% endif %}
                 </div>
                 {% if ride.driver_license_masked_image %}
-                  <div style="background: #0F172A; border-radius: 8px; overflow: hidden; height: 180px; display: flex; align-items: center; justify-content: center; position: relative;">
+                  <div style="background: #0F172A; border-radius: 8px; overflow: hidden; height: 180px; display: flex; align-items: center; justify-content: center; position: relative; cursor: pointer;" onclick="openDocPreview('{{ ride.driver_license_masked_image.url }}', 'Driving Licence (Front) - Ride #{{ ride.id }}')">
                     <img src="{{ ride.driver_license_masked_image.url }}" alt="Driving Licence Front" style="max-height: 175px; max-width: 100%; object-fit: contain;">
                     <!-- Anti-screenshot watermark overlay -->
                     <div class="anti-screenshot-guard">
@@ -270,7 +276,7 @@
                     </div>
                   </div>
                 {% elif ride.driver_license_image %}
-                  <div style="background: #0F172A; border-radius: 8px; overflow: hidden; height: 180px; display: flex; align-items: center; justify-content: center; position: relative;">
+                  <div style="background: #0F172A; border-radius: 8px; overflow: hidden; height: 180px; display: flex; align-items: center; justify-content: center; position: relative; cursor: pointer;" onclick="openDocPreview('{{ ride.driver_license_image.url }}', 'Driving Licence (Front) - Ride #{{ ride.id }}')">
                     <img src="{{ ride.driver_license_image.url }}" alt="Driving Licence Front" style="max-height: 175px; max-width: 100%; object-fit: contain;">
                     <div class="anti-screenshot-guard">
                       <div class="watermark-stamp">CONFIDENTIAL • NO SCREENSHOT</div>
@@ -289,10 +295,14 @@
               <div class="secure-document-card" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 12px; text-align: center; position: relative;">
                 <div style="font-size: 12px; font-weight: 800; color: #1e293b; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
                   <span>🚗 DL Back (Protected)</span>
-                  <span style="font-size: 10px; color: #DC2626; font-weight: 700;">🔒 No Screenshot</span>
+                  {% if ride.driver_license_back_image %}
+                    <button type="button" onclick="openDocPreview('{{ ride.driver_license_back_image.url }}', 'Driving Licence (Back) - Ride #{{ ride.id }}')" style="background: #0D5C3A; color: #FFFFFF; border: none; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 4px; cursor: pointer;">🔍 Preview</button>
+                  {% else %}
+                    <span style="font-size: 10px; color: #DC2626; font-weight: 700;">🔒 No Screenshot</span>
+                  {% endif %}
                 </div>
                 {% if ride.driver_license_back_image %}
-                  <div style="background: #0F172A; border-radius: 8px; overflow: hidden; height: 180px; display: flex; align-items: center; justify-content: center; position: relative;">
+                  <div style="background: #0F172A; border-radius: 8px; overflow: hidden; height: 180px; display: flex; align-items: center; justify-content: center; position: relative; cursor: pointer;" onclick="openDocPreview('{{ ride.driver_license_back_image.url }}', 'Driving Licence (Back) - Ride #{{ ride.id }}')">
                     <img src="{{ ride.driver_license_back_image.url }}" alt="Driving Licence Back" style="max-height: 175px; max-width: 100%; object-fit: contain;">
                     <div class="anti-screenshot-guard">
                       <div class="watermark-stamp">CONFIDENTIAL • NO SCREENSHOT</div>
@@ -311,10 +321,14 @@
               <div class="secure-document-card" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 12px; text-align: center; position: relative;">
                 <div style="font-size: 12px; font-weight: 800; color: #1e293b; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
                   <span>🪪 Government ID Proof</span>
-                  <span style="font-size: 10px; color: #DC2626; font-weight: 700;">🔒 No Screenshot</span>
+                  {% if ride.govt_id_front_image %}
+                    <button type="button" onclick="openDocPreview('{{ ride.govt_id_front_image.url }}', 'Government ID Proof - Ride #{{ ride.id }}')" style="background: #0D5C3A; color: #FFFFFF; border: none; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 4px; cursor: pointer;">🔍 Preview</button>
+                  {% else %}
+                    <span style="font-size: 10px; color: #DC2626; font-weight: 700;">🔒 No Screenshot</span>
+                  {% endif %}
                 </div>
                 {% if ride.govt_id_front_image %}
-                  <div style="background: #0F172A; border-radius: 8px; overflow: hidden; height: 180px; display: flex; align-items: center; justify-content: center; position: relative;">
+                  <div style="background: #0F172A; border-radius: 8px; overflow: hidden; height: 180px; display: flex; align-items: center; justify-content: center; position: relative; cursor: pointer;" onclick="openDocPreview('{{ ride.govt_id_front_image.url }}', 'Government ID Proof - Ride #{{ ride.id }}')">
                     <img src="{{ ride.govt_id_front_image.url }}" alt="Government ID" style="max-height: 175px; max-width: 100%; object-fit: contain;">
                     <div class="anti-screenshot-guard">
                       <div class="watermark-stamp">CONFIDENTIAL • NO SCREENSHOT</div>
@@ -430,7 +444,72 @@
 
 </div>
 
+<!-- Modal Document Preview (Protected, No Screenshot, Watermarked) -->
+<div id="previewDocModal" style="display: none; position: fixed; inset: 0; z-index: 999999; background: rgba(15, 23, 42, 0.94); backdrop-filter: blur(8px); align-items: center; justify-content: center; padding: 20px;">
+  <div style="background: #0F172A; border: 2px solid #334155; border-radius: 16px; width: 100%; max-width: 900px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; position: relative; box-shadow: 0 25px 60px rgba(0,0,0,0.5);">
+    
+    <!-- Modal Header -->
+    <div style="padding: 14px 20px; background: #1E293B; border-bottom: 1px solid #334155; display: flex; align-items: center; justify-content: space-between;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="font-size: 18px;">🛡️</span>
+        <span id="previewDocModalTitle" style="color: #F8FAFC; font-weight: 800; font-size: 15px;">Document Preview (Protected Inspection)</span>
+        <span style="background: #FEF2F2; color: #DC2626; border: 1px solid #FCA5A5; font-size: 10.5px; padding: 2px 8px; border-radius: 4px; font-weight: 800;">🚫 NO SCREENSHOTS</span>
+      </div>
+      <button type="button" onclick="closeDocPreviewModal()" style="background: #334155; border: none; color: #FFFFFF; font-size: 20px; font-weight: 700; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;">&times;</button>
+    </div>
+
+    <!-- Modal Image Body with Dynamic Watermarking -->
+    <div class="secure-document-card" style="flex: 1; min-height: 480px; position: relative; display: flex; align-items: center; justify-content: center; padding: 16px; background: #020617; overflow: hidden;">
+      <img id="previewDocModalImg" src="" alt="Document Preview" style="max-height: 70vh; max-width: 100%; object-fit: contain; pointer-events: none; user-select: none;">
+      
+      <!-- Anti-Screenshot Watermark Grid -->
+      <div class="anti-screenshot-guard" style="pointer-events: none;">
+        <div class="watermark-stamp" style="font-size: 22px; margin-bottom: 30px;">CONFIDENTIAL INSPECTION ONLY • NO SCREENSHOT</div>
+        <div class="watermark-stamp" style="font-size: 16px; margin-bottom: 30px;">INTERNAL USE ONLY • TAMIZHPAYANAM VERIFICATION</div>
+        <div class="watermark-stamp" style="font-size: 14px;">OFFICER {{ officer_name|default:"LK" }} • REPRODUCTION PROHIBITED</div>
+      </div>
+    </div>
+
+    <!-- Modal Footer -->
+    <div style="padding: 10px 20px; background: #1E293B; border-top: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #94A3B8;">
+      <span>🔒 Screen capture, snipping, and right-click downloading are disabled for driver security.</span>
+      <button type="button" onclick="closeDocPreviewModal()" style="background: #0066FF; color: #FFFFFF; border: none; padding: 6px 16px; border-radius: 6px; font-weight: 700; cursor: pointer;">Done Inspecting</button>
+    </div>
+
+  </div>
+</div>
+
 <script>
+  function openDocPreview(imgUrl, title) {
+    if (!imgUrl) return;
+    const modal = document.getElementById('previewDocModal');
+    const modalImg = document.getElementById('previewDocModalImg');
+    const modalTitle = document.getElementById('previewDocModalTitle');
+    if (modal && modalImg) {
+      modalImg.src = imgUrl;
+      if (modalTitle) modalTitle.textContent = title || 'Protected Document Preview';
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function closeDocPreviewModal() {
+    const modal = document.getElementById('previewDocModal');
+    if (modal) {
+      modal.style.display = 'none';
+      document.body.style.overflow = '';
+      const modalImg = document.getElementById('previewDocModalImg');
+      if (modalImg) modalImg.src = '';
+    }
+  }
+
+  // Close on Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeDocPreviewModal();
+    }
+  });
+
   function applyReasonPreset(selectEl, inputId) {
     const input = document.getElementById(inputId);
     if (selectEl.value) {

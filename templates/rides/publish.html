@@ -4,7 +4,99 @@
 {% block title %}Publish a Ride - Driver & Vehicle Details | TamizhPayanam{% endblock %}
 
 {% block extra_head %}
+<!-- Flatpickr Datepicker CSS -->
+<link rel="stylesheet" href="{% static 'vendor/flatpickr/flatpickr.min.css' %}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <style>
+  /* Flatpickr Theme Customization to match TamizhPayanam Green */
+  .flatpickr-calendar {
+    border-radius: 16px !important;
+    box-shadow: 0 16px 36px rgba(13, 92, 58, 0.16) !important;
+    border: 1.5px solid #E2E8F0 !important;
+    font-family: inherit !important;
+  }
+  .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange,
+  .flatpickr-day.selected:focus, .flatpickr-day.selected:hover {
+    background: #0D5C3A !important;
+    border-color: #0D5C3A !important;
+    font-weight: 700 !important;
+  }
+  .flatpickr-day.today {
+    border-color: #F59E0B !important;
+  }
+  .flatpickr-day:hover {
+    background: #E8F5E9 !important;
+  }
+  .flatpickr-months .flatpickr-month {
+    background: #0D5C3A !important;
+    color: #fff !important;
+    fill: #fff !important;
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+  }
+  .flatpickr-current-month .flatpickr-monthDropdown-months,
+  .flatpickr-current-month input.cur-year {
+    color: #fff !important;
+    font-weight: 800 !important;
+  }
+  .flatpickr-months .flatpickr-prev-month svg,
+  .flatpickr-months .flatpickr-next-month svg {
+    fill: #fff !important;
+  }
+
+  /* Time Picker Stepper Box Styling */
+  .time-stepper-container {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+  }
+  .time-select-unit {
+    background: #F8FAFC;
+    border: 1.5px solid #CBD5E1;
+    border-radius: 10px;
+    padding: 6px 8px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #0F172A;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .time-select-unit:focus {
+    border-color: #0D5C3A;
+    background: #FFFFFF;
+    box-shadow: 0 0 0 3px rgba(13, 92, 58, 0.12);
+  }
+  .time-separator {
+    font-size: 18px;
+    font-weight: 800;
+    color: #64748B;
+  }
+  .ampm-toggle-group {
+    display: inline-flex;
+    background: #E2E8F0;
+    padding: 3px;
+    border-radius: 10px;
+    gap: 3px;
+    margin-left: auto;
+  }
+  .ampm-btn {
+    border: none;
+    background: transparent;
+    padding: 5px 12px;
+    border-radius: 7px;
+    font-size: 12.5px;
+    font-weight: 800;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .ampm-btn.active {
+    background: #0D5C3A;
+    color: #FFFFFF;
+    box-shadow: 0 2px 6px rgba(13, 92, 58, 0.25);
+  }
   :root {
     --tp-dark: #12372A;
     --tp-green: #0D5C3A;
@@ -638,24 +730,60 @@
         </div>
 
         <div class="form-row-2">
-          <!-- Date -->
+          <!-- Date with Calendar Icon and Automatic Datepicker -->
           <div class="form-field-group">
-            <div class="field-input-box">
+            <div class="field-input-box" style="cursor: pointer;" id="date_input_wrapper">
               <span class="field-icon">📅</span>
               <div class="field-text-wrap">
                 <label class="field-label-small">Journey Date</label>
-                <input type="text" id="id_date" name="departure_date" class="field-input-clean" placeholder="e.g. 2026-11-25 or 25 Nov 2026" value="{{ form_data.departure_date|default:'' }}" required>
+                <input type="text" id="id_date" name="departure_date" class="field-input-clean" placeholder="Select Journey Date" value="{{ form_data.departure_date|default:'' }}" required readonly style="cursor: pointer; background: transparent;">
               </div>
             </div>
           </div>
 
-          <!-- Time -->
+          <!-- Time with Automatic Hours, Minutes, and AM/PM Controls -->
           <div class="form-field-group">
             <div class="field-input-box">
               <span class="field-icon">⏰</span>
-              <div class="field-text-wrap">
+              <div class="field-text-wrap" style="width: 100%;">
                 <label class="field-label-small">Departure Time</label>
-                <input type="text" id="id_time" name="departure_time" class="field-input-clean" placeholder="08:00 AM" value="{{ form_data.departure_time|default:'' }}" placeholder="e.g. 07:30 AM" required>
+                <div class="time-stepper-container">
+                  <!-- Hidden combined departure_time input sent to backend -->
+                  <input type="hidden" id="id_time" name="departure_time" value="{{ form_data.departure_time|default:'08:00 AM' }}">
+                  
+                  <!-- Hour Selector -->
+                  <select id="time_hour" name="time_hour" class="time-select-unit" title="Select Hour">
+                    <option value="01">01</option>
+                    <option value="02">02</option>
+                    <option value="03">03</option>
+                    <option value="04">04</option>
+                    <option value="05">05</option>
+                    <option value="06">06</option>
+                    <option value="07">07</option>
+                    <option value="08" selected>08</option>
+                    <option value="09">09</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                  </select>
+
+                  <span class="time-separator">:</span>
+
+                  <!-- Minute Selector -->
+                  <select id="time_minute" name="time_minute" class="time-select-unit" title="Select Minute">
+                    <option value="00" selected>00</option>
+                    <option value="15">15</option>
+                    <option value="30">30</option>
+                    <option value="45">45</option>
+                  </select>
+
+                  <!-- AM / PM Selector -->
+                  <div class="ampm-toggle-group">
+                    <input type="hidden" id="time_ampm" name="time_ampm" value="AM">
+                    <button type="button" class="ampm-btn active" id="btn_am" data-val="AM">AM</button>
+                    <button type="button" class="ampm-btn" id="btn_pm" data-val="PM">PM</button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -966,7 +1094,7 @@
         <!-- Price & Seats -->
         <div class="preview-price-box">
           <div class="preview-seats">
-            <span id="prev_seats_num">3</span> Seats Available &bull; <span id="prev_date_str">Sat, 22 Nov 2026</span>
+            <span id="prev_seats_num">3</span> Seats Available &bull; <span id="prev_date_str">Sat, 22 Nov 2026</span> &bull; <span id="prev_time_str" style="color: #0D5C3A; font-weight: 700;">08:00 AM</span>
           </div>
           <div class="preview-fare">
             ₹<span id="prev_fare_num">450</span> <small>/ seat</small>
@@ -1202,7 +1330,108 @@
     bindInputToText('id_car_model', 'prev_car_model', 'Maruti Suzuki Dzire VXI');
     bindInputToText('id_car_number', 'prev_car_plate', 'TN-01-AB-1234', function(v) { return v.toUpperCase(); });
     bindInputToText('id_seats', 'prev_seats_num', '3');
-    bindInputToText('id_date', 'prev_date_str', 'Sat, 22 Nov 2026');
+    // Datepicker & Time Controls Setup
+    const dateInput = document.getElementById('id_date');
+    const dateWrapper = document.getElementById('date_input_wrapper');
+    const prevDateEl = document.getElementById('prev_date_str');
+    const prevTimeEl = document.getElementById('prev_time_str');
+    const timeHiddenInput = document.getElementById('id_time');
+    const hourSelect = document.getElementById('time_hour');
+    const minuteSelect = document.getElementById('time_minute');
+    const ampmHidden = document.getElementById('time_ampm');
+    const btnAm = document.getElementById('btn_am');
+    const btnPm = document.getElementById('btn_pm');
+
+    // Update Departure Time combined string and live preview
+    function updateDepartureTime() {
+      const h = hourSelect ? hourSelect.value : '08';
+      const m = minuteSelect ? minuteSelect.value : '00';
+      const ap = ampmHidden ? ampmHidden.value : 'AM';
+      const fullTime = `${h}:${m} ${ap}`;
+      if (timeHiddenInput) timeHiddenInput.value = fullTime;
+      if (prevTimeEl) prevTimeEl.textContent = fullTime;
+    }
+
+    if (hourSelect) hourSelect.addEventListener('change', updateDepartureTime);
+    if (minuteSelect) minuteSelect.addEventListener('change', updateDepartureTime);
+
+    if (btnAm && btnPm) {
+      btnAm.addEventListener('click', function() {
+        btnAm.classList.add('active');
+        btnPm.classList.remove('active');
+        if (ampmHidden) ampmHidden.value = 'AM';
+        updateDepartureTime();
+      });
+
+      btnPm.addEventListener('click', function() {
+        btnPm.classList.add('active');
+        btnAm.classList.remove('active');
+        if (ampmHidden) ampmHidden.value = 'PM';
+        updateDepartureTime();
+      });
+    }
+
+    // Initialize Flatpickr Calendar for Journey Date
+    function initFlatpickrCalendar() {
+      if (typeof flatpickr !== 'undefined' && dateInput) {
+        const fp = flatpickr(dateInput, {
+          dateFormat: "Y-m-d",
+          altInput: true,
+          altFormat: "D, d M Y",
+          minDate: "today",
+          defaultDate: dateInput.value || "today",
+          theme: "material_green",
+          onChange: function(selectedDates, dateStr, instance) {
+            if (prevDateEl) {
+              if (selectedDates.length > 0) {
+                const d = selectedDates[0];
+                const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                prevDateEl.textContent = `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+              } else {
+                prevDateEl.textContent = 'Sat, 22 Nov 2026';
+              }
+            }
+          }
+        });
+
+        if (dateWrapper) {
+          dateWrapper.addEventListener('click', function() {
+            fp.open();
+          });
+        }
+
+        // Set initial preview text
+        if (dateInput.value) {
+          try {
+            const d = new Date(dateInput.value);
+            if (!isNaN(d.getTime()) && prevDateEl) {
+              const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+              const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+              prevDateEl.textContent = `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+            }
+          } catch(e) {}
+        }
+      }
+    }
+
+    // Try loading flatpickr script dynamically if not yet ready
+    if (typeof flatpickr === 'undefined') {
+      const script = document.createElement('script');
+      script.src = "{% static 'vendor/flatpickr/flatpickr.min.js' %}";
+      script.onload = initFlatpickrCalendar;
+      script.onerror = function() {
+        const cdnScript = document.createElement('script');
+        cdnScript.src = "https://cdn.jsdelivr.net/npm/flatpickr";
+        cdnScript.onload = initFlatpickrCalendar;
+        document.head.appendChild(cdnScript);
+      };
+      document.head.appendChild(script);
+    } else {
+      initFlatpickrCalendar();
+    }
+
+    updateDepartureTime();
     bindInputToText('id_price', 'prev_fare_num', '450');
 
     // Prevent same departure and destination city
