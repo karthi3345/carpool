@@ -170,12 +170,16 @@ def reviews_list_view(request):
 def help_center_view(request):
     return render(request, 'support/help_center.html')
 
+def heritage_library_view(request):
+    return render(request, 'public/heritage.html')
+
 def admin_dashboard_view(request):
     return render(request, 'dashboard/admin_dashboard.html')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home_preview, name='home'),
+    path('heritage/', heritage_library_view, name='heritage-library'),
     path('explore/', explore_map_view, name='explore_map'),
     path('rides/my-rides/', my_rides_view, name='my-rides'),
     path('accounts/profile/', user_profile_view, name='user-profile'),
