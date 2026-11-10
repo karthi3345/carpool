@@ -947,36 +947,6 @@
     </a>
   </div>
 
-  <!-- REELS HORIZONTAL BAR (Always visible at top of Feed) -->
-  {% if current_tab == 'feed' and reels %}
-    <div class="reels-carousel-card">
-      <div class="reels-carousel-header">
-        <h3><span>🎥</span> Tamil Nadu Travel Reels</h3>
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <button type="button" onclick="openReelModal()" style="background: #1877f2; color: #ffffff; border: none; font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 999px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
-            <span>+</span> Upload Reel
-          </button>
-          <a href="/community/?tab=reels" style="color: #1877f2; font-size: 13px; font-weight: 700; text-decoration: none;">Watch all &rsaquo;</a>
-        </div>
-      </div>
-
-      <div class="reels-scroll-row">
-        {% for reel in reels %}
-          <div class="reel-thumb-card" onclick="location.href='/community/?tab=reels#reel-{{ reel.id }}'">
-            <video class="reel-thumb-video" src="{{ reel.get_video_src }}" muted playsinline preload="metadata"></video>
-            <div class="reel-thumb-overlay">
-              <span class="reel-thumb-play-icon">▶</span>
-              <div>
-                <span style="font-size: 10px; background: rgba(0,0,0,0.5); padding: 2px 6px; border-radius: 4px; display: inline-block; margin-bottom: 4px;">{{ reel.route_tag }}</span>
-                <div class="reel-thumb-creator">{{ reel.title }}</div>
-              </div>
-            </div>
-          </div>
-        {% endfor %}
-      </div>
-    </div>
-  {% endif %}
-
   <!-- VIEW 1: DEDICATED REELS STREAM WITH SOUND -->
   {% if current_tab == 'reels' %}
     <div class="reels-feed-stream">
@@ -1094,8 +1064,8 @@
         <button type="button" class="composer-act-btn" onclick="toggleComposerForm()">
           <span style="color: #45bd62; font-size: 18px;">📷</span> Photo / Media
         </button>
-        <button type="button" class="composer-act-btn" onclick="location.href='/community/?tab=reels'">
-          <span style="color: #e11d48; font-size: 18px;">🎬</span> Travel Reel
+        <button type="button" class="composer-act-btn" onclick="openReelModal()">
+          <span style="color: #e11d48; font-size: 18px;">🎬</span> Upload Reel
         </button>
         <button type="button" class="composer-act-btn" onclick="toggleComposerForm()">
           <span style="color: #1877f2; font-size: 18px;">📍</span> Route
