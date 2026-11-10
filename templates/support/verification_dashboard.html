@@ -1,7 +1,102 @@
 {% extends 'base.html' %}
 
-{% block title %}Customer Support Verification Console | ChalRe
+{% block title %}Customer Support Verification Console | ChalRe{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* Anti-Screenshot, Anti-Print & Document Protection Enforcement */
+  .secure-document-card {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+  }
+
+  .secure-document-card img {
+    pointer-events: none !important;
+    -webkit-user-drag: none !important;
+    user-drag: none !important;
+  }
+
+  /* Watermark protection overlay prevents unauthorized screenshots */
+  .anti-screenshot-guard {
+    position: absolute;
+    inset: 0;
+    pointer-events: auto;
+    background: repeating-linear-gradient(
+      45deg,
+      rgba(220, 38, 38, 0.05),
+      rgba(220, 38, 38, 0.05) 15px,
+      rgba(15, 23, 42, 0.03) 15px,
+      rgba(15, 23, 42, 0.03) 30px
+    );
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .watermark-stamp {
+    font-size: 13px;
+    font-weight: 900;
+    color: rgba(220, 38, 38, 0.28);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transform: rotate(-15deg);
+    user-select: none;
+    text-shadow: 0 1px 2px rgba(255,255,255,0.8);
+    white-space: nowrap;
+  }
+
+  /* Black out documents during printing or Ctrl+P */
+  @media print {
+    body * {
+      visibility: hidden !important;
+    }
+    .chalre-container::after {
+      content: "SCREENSHOT AND PRINTING OF CONFIDENTIAL VERIFICATION DOCUMENTS IS STRICTLY PROHIBITED AS PER DATA PRIVACY ACT.";
+      visibility: visible !important;
+      display: block;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 24px;
+      font-weight: bold;
+      color: red;
+      text-align: center;
+    }
+  }
+</style>
+
 <script>
+  // Disable Right Click on secure document cards to prevent image saving
+  document.addEventListener('contextmenu', function(e) {
+    if (e.target.closest('.secure-document-card') || e.target.closest('.anti-screenshot-guard')) {
+      e.preventDefault();
+      alert('⚠️ Security Alert: Saving or right-clicking on Government ID and Driving Licence documents is strictly disabled for driver privacy.');
+      return false;
+    }
+  });
+
+  // Block PrintScreen / Snipping key shortcuts (PrintScreen, Ctrl+P, Ctrl+S)
+  document.addEventListener('keydown', function(e) {
+    // PrintScreen key
+    if (e.key === 'PrintScreen') {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText('');
+      }
+      alert('⚠️ Screenshot Prohibited: Capturing screenshots of driver identity documents is restricted as per data privacy compliance.');
+    }
+    // Ctrl+P (Print) or Ctrl+S (Save)
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P' || e.key === 's' || e.key === 'S')) {
+      e.preventDefault();
+      alert('⚠️ Action Prohibited: Printing and saving identity documents is blocked.');
+      return false;
+    }
+  });
+
   function applyReasonPreset(selectEl, inputId) {
     const input = document.getElementById(inputId);
     if (selectEl.value) {
@@ -19,7 +114,6 @@
     return confirm('Are you sure you want to REJECT Ride #' + rideId + ' with reason:\n"' + reason + '"?\nThe driver will be notified with this reason.');
   }
 </script>
-
 {% endblock %}
 
 {% block content %}
@@ -152,35 +246,36 @@
               </div>
             </div>
 
-            <!-- 2-Document Inspection Gallery (Govt ID & Driving Licence) with Screenshot Action -->
+            <!-- 2-Document Inspection Gallery (Govt ID & Driving Licence) with Anti-Screenshot Protection -->
             <div style="font-size: 12px; font-weight: 800; color: #334155; text-transform: uppercase; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
               <span>📁 Uploaded Documents For Security Inspection (Govt ID &amp; Driving Licence)</span>
-              <span style="font-size: 11px; color: #0284c7; font-weight: 700;">📸 Support Officers Can Inspect / Take Screenshot Before Approval</span>
+              <span style="font-size: 11px; background: #FEF2F2; color: #DC2626; border: 1px solid #FCA5A5; padding: 2px 8px; border-radius: 4px; font-weight: 800;">🚫 Screenshots Strictly Prohibited</span>
             </div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
               
-              <!-- 1. Driving Licence Document Card -->
-              <div style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 12px; text-align: center;">
+              <!-- 1. Driving Licence Document Card (Protected View) -->
+              <div class="secure-document-card" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 12px; text-align: center; position: relative;">
                 <div style="font-size: 12px; font-weight: 800; color: #1e293b; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
-                  <span>🚗 Driver's Licence (DL)</span>
-                  <div style="display: flex; gap: 8px;">
-                    {% if ride.driver_license_masked_image or ride.driver_license_image %}
-                      <a href="{% if ride.driver_license_masked_image %}{{ ride.driver_license_masked_image.url }}{% else %}{{ ride.driver_license_image.url }}{% endif %}" target="_blank" style="color: #087443; font-weight: 700; text-decoration: underline; font-size: 11px;">Open Full ↗</a>
-                    {% endif %}
-                  </div>
+                  <span>🚗 Driver's Licence (Protected)</span>
+                  <span style="font-size: 11px; color: #DC2626; font-weight: 700;">🔒 No Download / Screenshot</span>
                 </div>
                 {% if ride.driver_license_masked_image %}
                   <div style="background: #0F172A; border-radius: 8px; overflow: hidden; height: 180px; display: flex; align-items: center; justify-content: center; position: relative;">
-                    <a href="{{ ride.driver_license_masked_image.url }}" target="_blank">
-                      <img src="{{ ride.driver_license_masked_image.url }}" alt="Driving Licence" style="max-height: 175px; max-width: 100%; object-fit: contain;">
-                    </a>
+                    <img src="{{ ride.driver_license_masked_image.url }}" alt="Driving Licence" style="max-height: 175px; max-width: 100%; object-fit: contain;">
+                    <!-- Anti-screenshot watermark overlay -->
+                    <div class="anti-screenshot-guard">
+                      <div class="watermark-stamp">CONFIDENTIAL • NO SCREENSHOT</div>
+                      <div class="watermark-stamp" style="font-size: 10px; margin-top: 4px;">OFFICER {{ officer_name|default:"LK" }} • TAMIZHPAYANAM</div>
+                    </div>
                   </div>
                 {% elif ride.driver_license_image %}
                   <div style="background: #0F172A; border-radius: 8px; overflow: hidden; height: 180px; display: flex; align-items: center; justify-content: center; position: relative;">
-                    <a href="{{ ride.driver_license_image.url }}" target="_blank">
-                      <img src="{{ ride.driver_license_image.url }}" alt="Driving Licence" style="max-height: 175px; max-width: 100%; object-fit: contain;">
-                    </a>
+                    <img src="{{ ride.driver_license_image.url }}" alt="Driving Licence" style="max-height: 175px; max-width: 100%; object-fit: contain;">
+                    <div class="anti-screenshot-guard">
+                      <div class="watermark-stamp">CONFIDENTIAL • NO SCREENSHOT</div>
+                      <div class="watermark-stamp" style="font-size: 10px; margin-top: 4px;">OFFICER {{ officer_name|default:"LK" }} • TAMIZHPAYANAM</div>
+                    </div>
                   </div>
                 {% else %}
                   <div style="background: #f1f5f9; border-radius: 8px; height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; font-size: 12px;">
@@ -190,19 +285,19 @@
                 {% endif %}
               </div>
 
-              <!-- 2. Government ID Proof Card -->
-              <div style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 12px; text-align: center;">
+              <!-- 2. Government ID Proof Card (Protected View) -->
+              <div class="secure-document-card" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 12px; text-align: center; position: relative;">
                 <div style="font-size: 12px; font-weight: 800; color: #1e293b; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
-                  <span>🪪 Government ID Proof (Aadhaar / Voter ID / Passport)</span>
-                  {% if ride.govt_id_front_image %}
-                    <a href="{{ ride.govt_id_front_image.url }}" target="_blank" style="color: #087443; font-weight: 700; text-decoration: underline; font-size: 11px;">Open Full ↗</a>
-                  {% endif %}
+                  <span>🪪 Government ID Proof (Protected)</span>
+                  <span style="font-size: 11px; color: #DC2626; font-weight: 700;">🔒 No Download / Screenshot</span>
                 </div>
                 {% if ride.govt_id_front_image %}
                   <div style="background: #0F172A; border-radius: 8px; overflow: hidden; height: 180px; display: flex; align-items: center; justify-content: center; position: relative;">
-                    <a href="{{ ride.govt_id_front_image.url }}" target="_blank">
-                      <img src="{{ ride.govt_id_front_image.url }}" alt="Government ID" style="max-height: 175px; max-width: 100%; object-fit: contain;">
-                    </a>
+                    <img src="{{ ride.govt_id_front_image.url }}" alt="Government ID" style="max-height: 175px; max-width: 100%; object-fit: contain;">
+                    <div class="anti-screenshot-guard">
+                      <div class="watermark-stamp">CONFIDENTIAL • NO SCREENSHOT</div>
+                      <div class="watermark-stamp" style="font-size: 10px; margin-top: 4px;">OFFICER {{ officer_name|default:"LK" }} • TAMIZHPAYANAM</div>
+                    </div>
                   </div>
                 {% else %}
                   <div style="background: #f1f5f9; border-radius: 8px; height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; font-size: 12px;">
@@ -214,11 +309,11 @@
 
             </div>
 
-            <!-- Screenshot & Data Security Advisory -->
-            <div style="background: #FEF3C7; border: 1px solid #FCD34D; border-radius: 8px; padding: 10px 14px; margin-top: 14px; font-size: 12px; color: #92400E; display: flex; align-items: center; justify-content: space-between;">
+            <!-- Security & Anti-Screenshot Policy Notice -->
+            <div style="background: #FEF2F2; border: 1.5px solid #FCA5A5; border-radius: 8px; padding: 10px 14px; margin-top: 14px; font-size: 12px; color: #991B1B; display: flex; align-items: center; justify-content: space-between;">
               <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="font-size: 16px;">📸</span>
-                <span><b>Security &amp; Privacy Policy:</b> Support officers can view and take a screenshot of the Government ID and Driving Licence for internal record keeping. As per security purpose, once verified and approved, raw document files will not be permanently stored in the database.</span>
+                <span style="font-size: 16px;">🛡️</span>
+                <span><b>Strict Data Security Notice:</b> For driver security and confidentiality, support officers <b>CANNOT take screenshots, save images, or copy identity documents</b>. Once verified and approved, raw files are automatically purged from database storage.</span>
               </div>
             </div>
           </div>
