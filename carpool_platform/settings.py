@@ -92,16 +92,17 @@ DATABASES = {
     }
 }
 
-# Vercel Postgres provides POSTGRES_URL or DATABASE_URL
+# Vercel / Production Postgres: Check if DATABASE_URL or POSTGRES_URL is set
 database_url = os.getenv('DATABASE_URL') or os.getenv('POSTGRES_URL') or os.getenv('POSTGRES_PRISMA_URL')
-if database_url:
+# If DATABASE_URL is not localhost dummy, configure PostgreSQL
+if database_url and not ('localhost' in database_url and 'postgres:postgres' in database_url):
     try:
         import dj_database_url
         DATABASES['default'] = dj_database_url.config(
             default=database_url,
             conn_max_age=600,
             conn_health_checks=True,
-            ssl_require=True if 'vercel' in database_url or 'supabase' in database_url or 'neon' in database_url or 'aws' in database_url else False
+            ssl_require=True if any(host in database_url for host in ['vercel', 'supabase', 'neon', 'aws', 'pooler']) else False
         )
     except Exception:
         pass
