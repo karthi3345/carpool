@@ -88,6 +88,9 @@ def create_post_view(request):
         author_name = get_author_name(request)
         author_city = request.POST.get('author_city', '').strip() or 'Tamil Nadu'
         travel_tag = request.POST.get('travel_tag', '').strip() or 'Travel Story'
+        custom_tag = request.POST.get('custom_travel_tag', '').strip()
+        if travel_tag.lower() == 'other' and custom_tag:
+            travel_tag = custom_tag
         image_url = request.POST.get('image_url', '').strip()
         uploaded_image = request.FILES.get('image')
 

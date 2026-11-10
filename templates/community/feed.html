@@ -990,14 +990,21 @@
             </div>
             <div>
               <label style="font-size: 11px; font-weight: 700; color: #65676b; display: block; margin-bottom: 4px;">TOPIC TAG</label>
-              <select name="travel_tag" class="compact-select">
+              <select name="travel_tag" id="postTopicTagSelect" class="compact-select" onchange="toggleCustomTopicTag(this)">
                 <option value="Travel Story">📖 Travel Story</option>
                 <option value="Carpool Buddy">🤝 Carpool Buddy</option>
                 <option value="Road Trip Tips">🛣️ Highway & Route Tips</option>
                 <option value="Chennai to Bangalore">🚗 Chennai ⇄ Bangalore Corridor</option>
                 <option value="Western Ghats Ride">⛰️ Western Ghats / Ooty</option>
+                <option value="Other">✏️ Other (Specify topic...)</option>
               </select>
             </div>
+          </div>
+
+          <!-- Dynamic 'Other' Topic Tag Input Field -->
+          <div id="customTopicTagWrap" style="display: none; margin-top: 10px;">
+            <label style="font-size: 11px; font-weight: 700; color: #0066FF; display: block; margin-bottom: 4px;">SPECIFY YOUR TOPIC TAG</label>
+            <input type="text" id="customTopicTagInput" name="custom_travel_tag" class="compact-input" placeholder="e.g. Temple Trail, Monsoon Drive, ECR Food Stop" style="border: 1.5px solid #0066FF; background: #F8FAFC;" />
           </div>
 
           <div style="margin-top: 10px;">
@@ -1344,6 +1351,25 @@
       vids[0].play().catch(() => {});
     }
   });
+
+  function toggleCustomTopicTag(selectEl) {
+    const wrap = document.getElementById('customTopicTagWrap');
+    const input = document.getElementById('customTopicTagInput');
+    if (!wrap) return;
+    if (selectEl.value === 'Other') {
+      wrap.style.display = 'block';
+      if (input) {
+        input.focus();
+        input.required = true;
+      }
+    } else {
+      wrap.style.display = 'none';
+      if (input) {
+        input.required = false;
+        input.value = '';
+      }
+    }
+  }
 </script>
 
 <!-- Customer Reel Upload Modal -->
