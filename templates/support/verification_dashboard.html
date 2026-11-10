@@ -246,23 +246,23 @@
               </div>
             </div>
 
-            <!-- 2-Document Inspection Gallery (Govt ID & Driving Licence) with Anti-Screenshot Protection -->
+            <!-- 3-Document Inspection Gallery (DL Front, DL Back & Govt ID) with Anti-Screenshot Protection -->
             <div style="font-size: 12px; font-weight: 800; color: #334155; text-transform: uppercase; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
-              <span>📁 Uploaded Documents For Security Inspection (Govt ID &amp; Driving Licence)</span>
+              <span>📁 Uploaded Documents For Security Inspection (DL Front, DL Back &amp; Govt ID)</span>
               <span style="font-size: 11px; background: #FEF2F2; color: #DC2626; border: 1px solid #FCA5A5; padding: 2px 8px; border-radius: 4px; font-weight: 800;">🚫 Screenshots Strictly Prohibited</span>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;">
               
-              <!-- 1. Driving Licence Document Card (Protected View) -->
+              <!-- 1. Driving Licence Front Document Card (Protected View) -->
               <div class="secure-document-card" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 12px; text-align: center; position: relative;">
                 <div style="font-size: 12px; font-weight: 800; color: #1e293b; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
-                  <span>🚗 Driver's Licence (Protected)</span>
-                  <span style="font-size: 11px; color: #DC2626; font-weight: 700;">🔒 No Download / Screenshot</span>
+                  <span>🚗 DL Front (Protected)</span>
+                  <span style="font-size: 10px; color: #DC2626; font-weight: 700;">🔒 No Screenshot</span>
                 </div>
                 {% if ride.driver_license_masked_image %}
                   <div style="background: #0F172A; border-radius: 8px; overflow: hidden; height: 180px; display: flex; align-items: center; justify-content: center; position: relative;">
-                    <img src="{{ ride.driver_license_masked_image.url }}" alt="Driving Licence" style="max-height: 175px; max-width: 100%; object-fit: contain;">
+                    <img src="{{ ride.driver_license_masked_image.url }}" alt="Driving Licence Front" style="max-height: 175px; max-width: 100%; object-fit: contain;">
                     <!-- Anti-screenshot watermark overlay -->
                     <div class="anti-screenshot-guard">
                       <div class="watermark-stamp">CONFIDENTIAL • NO SCREENSHOT</div>
@@ -271,7 +271,7 @@
                   </div>
                 {% elif ride.driver_license_image %}
                   <div style="background: #0F172A; border-radius: 8px; overflow: hidden; height: 180px; display: flex; align-items: center; justify-content: center; position: relative;">
-                    <img src="{{ ride.driver_license_image.url }}" alt="Driving Licence" style="max-height: 175px; max-width: 100%; object-fit: contain;">
+                    <img src="{{ ride.driver_license_image.url }}" alt="Driving Licence Front" style="max-height: 175px; max-width: 100%; object-fit: contain;">
                     <div class="anti-screenshot-guard">
                       <div class="watermark-stamp">CONFIDENTIAL • NO SCREENSHOT</div>
                       <div class="watermark-stamp" style="font-size: 10px; margin-top: 4px;">OFFICER {{ officer_name|default:"LK" }} • TAMIZHPAYANAM</div>
@@ -280,16 +280,38 @@
                 {% else %}
                   <div style="background: #f1f5f9; border-radius: 8px; height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; font-size: 12px;">
                     <span style="font-size: 32px;">📄</span>
-                    <span>No DL Image Uploaded (Manual / Auto-Verified)</span>
+                    <span>No DL Front Uploaded</span>
                   </div>
                 {% endif %}
               </div>
 
-              <!-- 2. Government ID Proof Card (Protected View) -->
+              <!-- 2. Driving Licence Back Document Card (Protected View) -->
               <div class="secure-document-card" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 12px; text-align: center; position: relative;">
                 <div style="font-size: 12px; font-weight: 800; color: #1e293b; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
-                  <span>🪪 Government ID Proof (Protected)</span>
-                  <span style="font-size: 11px; color: #DC2626; font-weight: 700;">🔒 No Download / Screenshot</span>
+                  <span>🚗 DL Back (Protected)</span>
+                  <span style="font-size: 10px; color: #DC2626; font-weight: 700;">🔒 No Screenshot</span>
+                </div>
+                {% if ride.driver_license_back_image %}
+                  <div style="background: #0F172A; border-radius: 8px; overflow: hidden; height: 180px; display: flex; align-items: center; justify-content: center; position: relative;">
+                    <img src="{{ ride.driver_license_back_image.url }}" alt="Driving Licence Back" style="max-height: 175px; max-width: 100%; object-fit: contain;">
+                    <div class="anti-screenshot-guard">
+                      <div class="watermark-stamp">CONFIDENTIAL • NO SCREENSHOT</div>
+                      <div class="watermark-stamp" style="font-size: 10px; margin-top: 4px;">OFFICER {{ officer_name|default:"LK" }} • TAMIZHPAYANAM</div>
+                    </div>
+                  </div>
+                {% else %}
+                  <div style="background: #f1f5f9; border-radius: 8px; height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; font-size: 12px;">
+                    <span style="font-size: 32px;">🔄</span>
+                    <span>No DL Back Uploaded</span>
+                  </div>
+                {% endif %}
+              </div>
+
+              <!-- 3. Government ID Proof Card (Protected View) -->
+              <div class="secure-document-card" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 12px; text-align: center; position: relative;">
+                <div style="font-size: 12px; font-weight: 800; color: #1e293b; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                  <span>🪪 Government ID Proof</span>
+                  <span style="font-size: 10px; color: #DC2626; font-weight: 700;">🔒 No Screenshot</span>
                 </div>
                 {% if ride.govt_id_front_image %}
                   <div style="background: #0F172A; border-radius: 8px; overflow: hidden; height: 180px; display: flex; align-items: center; justify-content: center; position: relative;">
