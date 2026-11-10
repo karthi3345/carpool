@@ -119,20 +119,31 @@ def verify_license_api_view(request):
 
 
 def search_rides_view(request):
-    from_city = request.GET.get('from', '').strip()
-    to_city = request.GET.get('to', '').strip()
+    # Support both 'from'/'to' and 'from_city'/'to_city' from homepage search form
+    from_city = (request.GET.get('from_city', '') or request.GET.get('from', '')).strip()
+    to_city = (request.GET.get('to_city', '') or request.GET.get('to', '')).strip()
     date_str = request.GET.get('date', '').strip()
     passengers = request.GET.get('passengers', '1').strip()
     if not passengers.isdigit():
         passengers = '1'
 
-    if not from_city and not to_city:
-        from_city = 'Chennai'
-        to_city = 'Madurai'
-
-    # If user searched same origin and destination, fallback to Madurai destination to prevent identical route
-    if from_city and to_city and from_city.strip().lower() == to_city.strip().lower():
-        to_city = 'Madurai' if from_city.strip().lower() != 'madurai' else 'Coimbatore'
+    today = datetime.now().date()
+    selected_date = None
+    if date_str:
+        # Support various date formats like '2026-11-25', '25 Nov 2026', 'Thu, 12 Nov 2026'
+        import re
+        from datetime import datetime as dt_parser
+        cleaned_date_str = re.sub(r'^[A-Za-z]+,\s*', '', date_str.strip())
+        for fmt in ['%Y-%m-%d', '%d %b %Y', '%d %B %Y', '%d/%m/%Y', '%d-%m-%Y']:
+            try:
+                selected_date = dt_parser.strptime(cleaned_date_str, fmt).date()
+                break
+            except ValueError:
+                pass
+        if not selected_date:
+            selected_date = today
+    else:
+        selected_date = today
 
     base_qs = Ride.objects.filter(status='published', available_seats__gt=0)
     if from_city:
@@ -140,20 +151,22 @@ def search_rides_view(request):
     if to_city:
         base_qs = base_qs.filter(destination__name__icontains=to_city)
 
-    today = datetime.now().date()
-    selected_date = None
-    if date_str:
-        try:
-            selected_date = datetime.strptime(date_str, '%Y-%m-%d').date()
-        except ValueError:
-            selected_date = today
-    else:
-        first_ride = base_qs.order_by('departure_date').first()
-        selected_date = first_ride.departure_date if first_ride else today
-
+    # Filter rides strictly for the selected journey date and minimum seats requested
     active_rides = base_qs.filter(departure_date=selected_date)
-    if not active_rides.exists() and not date_str:
-        active_rides = base_qs
+    if passengers.isdigit() and int(passengers) > 1:
+        active_rides = active_rides.filter(available_seats__gte=int(passengers))
+
+    # Calculate date relative label (e.g. "Today", "Tomorrow", "Thu, 12 Nov")
+    tomorrow = today + timedelta(days=1)
+    if selected_date == today:
+        date_display_label = "today"
+        date_header_label = "Today"
+    elif selected_date == tomorrow:
+        date_display_label = "tomorrow"
+        date_header_label = "Tomorrow"
+    else:
+        date_display_label = selected_date.strftime('%d %b')
+        date_header_label = selected_date.strftime('%a, %d %b')
 
     stats = base_qs.aggregate(
         min_price=Min('price_per_seat'),
@@ -291,6 +304,8 @@ def search_rides_view(request):
         'from_city': from_city,
         'to_city': to_city,
         'date_str': selected_date.strftime('%Y-%m-%d'),
+        'date_display_label': date_display_label,
+        'date_header_label': date_header_label,
         'passengers': passengers,
         'all_cities': all_cities,
         'total_rides': active_rides.count(),

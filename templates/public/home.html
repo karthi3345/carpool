@@ -223,13 +223,12 @@ date.addEventListener('change', () => {
 
 /* search */
 $('#search').addEventListener('submit', e => {
-  e.preventDefault();
   const from = $('#from').value.trim(), to = $('#to').value.trim();
-  if (!date.value) return toast('Please select a journey date.');
-  if (from.toLowerCase() === to.toLowerCase()) return toast('Departure and destination cannot be the same.');
-  const pax = $('#pax').selectedOptions[0].text;
-  toast(`Searching rides: ${from} → ${to} on ${date.value} (${pax})`);
-  // TODO: fetch(`/api/rides?from=${from}&to=${to}&date=${date.value}&pax=${$('#pax').value}`)
+  if (from && to && from.toLowerCase() === to.toLowerCase()) {
+    e.preventDefault();
+    return toast('Departure and destination cannot be the same.');
+  }
+  // Let form submit normally to /rides/search/?from_city=...&to_city=...&date=...&passengers=...
 });
 
 /* placeholder actions – connect to your routes */
