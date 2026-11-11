@@ -56,7 +56,7 @@ def home_preview(request):
     featured_reviews = PassengerReview.objects.filter(rating__gte=4).order_by('-created_at')[:6]
     total_reviews_count = PassengerReview.objects.count()
 
-    return render(request, 'public/home.html', {
+    return render(request, ['landing/home.html', 'public/home.html'], {
         'popular_cities': popular_cities,
         'all_cities': all_cities_qs,
         'cities_json': json.dumps(cities_data),
@@ -68,7 +68,7 @@ def home_preview(request):
 
 
 def explore_map_view(request):
-    return render(request, 'public/explore_map.html')
+    return render(request, ['landing/explore_map.html', 'public/explore_map.html'])
 
 def my_rides_view(request):
     tab = request.GET.get('tab', 'upcoming')

@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Explore Tamil Nadu Map - TamizhPayanam</title>
+  
+  <!-- Google Fonts: Plus Jakarta Sans & Playfair Display -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;600;700;800&family=Playfair+Display:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet Map CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <style>
+    :root {
+      --ink: #241611;
+      --maroon: #891a1c;
+      --maroon-d: #600704;
+      --gold: #fdc039;
+      --gold-d: #eaa91c;
+      --cream: #fcecda;
+      --muted: #5f4a3f;
+      --card-bg: #FFFFFF;
+      --border: #e3cfb8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', 'Noto Sans Tamil', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Sticky Navigation Bar */
+    .explore-nav {
+      height: 70px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 20px rgba(96, 7, 4, 0.08);
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--ink);
+    }
+    .brand-wrap img {
+      height: 48px;
+      width: auto;
+      object-fit: contain;
+    }
+    .brand-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+    .brand-title span { color: var(--gold-d); }
+    .brand-sub { font-size: 11px; font-weight: 600; color: var(--muted); }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .btn-nav {
+      font-size: 13.5px;
+      font-weight: 700;
+      padding: 8px 20px;
+      border-radius: 999px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-home { background: transparent; color: var(--ink); border: 1.5px solid var(--border); }
+    .btn-home:hover { background: #fff; }
+    .btn-publish { background: var(--maroon-d); color: #fff; }
+    .btn-publish:hover { background: #3f0402; }
+
+    /* Main Split Layout: Left Details / Right Map */
+    .explore-container {
+      display: grid;
+      grid-template-columns: 480px 1fr;
+      flex: 1;
+      height: calc(100vh - 70px);
+      overflow: hidden;
+    }
+
+    /* Left Details Panel */
+    .details-panel {
+      background: #FFFDF5;
+      border-right: 2px solid var(--border);
+      overflow-y: auto;
+      padding: 28px 28px 40px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 4px 0 24px rgba(110, 50, 15, 0.05);
+      z-index: 10;
+    }
+
+    /* Search & Filter Bar */
+    .search-filter-box {
+      margin-bottom: 24px;
+    }
+    .place-search-input {
+      width: 100%;
+      height: 46px;
+      background: #FFFFFF;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 0 16px 0 42px;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--ink);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .place-search-input:focus {
+      border-color: var(--maroon);
+      box-shadow: 0 4px 14px rgba(137, 26, 28, 0.12);
+    }
+    .search-icon-pos {
+      position: absolute;
+      left: 14px;
+      top: 13px;
+      width: 20px;
+      height: 20px;
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    /* Categories Pills */
+    .category-pills {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      margin-top: 12px;
+    }
+    .category-pills::-webkit-scrollbar { height: 4px; }
+    .category-pills::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    .cat-pill {
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+    .cat-pill:hover, .cat-pill.active {
+      background: var(--maroon-d);
+      color: #FFFFFF;
+      border-color: var(--maroon-d);
+    }
+
+    /* Selected Place Hero Card */
+    .place-card-main {
+      background: #FFFFFF;
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 6px 20px rgba(110, 50, 15, 0.08);
+      margin-bottom: 24px;
+    }
+    .place-image-hero {
+      width: 100%;
+      height: 210px;
+      object-fit: cover;
+      display: block;
+    }
+    .place-card-body {
+      padding: 22px;
+    }
+    .place-badge-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .place-category-badge {
+      background: rgba(253, 192, 57, 0.2);
+      border: 1px solid var(--gold-d);
+      color: #8c5300;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .place-district-badge {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+    .place-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--ink);
+      line-height: 1.2;
+      margin-bottom: 4px;
+    }
+    .place-tamil-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--maroon);
+      margin-bottom: 14px;
+    }
+    .place-desc {
+      font-size: 13.5px;
+      color: #4a382e;
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+
+    /* Section Highlights Block */
+    .highlight-section-title {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: var(--ink);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .attractions-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+    .attraction-tag {
+      background: #FDF4E7;
+      border: 1px solid #ebd7bf;
+      color: #552718;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 8px;
+    }
+
+    /* Action Carpool Button */
+    .btn-find-rides {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--gold);
+      color: var(--ink);
+      font-weight: 900;
+      font-size: 14px;
+      padding: 13px 20px;
+      border-radius: 999px;
+      text-decoration: none;
+      box-shadow: 0 4px 16px rgba(253, 192, 57, 0.4);
+      transition: transform 0.15s ease, background 0.15s ease;
+      width: 100%;
+    }
+    .btn-find-rides:hover {
+      background: var(--gold-d);
+      transform: translateY(-2px);
+    }
+
+    /* Right Interactive Map Area */
+    .map-panel {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    #tnFullMap {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Map Legend Overlay */
+    .map-legend {
+      position: absolute;
+      bottom: 24px;
+      right: 24px;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(8px);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      z-index: 1000;
+      box-shadow: 0 4px 18px rgba(110, 50, 15, 0.12);
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--ink);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .legend-item { display: flex; align-items: center; gap: 8px; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+    @media (max-width: 992px) {
+      .explore-container { grid-template-columns: 1fr; height: auto; }
+      .details-panel { height: auto; border-right: none; border-bottom: 2px solid var(--border); }
+      .map-panel { height: 480px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Sticky Header -->
+  <header class="explore-nav">
+    <a href="/" class="brand-wrap">
+      <img src="/static/images/hero_logo.png" alt="TamizhPayanam Logo">
+      <div>
+        <div class="brand-title">Tamizh<span>Payanam</span></div>
+        <div class="brand-sub">Explore Tamil Nadu &bull; வரைபடம்</div>
+      </div>
+    </a>
+
+    <div class="nav-actions">
+      <a href="/" class="btn-nav btn-home">
+        <span>🏠</span> Home
+      </a>
+      <a href="/rides/search/" class="btn-nav btn-home">
+        <span>🚗</span> Find Rides
+      </a>
+      <a href="/rides/publish/" class="btn-nav btn-publish">
+        <span>📋</span> Publish a Ride
+      </a>
+    </div>
+  </header>
+
+  <!-- Split Screen Layout -->
+  <main class="explore-container">
+    
+    <!-- Left Details Panel -->
+    <section class="details-panel" id="detailsPanel">
+      
+      <!-- Search Input -->
+      <div class="search-filter-box">
+        <div style="position: relative;">
+          <svg class="search-icon-pos" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <input type="text" id="placeSearch" class="place-search-input" placeholder="Search by city, temple, or hill station...">
+        </div>
+
+        <!-- 5 Category Filter Buttons -->
+        <div class="category-pills">
+          <button class="cat-pill active" onclick="applyCategoryFilter('all')">All Places</button>
+          <button class="cat-pill" onclick="applyCategoryFilter('heritage')">🏛️ Heritage &amp; History</button>
+          <button class="cat-pill" onclick="applyCategoryFilter('temples')">🛕 Temples &amp; Sacred</button>
+          <button class="cat-pill" onclick="applyCategoryFilter('hills')">⛰️ Hill Stations</button>
+          <button class="cat-pill" onclick="applyCategoryFilter('beaches')">🏖️ Beaches &amp; Coast</button>
+          <button class="cat-pill" onclick="applyCategoryFilter('nature')">🌿 Nature &amp; Waterfalls</button>
+        </div>
+      </div>
+
+      <!-- Selected Destination Card -->
+      <article class="place-card-main">
+        <img id="cardImage" src="https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80" alt="Destination Photo" class="place-image-hero">
+        
+        <div class="place-card-body">
+          <div class="place-badge-row">
+            <span id="cardCategory" class="place-category-badge">Heritage &amp; History</span>
+            <span id="cardDistrict" class="place-district-badge">📍 Thanjavur District</span>
+          </div>
+
+          <h2 id="cardTitle" class="place-title">Brihadisvara Temple (Big Temple)</h2>
+          <div id="cardTamil" class="place-tamil-title">தஞ்சைப் பெருவுடையார் கோயில்</div>
+
+          <p id="cardDesc" class="place-desc">
+            Standing tall for over 1,014 years, this monolithic granite marvel was commissioned by Emperor Raja Raja Chola I. Featuring an 80-tonne single granite capstone atop its 216-foot vimana, it remains the crowning jewel of Chola Dravidian architecture.
+          </p>
+
+          <!-- Famous Attractions -->
+          <div class="highlight-section-title">
+            <span>✨</span> Famous Attractions &amp; Highlights
+          </div>
+          <div id="cardAttractions" class="attractions-grid">
+            <span class="attraction-tag">Brihadisvara Vimana</span>
+            <span class="attraction-tag">Thanjavur Maratha Palace</span>
+            <span class="attraction-tag">Saraswathi Mahal Library</span>
+            <span class="attraction-tag">Kallanai Dam</span>
+          </div>
+
+          <!-- Active Travel Corridors -->
+          <div class="highlight-section-title">
+            <span>🚗</span> Popular Carpool Corridors
+          </div>
+          <div id="cardCorridors" style="font-size: 13px; color: #5f4a3f; display: flex; flex-direction: column; gap: 6px; margin-bottom: 22px;">
+            <div>&bull; <strong>Trichy &rarr; Thanjavur</strong> (45 mins ride)</div>
+            <div>&bull; <strong>Chennai &rarr; Thanjavur</strong> (NH 38 &bull; 5.5 hours)</div>
+            <div>&bull; <strong>Madurai &rarr; Thanjavur</strong> (2.5 hours)</div>
+          </div>
+
+          <a id="cardSearchLink" href="/rides/search/?to=Thanjavur" class="btn-find-rides">
+            <span>Search Shared Rides to Thanjavur</span> &rarr;
+          </a>
+        </div>
+      </article>
+
+    </section>
+
+    <!-- Right Map View -->
+    <section class="map-panel">
+      <div id="tnFullMap"></div>
+
+      <!-- Interactive Map Legend -->
+      <div class="map-legend">
+        <div class="legend-item"><span class="legend-dot" style="background:#891a1c;"></span> Heritage &amp; History</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#d97706;"></span> Temples &amp; Sacred</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#166534;"></span> Hill Stations</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#0284c7;"></span> Beaches &amp; Coast</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#059669;"></span> Nature &amp; Waterfalls</div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // Rich Destination Dataset across Tamil Nadu
+    const destinations = [
+      {
+        id: "thanjavur",
+        name: "Brihadisvara Temple, Thanjavur",
+        tamil: "தஞ்சைப் பெருவுடையார் கோயில்",
+        district: "Thanjavur",
+        category: "heritage",
+        categoryName: "Heritage & History",
+        lat: 10.7870,
+        lng: 79.1378,
+        image: "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80",
+        desc: "Over 1,014 years old, built by Emperor Raja Raja Chola I with an 80-tonne monolithic granite cupola atop its 216-ft vimana. Zenith of Chola temple architecture.",
+        attractions: ["Brihadisvara Vimana", "Thanjavur Maratha Palace", "Saraswathi Mahal Library", "Kallanai Dam"],
+        corridors: ["Trichy → Thanjavur (45m)", "Chennai → Thanjavur (5.5h)", "Madurai → Thanjavur (2.5h)"]
+      },
+      {
+        id: "madurai",
+        name: "Madurai Meenakshi Amman Temple",
+        tamil: "மதுரை மீனாட்சி அம்மன் கோயில்",
+        district: "Madurai",
+        category: "temples",
+        categoryName: "Temples & Sacred",
+        lat: 9.9195,
+        lng: 78.1194,
+        image: "https://images.unsplash.com/photo-1609766418204-94aae0ecfddc?auto=format&fit=crop&w=800&q=80",
+        desc: "Ancient Pandyan capital on the holy Vaigai river. The temple complex features 14 soaring gopurams decorated with thousands of polychrome sculptural figures and the Hall of 1,000 Pillars.",
+        attractions: ["14 Soaring Gopurams", "Thousand Pillar Hall", "Thirumalai Nayakkar Mahal", "Teppakulam"],
+        corridors: ["Chennai → Madurai (GST Road • 6.5h)", "Coimbatore → Madurai (3.5h)", "Trichy → Madurai (2h)"]
+      },
+      {
+        id: "mahabalipuram",
+        name: "Shore Temple & Pancha Rathas",
+        tamil: "மாமல்லபுரம் கடற்கரைக் கோயில்",
+        district: "Chengalpattu",
+        category: "heritage",
+        categoryName: "Heritage & History",
+        lat: 12.6169,
+        lng: 80.1994,
+        image: "https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&w=800&q=80",
+        desc: "UNESCO World Heritage rock-cut architecture of the 7th-century Pallava dynasty along the scenic East Coast Road overlooking the crashing Bay of Bengal waves.",
+        attractions: ["Shore Temple", "Arjuna's Penance Bas-Relief", "Pancha Rathas", "Krishna's Butterball"],
+        corridors: ["Chennai ECR → Mahabalipuram (1h)", "Mahabalipuram → Pondicherry (1.5h)"]
+      },
+      {
+        id: "ooty",
+        name: "Ooty & Nilgiri Mountain Railway",
+        tamil: "ஊட்டி மற்றும் நீலகிரி மலை",
+        district: "Nilgiris",
+        category: "hills",
+        categoryName: "Hill Stations",
+        lat: 11.4102,
+        lng: 76.6950,
+        image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=800&q=80",
+        desc: "Queen of Hill Stations perched at 2,240 meters amidst rolling tea gardens, eucalyptus groves, and the UNESCO historic steam mountain toy train.",
+        attractions: ["Doddabetta Peak", "Botanical & Rose Gardens", "Ooty Lake & Boating", "Tea Plantations"],
+        corridors: ["Coimbatore → Ooty (2.5h)", "Mettupalayam → Ooty (1.5h)", "Erode → Ooty (3.5h)"]
+      },
+      {
+        id: "kodaikanal",
+        name: "Kodaikanal Lake & Coaker's Walk",
+        tamil: "கொடைக்கானல் ஏரி மற்றும் பைன் காடுகள்",
+        district: "Dindigul",
+        category: "hills",
+        categoryName: "Hill Stations",
+        lat: 10.2381,
+        lng: 77.4892,
+        image: "https://images.unsplash.com/photo-1589182373726-e4f658ab50f0?auto=format&fit=crop&w=800&q=80",
+        desc: "Princess of Hill Stations on the Palani plateau famous for Kurinji flowers, mist-covered valleys, Pillar Rocks, and pine forests.",
+        attractions: ["Star-shaped Kodai Lake", "Pillar Rocks", "Silver Cascade Falls", "Bryant Park"],
+        corridors: ["Madurai → Kodaikanal (3h)", "Dindigul → Kodaikanal (2h)", "Coimbatore → Kodaikanal (4h)"]
+      },
+      {
+        id: "yercaud",
+        name: "Yercaud Shevaroy Hills",
+        tamil: "ஏற்காடு சேர்வராயன் மலை",
+        district: "Salem",
+        category: "hills",
+        categoryName: "Hill Stations",
+        lat: 11.7753,
+        lng: 78.2093,
+        image: "https://images.unsplash.com/photo-1626014303757-64670081d643?auto=format&fit=crop&w=800&q=80",
+        desc: "Jewel of the South nestled in the Eastern Ghats. Reached via 20 breathtaking hairpin bends from Salem surrounded by coffee estates and orange groves.",
+        attractions: ["Yercaud Lake", "Lady's Seat", "Pagoda Point", "Shevaroy Temple Peak"],
+        corridors: ["Salem → Yercaud (1h)", "Chennai → Yercaud (6h)", "Coimbatore → Yercaud (3.5h)"]
+      },
+      {
+        id: "kanyakumari",
+        name: "Thiruvalluvar Statue & Triveni Sangam",
+        tamil: "திருவள்ளுவர் சிலை & முக்கடல் சங்கமம்",
+        district: "Kanniyakumari",
+        category: "beaches",
+        categoryName: "Beaches & Coast",
+        lat: 8.0883,
+        lng: 77.5385,
+        image: "https://images.unsplash.com/photo-1621644860680-d3545b5470ee?auto=format&fit=crop&w=800&q=80",
+        desc: "The southernmost point of India where the Bay of Bengal, Arabian Sea, and Indian Ocean unite. Houses the 133-ft stone monolith statue of Saint Thiruvalluvar.",
+        attractions: ["133-ft Thiruvalluvar Statue", "Vivekananda Rock Memorial", "Sunset & Sunrise Point", "Gandhi Memorial"],
+        corridors: ["Tirunelveli → Kanniyakumari (1.5h)", "Madurai → Kanniyakumari (4h)", "Nagercoil → Kanyakumari (30m)"]
+      },
+      {
+        id: "dhanushkodi",
+        name: "Pamban Sea Bridge & Dhanushkodi",
+        tamil: "பாம்பன் கடல் பாலம் & தனுஷ்கோடி",
+        district: "Ramanathapuram",
+        category: "beaches",
+        categoryName: "Beaches & Coast",
+        lat: 9.1772,
+        lng: 79.4140,
+        image: "https://images.unsplash.com/photo-1570789210967-2cac24afeb00?auto=format&fit=crop&w=800&q=80",
+        desc: "A stunning ocean causeway over Palk Strait to Rameswaram Island, leading to the legendary ghost town and pristine coastal sands just 24 km from Sri Lanka.",
+        attractions: ["Historic 1914 Pamban Sea Bridge", "Ramanathaswamy Temple (22 Theerthams)", "Arichal Munai End Point"],
+        corridors: ["Madurai → Rameswaram (3h)", "Trichy → Rameswaram (4.5h)"]
+      },
+      {
+        id: "hogenakkal",
+        name: "Hogenakkal Falls (Niagara of India)",
+        tamil: "ஒகேனக்கல் நீர்வீழ்ச்சி (காவிரி)",
+        district: "Dharmapuri",
+        category: "nature",
+        categoryName: "Nature & Waterfalls",
+        lat: 12.1182,
+        lng: 77.7766,
+        image: "https://images.unsplash.com/photo-1546182990-dffeafbe841d?auto=format&fit=crop&w=800&q=80",
+        desc: "Roaring carbonatite rock waterfalls of the Kaveri river offering thrilling round coracle boat rides and medicinal herbal bath experiences.",
+        attractions: ["Coracle Boating (பரிசல் பயணம்)", "Main Falls Gorge", "Melagiri Hills Viewpoint", "Fresh Fish Fry"],
+        corridors: ["Dharmapuri → Hogenakkal (1h)", "Salem → Hogenakkal (1.5h)", "Bangalore/Hosur → Hogenakkal (2.5h)"]
+      },
+      {
+        id: "courtallam",
+        name: "Courtallam Spa Waterfalls",
+        tamil: "குற்றாலம் அருவிகள் (தென்காசி)",
+        district: "Tenkasi",
+        category: "nature",
+        categoryName: "Nature & Waterfalls",
+        lat: 8.9298,
+        lng: 77.2694,
+        image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+        desc: "Famed natural medical spa of South India in the Western Ghats with 9 cascading waterfalls enriched by therapeutic forest herbs during the Southwest Monsoon.",
+        attractions: ["Main Falls (பேரருவி)", "Five Falls (ஐந்தருவி)", "Old Falls (பழைய குற்றாலம்)", "Shenbaga Devi Falls"],
+        corridors: ["Tenkasi → Courtallam (15m)", "Tirunelveli → Courtallam (1h)", "Madurai → Courtallam (2.5h)"]
+      },
+      {
+        id: "tiruvannamalai",
+        name: "Arunachaleswarar Temple & Girivalam",
+        tamil: "திருவண்ணாமலை அருணாசலேஸ்வரர்",
+        district: "Tiruvannamalai",
+        category: "temples",
+        categoryName: "Temples & Sacred",
+        lat: 12.2253,
+        lng: 79.0747,
+        image: "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80",
+        desc: "One of the Pancha Bhoota Sthalas representing Fire (Agni). Thousands of pilgrims perform the 14-km barefoot circumambulation around Annamalai Hill on Pournami.",
+        attractions: ["14-km Girivalam Path", "Raja Gopuram (217 ft)", "Sri Ramana Maharshi Ashram"],
+        corridors: ["Chennai → Tiruvannamalai (4h)", "Vellore → Tiruvannamalai (2h)", "Salem → Tiruvannamalai (3h)"]
+      },
+      {
+        id: "velankanni",
+        name: "Basilica of Our Lady of Good Health",
+        tamil: "வேளாங்கண்ணி ஆரோக்கிய மாதா பேராலயம்",
+        district: "Nagapattinam",
+        category: "temples",
+        categoryName: "Temples & Sacred",
+        lat: 10.6833,
+        lng: 79.8333,
+        image: "https://images.unsplash.com/photo-1548625361-197e4153924f?auto=format&fit=crop&w=800&q=80",
+        desc: "Known as the Lourdes of the East, this Gothic-style coastal basilica draws millions of multi-faith pilgrims along the Coromandel coast.",
+        attractions: ["Gothic Shrine Basilica", "Velankanni Beach", "Morning Star Church", "Holy Path Way of the Cross"],
+        corridors: ["Trichy → Velankanni (3h)", "Chennai → Velankanni (6.5h)", "Coimbatore → Velankanni (6.5h)"]
+      }
+    ];
+
+    let map = null;
+    let markersGroup = null;
+    let activeCategory = 'all';
+
+    function getCategoryColor(cat) {
+      switch(cat) {
+        case 'heritage': return '#891a1c';
+        case 'temples': return '#d97706';
+        case 'hills': return '#166534';
+        case 'beaches': return '#0284c7';
+        case 'nature': return '#059669';
+        default: return '#fdc039';
+      }
+    }
+
+    function updateDetailsCard(place) {
+      document.getElementById('cardTitle').innerText = place.name;
+      document.getElementById('cardTamil').innerText = place.tamil;
+      document.getElementById('cardDistrict').innerText = "📍 " + place.district + " District";
+      document.getElementById('cardCategory').innerText = place.categoryName;
+      document.getElementById('cardDesc').innerText = place.desc;
+      document.getElementById('cardImage').src = place.image;
+
+      // Update Attractions
+      const attrContainer = document.getElementById('cardAttractions');
+      attrContainer.innerHTML = '';
+      place.attractions.forEach(a => {
+        const span = document.createElement('span');
+        span.className = 'attraction-tag';
+        span.innerText = a;
+        attrContainer.appendChild(span);
+      });
+
+      // Update Corridors
+      const corrContainer = document.getElementById('cardCorridors');
+      corrContainer.innerHTML = '';
+      place.corridors.forEach(c => {
+        const div = document.createElement('div');
+        div.innerHTML = '&bull; ' + c;
+        corrContainer.appendChild(div);
+      });
+
+      // Update Search Button Link
+      const btn = document.getElementById('cardSearchLink');
+      btn.href = '/rides/search/?to=' + encodeURIComponent(place.district);
+      btn.innerHTML = `<span>Search Shared Rides to ${place.district}</span> &rarr;`;
+
+      // Smooth pan on map
+      if (map) {
+        map.flyTo([place.lat, place.lng], 9.5, { duration: 1.2 });
+      }
+    }
+
+    function renderMarkers() {
+      if (!markersGroup) return;
+      markersGroup.clearLayers();
+
+      const query = document.getElementById('placeSearch').value.toLowerCase().trim();
+
+      const filtered = destinations.filter(p => {
+        const matchesCat = (activeCategory === 'all' || p.category === activeCategory);
+        const matchesQuery = !query || 
+          p.name.toLowerCase().includes(query) ||
+          p.tamil.toLowerCase().includes(query) ||
+          p.district.toLowerCase().includes(query);
+        return matchesCat && matchesQuery;
+      });
+
+      filtered.forEach(place => {
+        const marker = L.circleMarker([place.lat, place.lng], {
+          radius: 9,
+          fillColor: getCategoryColor(place.category),
+          color: '#241611',
+          weight: 2.5,
+          opacity: 1,
+          fillOpacity: 0.95
+        });
+
+        marker.bindPopup(`<strong>${place.name}</strong><br><span style="color:#600704;">${place.tamil}</span><br><em>${place.district} District</em>`);
+        marker.on('click', () => {
+          updateDetailsCard(place);
+        });
+
+        markersGroup.addLayer(marker);
+      });
+    }
+
+    window.applyCategoryFilter = function(cat) {
+      activeCategory = cat;
+      document.querySelectorAll('.cat-pill').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${cat}'`));
+      });
+      renderMarkers();
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initialize Leaflet locked exclusively to Tamil Nadu
+      const southWest = L.latLng(8.05, 76.10);
+      const northEast = L.latLng(13.60, 80.45);
+      const bounds = L.latLngBounds(southWest, northEast);
+
+      map = L.map('tnFullMap', {
+        center: [10.80, 78.50], // Center of TN
+        zoom: 7.2,
+        minZoom: 6.8,
+        maxBounds: bounds,
+        maxBoundsViscosity: 1.0
+      });
+
+      L.tileLayer('https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=WIbwOq9Iz1uoXYXGrfwK', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &bull; MapTiler',
+        maxZoom: 16
+      }).addTo(map);
+
+      markersGroup = L.layerGroup().addTo(map);
+
+      renderMarkers();
+
+      // Search event listener
+      document.getElementById('placeSearch').addEventListener('input', () => {
+        renderMarkers();
+      });
+    });
+  </script>
+
+</body>
+</html>

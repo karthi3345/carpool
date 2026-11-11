@@ -1,0 +1,1649 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Tamil Heritage, Literature & Audio Library - TamizhPayanam{% endblock %}
+
+{% block extra_head %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Serif+Tamil:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --h-bg: #fffbf0;
+    --h-card: #ffffff;
+    --h-maroon: #680e11;
+    --h-gold: #c88612;
+    --h-gold-light: #fef4dd;
+    --h-dark: #1f1610;
+    --h-muted: #5e5246;
+    --h-border: #ebd9b5;
+    --h-accent: #b91c1c;
+  }
+
+  body {
+    background: var(--h-bg);
+    color: var(--h-dark);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  .heritage-container {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 36px 20px 80px;
+  }
+
+  /* Hero Banner */
+  .heritage-hero {
+    background: linear-gradient(135deg, #420709 0%, #680e11 50%, #831518 100%);
+    border-radius: 24px;
+    padding: 48px 40px;
+    color: #ffffff;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 16px 40px rgba(104, 14, 17, 0.22);
+    margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+  }
+
+  .heritage-hero::after {
+    content: '';
+    position: absolute;
+    right: -50px;
+    top: -50px;
+    width: 320px;
+    height: 320px;
+    background: radial-gradient(circle, rgba(200, 134, 18, 0.3) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .heritage-hero-content {
+    max-width: 680px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .heritage-pill-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(200, 134, 18, 0.25);
+    border: 1px solid rgba(246, 202, 105, 0.5);
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: #fce3a2;
+    margin-bottom: 16px;
+  }
+
+  .heritage-hero h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 38px;
+    font-weight: 800;
+    line-height: 1.2;
+    margin: 0 0 12px;
+    color: #ffffff;
+  }
+
+  .heritage-hero h1 span {
+    color: #fdcf66;
+    display: block;
+    font-family: 'Noto Serif Tamil', serif;
+    font-size: 26px;
+    font-weight: 700;
+    margin-top: 6px;
+  }
+
+  .heritage-hero p {
+    font-size: 15.5px;
+    line-height: 1.6;
+    color: #f7e7d0;
+    margin: 0;
+  }
+
+  /* Audio Status Player Sticky Island */
+  .audio-master-island {
+    background: #ffffff;
+    border: 1.5px solid var(--h-border);
+    border-radius: 18px;
+    padding: 18px 24px;
+    margin-bottom: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+    box-shadow: 0 6px 20px rgba(78, 40, 16, 0.08);
+  }
+
+  .audio-now-playing {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .audio-disc-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--h-gold) 0%, var(--h-maroon) 100%);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    animation: spinSlow 8s linear infinite;
+    animation-play-state: paused;
+  }
+
+  .audio-disc-icon.playing {
+    animation-play-state: running;
+  }
+
+  @keyframes spinSlow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .audio-now-meta .track-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--h-dark);
+  }
+
+  .audio-now-meta .track-sub {
+    font-size: 12.5px;
+    color: var(--h-muted);
+  }
+
+  .audio-controls-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .btn-audio-ctrl {
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+  }
+
+  .btn-audio-play {
+    background: var(--h-maroon);
+    color: #ffffff;
+    padding: 10px 22px;
+    box-shadow: 0 4px 12px rgba(104, 14, 17, 0.25);
+  }
+
+  .btn-audio-play:hover {
+    background: #831518;
+    transform: scale(1.03);
+  }
+
+  .btn-audio-stop {
+    background: #f3f4f6;
+    color: #374151;
+    padding: 10px 18px;
+  }
+
+  .btn-audio-stop:hover {
+    background: #e5e7eb;
+  }
+
+  /* Audio Subtitles / Synchronized Display Box */
+  .subtitles-teleprompter {
+    background: #2b1d16;
+    color: #fff9ea;
+    border-radius: 14px;
+    padding: 14px 20px;
+    font-size: 14.5px;
+    font-family: 'Noto Serif Tamil', Georgia, serif;
+    line-height: 1.6;
+    width: 100%;
+    margin-top: 10px;
+    border-left: 5px solid var(--h-gold);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .subtitles-teleprompter .sub-badge {
+    background: var(--h-gold);
+    color: #2b1d16;
+    font-size: 10px;
+    font-weight: 900;
+    padding: 3px 8px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    text-transform: uppercase;
+  }
+
+  /* Category Filter Tabs */
+  .library-filters {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-bottom: 28px;
+  }
+
+  .lib-filter-pill {
+    background: #ffffff;
+    border: 1.5px solid var(--h-border);
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--h-muted);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+  }
+
+  .lib-filter-pill.active,
+  .lib-filter-pill:hover {
+    background: var(--h-maroon);
+    border-color: var(--h-maroon);
+    color: #ffffff;
+  }
+
+  /* Books Grid */
+  /* Daily Chapter & Daily Kural with Story */
+  .daily-kural-container {
+    background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 50%, #FDE68A 100%);
+    border: 2px solid #F59E0B;
+    border-radius: 20px;
+    padding: 24px 28px;
+    margin-bottom: 28px;
+    box-shadow: 0 10px 25px rgba(245, 158, 11, 0.15);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .daily-kural-container::before {
+    content: "\1F4DC";
+    position: absolute;
+    right: 20px;
+    bottom: -15px;
+    font-size: 110px;
+    opacity: 0.12;
+    pointer-events: none;
+  }
+
+  .daily-kural-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .daily-badge-tag {
+    background: #78350F;
+    color: #FEF3C7;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .daily-nav-btns {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-kural-nav {
+    background: #ffffff;
+    border: 1px solid #D97706;
+    color: #92400E;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .btn-kural-nav:hover {
+    background: #D97706;
+    color: #ffffff;
+  }
+
+  .kural-quote-card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 18px 22px;
+    border-left: 5px solid #D97706;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 12px rgba(180, 83, 9, 0.08);
+  }
+
+  .kural-verse-text {
+    font-family: 'Noto Sans Tamil', 'Plus Jakarta Sans', Georgia, serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: #451A03;
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+
+  .kural-meaning-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed #E5E7EB;
+  }
+
+  @media (max-width: 768px) {
+    .kural-meaning-box { grid-template-columns: 1fr; }
+  }
+
+  .meaning-item-tamil {
+    font-size: 13.5px;
+    color: #78350F;
+    line-height: 1.55;
+  }
+
+  .meaning-item-english {
+    font-size: 13.5px;
+    color: #4B5563;
+    line-height: 1.55;
+    font-style: italic;
+  }
+
+  /* Story Illustration Box */
+  .kural-story-box {
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 14px;
+    padding: 16px 20px;
+    border: 1px solid #FCD34D;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .story-icon-bulb {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #FDE68A;
+    color: #B45309;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .story-title {
+    font-size: 14.5px;
+    font-weight: 800;
+    color: #78350F;
+    margin: 0 0 6px;
+  }
+
+  .story-desc {
+    font-size: 13px;
+    color: #451A03;
+    line-height: 1.6;
+    margin: 0 0 8px;
+  }
+
+  .story-lesson-badge {
+    display: inline-block;
+    background: #FEF3C7;
+    border: 1px solid #F59E0B;
+    color: #92400E;
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 6px;
+  }
+
+  .books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 26px;
+    margin-bottom: 50px;
+  }
+
+  .book-card {
+    background: var(--h-card);
+    border: 1.5px solid var(--h-border);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(60, 30, 10, 0.05);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .book-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(60, 30, 10, 0.12);
+    border-color: var(--h-gold);
+  }
+
+  .book-cover-banner {
+    height: 180px;
+    position: relative;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: #ffffff;
+  }
+
+  .book-cover-banner.bg-thirukkural {
+    background: linear-gradient(135deg, #78350f 0%, #b45309 100%);
+  }
+
+  .book-cover-banner.bg-ponniyin {
+    background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%);
+  }
+
+  .book-cover-banner.bg-silambu {
+    background: linear-gradient(135deg, #831843 0%, #be185d 100%);
+  }
+
+  .book-cover-banner.bg-avvaiyar {
+    background: linear-gradient(135deg, #14532d 0%, #15803d 100%);
+  }
+
+  .book-cover-banner.bg-bharathiyar {
+    background: linear-gradient(135deg, #701a75 0%, #a21caf 100%);
+  }
+
+  .book-cover-banner.bg-manimekalai {
+    background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
+  }
+
+  .book-tag {
+    align-self: flex-start;
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(4px);
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .book-header-titles {
+    position: relative;
+    z-index: 2;
+  }
+
+  .book-title-tamil {
+    font-family: 'Noto Serif Tamil', serif;
+    font-size: 22px;
+    font-weight: 800;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+  }
+
+  .book-title-en {
+    font-size: 13.5px;
+    font-weight: 600;
+    opacity: 0.9;
+    margin: 2px 0 0;
+  }
+
+  .book-body {
+    padding: 22px 24px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .book-author-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--h-maroon);
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  .book-description {
+    font-size: 13.5px;
+    color: var(--h-muted);
+    line-height: 1.6;
+    margin-bottom: 18px;
+  }
+
+  .sample-quote-box {
+    background: var(--h-gold-light);
+    border-left: 3.5px solid var(--h-gold);
+    border-radius: 0 10px 10px 0;
+    padding: 10px 14px;
+    margin-bottom: 18px;
+  }
+
+  .sample-quote-box .quote-tamil {
+    font-family: 'Noto Serif Tamil', serif;
+    font-size: 14.5px;
+    font-weight: 700;
+    color: #451a03;
+    margin-bottom: 4px;
+  }
+
+  .sample-quote-box .quote-en {
+    font-size: 12px;
+    color: #78350f;
+    font-style: italic;
+  }
+
+  .book-actions-footer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-top: 1px solid #f1e5ce;
+    padding-top: 16px;
+  }
+
+  .btn-study-read {
+    flex: 1;
+    background: var(--h-gold-light);
+    color: var(--h-maroon);
+    border: 1.5px solid #dfc79b;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-study-read:hover {
+    background: #edd8af;
+    color: #420709;
+  }
+
+  .btn-listen-audio {
+    flex: 1.2;
+    background: var(--h-maroon);
+    color: #ffffff;
+    border: none;
+    border-radius: 999px;
+    padding: 9px 16px;
+    font-size: 13px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(104, 14, 17, 0.2);
+    transition: all 0.2s ease;
+  }
+
+  .btn-listen-audio:hover {
+    background: #831518;
+    transform: scale(1.02);
+  }
+
+  /* Interactive Study Reader Modal */
+  .study-modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 10, 8, 0.75);
+    backdrop-filter: blur(6px);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .study-modal-backdrop.open {
+    display: flex;
+  }
+
+  .study-modal-box {
+    background: #fffdfa;
+    border-radius: 24px;
+    max-width: 840px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 32px 36px;
+    position: relative;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+    border: 2px solid var(--h-border);
+  }
+
+  .study-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    border-bottom: 1.5px solid #f1e5ce;
+    padding-bottom: 16px;
+  }
+
+  .study-modal-header h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--h-maroon);
+    margin: 0;
+  }
+
+  .study-modal-header .sub-tamil {
+    font-family: 'Noto Serif Tamil', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--h-gold);
+    margin-top: 4px;
+  }
+
+  .study-close-btn {
+    background: #f3f4f6;
+    border: none;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4b5563;
+  }
+
+  .study-close-btn:hover {
+    background: #e5e7eb;
+    color: #111827;
+  }
+
+  .verse-reader-item {
+    background: #ffffff;
+    border: 1px solid #ebd9b5;
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 16px;
+    transition: background 0.2s ease;
+  }
+
+  .verse-reader-item.highlighted {
+    background: #fef8eb;
+    border-color: var(--h-gold);
+    box-shadow: 0 4px 14px rgba(200, 134, 18, 0.15);
+  }
+
+  .verse-tamil {
+    font-family: 'Noto Serif Tamil', serif;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.7;
+    color: #2b1d16;
+    margin-bottom: 8px;
+  }
+
+  .verse-meaning {
+    font-size: 13.5px;
+    color: #5e5246;
+    line-height: 1.55;
+  }
+
+  .verse-audio-btn {
+    margin-top: 10px;
+    background: var(--h-gold-light);
+    color: var(--h-maroon);
+    border: 1px solid #dfc79b;
+    border-radius: 999px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .verse-audio-btn:hover {
+    background: var(--h-maroon);
+    color: #ffffff;
+  }
+
+  @media (max-width: 768px) {
+    .heritage-hero {
+      padding: 30px 24px;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .heritage-hero h1 { font-size: 28px; }
+    /* Daily Chapter & Daily Kural with Story */
+  .daily-kural-container {
+    background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 50%, #FDE68A 100%);
+    border: 2px solid #F59E0B;
+    border-radius: 20px;
+    padding: 24px 28px;
+    margin-bottom: 28px;
+    box-shadow: 0 10px 25px rgba(245, 158, 11, 0.15);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .daily-kural-container::before {
+    content: "\1F4DC";
+    position: absolute;
+    right: 20px;
+    bottom: -15px;
+    font-size: 110px;
+    opacity: 0.12;
+    pointer-events: none;
+  }
+
+  .daily-kural-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .daily-badge-tag {
+    background: #78350F;
+    color: #FEF3C7;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .daily-nav-btns {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-kural-nav {
+    background: #ffffff;
+    border: 1px solid #D97706;
+    color: #92400E;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .btn-kural-nav:hover {
+    background: #D97706;
+    color: #ffffff;
+  }
+
+  .kural-quote-card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 18px 22px;
+    border-left: 5px solid #D97706;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 12px rgba(180, 83, 9, 0.08);
+  }
+
+  .kural-verse-text {
+    font-family: 'Noto Sans Tamil', 'Plus Jakarta Sans', Georgia, serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: #451A03;
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+
+  .kural-meaning-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed #E5E7EB;
+  }
+
+  @media (max-width: 768px) {
+    .kural-meaning-box { grid-template-columns: 1fr; }
+  }
+
+  .meaning-item-tamil {
+    font-size: 13.5px;
+    color: #78350F;
+    line-height: 1.55;
+  }
+
+  .meaning-item-english {
+    font-size: 13.5px;
+    color: #4B5563;
+    line-height: 1.55;
+    font-style: italic;
+  }
+
+  /* Story Illustration Box */
+  .kural-story-box {
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 14px;
+    padding: 16px 20px;
+    border: 1px solid #FCD34D;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .story-icon-bulb {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #FDE68A;
+    color: #B45309;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .story-title {
+    font-size: 14.5px;
+    font-weight: 800;
+    color: #78350F;
+    margin: 0 0 6px;
+  }
+
+  .story-desc {
+    font-size: 13px;
+    color: #451A03;
+    line-height: 1.6;
+    margin: 0 0 8px;
+  }
+
+  .story-lesson-badge {
+    display: inline-block;
+    background: #FEF3C7;
+    border: 1px solid #F59E0B;
+    color: #92400E;
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 6px;
+  }
+
+  .books-grid { grid-template-columns: 1fr; }
+    .study-modal-box { padding: 20px; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="heritage-container">
+  
+  <!-- Back to Home Bar -->
+  <div style="margin-bottom: 20px;">
+    <a href="/" style="display: inline-flex; align-items: center; gap: 8px; color: var(--h-maroon); font-weight: 800; font-size: 14px; text-decoration: none;">
+      <span>&larr;</span> Back to Home
+    </a>
+  </div>
+
+  <!-- Hero Banner -->
+  <div class="heritage-hero">
+    <div class="heritage-hero-content">
+      <div class="heritage-pill-badge">
+        📜 Tamil Heritage &bull; தமிழ் இலக்கியம்
+      </div>
+      <h1>
+        Born from Heritage.
+        <span>தமிழ் இலக்கிய நூல்கள் &amp; குரல் வழிகாட்டி</span>
+      </h1>
+      <p>
+        Immerse yourself in thousands of years of timeless Tamil philosophy, Sangam epics, and historic literature. Read verses with clear explanations and listen along with synchronized narrated audio and subtitles while you travel.
+      </p>
+    </div>
+    <div>
+      <div style="width: 110px; height: 110px; border-radius: 50%; border: 3px solid rgba(253, 207, 102, 0.4); display: flex; align-items: center; justify-content: center; font-size: 54px; background: rgba(0,0,0,0.2);">
+        🪶
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio Master Island (Plays book chapters with subtitle teleprompter) -->
+  <div class="audio-master-island" id="audioMasterIsland">
+    <div class="audio-now-playing">
+      <div class="audio-disc-icon" id="audioDiscIcon">🎶</div>
+      <div class="audio-now-meta">
+        <div class="track-title" id="currentTrackTitle">Thirukkural - Chapter 1: Invocation (கடவுள் வாழ்த்து)</div>
+        <div class="track-sub" id="currentTrackSub">Narrated with synchronized bilingual subtitles</div>
+      </div>
+    </div>
+
+    <div class="audio-controls-group">
+      <button type="button" class="btn-audio-ctrl btn-audio-play" id="btnMasterPlay" onclick="togglePlayActiveBook()">
+        <span id="playPauseIcon">▶</span> <span id="playPauseText">Listen Audio</span>
+      </button>
+      <button type="button" class="btn-audio-ctrl btn-audio-stop" onclick="stopAudioPlayback()">
+        ⏹ Stop
+      </button>
+    </div>
+
+    <!-- Live Subtitle Teleprompter -->
+    <div class="subtitles-teleprompter" id="subtitlesBox">
+      <span class="sub-badge">Subtitle Audio</span>
+      <span id="subtitleText">அகர முதல எழுத்தெல்லாம் ஆதி பகவன் முதற்றே உலகு — As the letter 'A' is the first of all letters, so is the Eternal God first in the world.</span>
+    </div>
+  </div>
+
+  <!-- DAILY KURAL & INSPIRATIONAL STORY ISLAND -->
+  <div class="daily-kural-container" id="dailyKuralIsland">
+    <div class="daily-kural-header">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span class="daily-badge-tag">&#127775; Daily Kural with Story &bull; தினமும் ஒரு குறளும் கதையும்</span>
+        <span style="font-size: 12.5px; font-weight: 700; color: #92400E;" id="kuralDayLabel">Today's Wisdom</span>
+      </div>
+      
+      <div class="daily-nav-btns">
+        <button type="button" class="btn-kural-nav" onclick="changeDailyKural(-1)">&larr; Previous</button>
+        <button type="button" class="btn-kural-nav" onclick="playDailyKuralAudio()">&#9654; Listen Subtitle Audio</button>
+        <button type="button" class="btn-kural-nav" onclick="changeDailyKural(1)">Next &rarr;</button>
+      </div>
+    </div>
+
+    <!-- Verse Quote Card -->
+    <div class="kural-quote-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+        <span style="font-size: 12px; font-weight: 800; color: #D97706; text-transform: uppercase;" id="kuralNoBadge">&#2965;&#3009;&#2993;&#2995;&#3021; 1</span>
+        <span style="font-size: 11.5px; color: #9CA3AF;">Thirukkural &bull; Universal Living</span>
+      </div>
+
+      <div class="kural-verse-text" id="dailyKuralTamilText">
+        &#2949;&#2965;&#2992; &#2990;&#3009;&#2984;&#2994; &#2987;&#2996;&#3009;&#2984;&#3021;&#2984;&#3014;&#2994;&#3021;&#2994;&#3006;&#2990;&#3021; &#2966;&#2984;&#3007;<br>&#2986;&#2965;&#2997;&#2985;&#3021; &#2990;&#3009;&#2984;&#2993;&#3021;&#2993;&#3015; &#2989;&#2994;&#2965;&#3009;.
+      </div>
+
+      <div class="kural-meaning-box">
+        <div class="meaning-item-tamil">
+          <strong style="color: #451A03; display: block; margin-bottom: 2px;">&#2980;&#2990;&#3007;&#2996;&#3021; &#2997;&#3007;&#2995;&#2965;&#3021;&#2965;&#2990;&#3021;:</strong>
+          <span id="dailyKuralMeaningTamil">&#2984;&#2996;&#3009;&#2980;&#3021;&#2980;&#3009;&#2965;&#3021;&#2965;&#2995;&#3021; &#2984;&#2994;&#3021;&#2994;&#3006;&#2990;&#3021; '&#2949;' &#2985;&#2989;&#3021;&#2985;&#3009;&#2990;&#3021; &#2984;&#2996;&#3009;&#2980;&#3021;&#2984;&#3016; &#2990;&#3009;&#2984;&#2994;&#3006;&#2965;&#2965;&#3021; &#2965;&#3018;&#2979;&#3021;&#2975;&#3009; &#2980;&#3018;&#2975;&#2994;&#3009;&#2965;&#3007;&#2985;&#3021;&#2993;&#2985;...</span>
+        </div>
+        <div class="meaning-item-english">
+          <strong style="color: #1F2937; display: block; margin-bottom: 2px;">English Meaning:</strong>
+          <span id="dailyKuralMeaningEnglish">As the letter 'A' is the first of all letters, so the Eternal Divine leads this world.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Example Story for Practical Engagement -->
+    <div class="kural-story-box">
+      <div class="story-icon-bulb">&#128161;</div>
+      <div style="flex: 1;">
+        <h4 class="story-title" id="dailyStoryTitle">&#10024; Real-Life Story: The Weaver's Sacred Beginning</h4>
+        <p class="story-desc" id="dailyStoryContent">
+          In an ancient Tamil handloom village along the Kaveri, a master weaver taught his son never to lay the shuttle until the lead thread was set true. Just as every exquisite silk saree draws its strength from the first foundational thread, every action and human connection starts with reverence for the prime source.
+        </p>
+        <span class="story-lesson-badge" id="dailyStoryLesson">&#128204; Moral: Every noble journey starts with humility and a sacred foundation.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category Filter Pills -->
+  <div class="library-filters">
+    <button type="button" class="lib-filter-pill active" onclick="filterCategory('all', this)">All Books (6)</button>
+    <button type="button" class="lib-filter-pill" onclick="filterCategory('ethics', this)">Philosophy &amp; Ethics (அறம்)</button>
+    <button type="button" class="lib-filter-pill" onclick="filterCategory('epics', this)">Five Great Epics (ஐம்பெருங்காப்பியம்)</button>
+    <button type="button" class="lib-filter-pill" onclick="filterCategory('history', this)">Historic Novels (வரலாற்று நாவல்)</button>
+    <button type="button" class="lib-filter-pill" onclick="filterCategory('patriotic', this)">Freedom &amp; Renaissance (விடுதலை கவிதைகள்)</button>
+  </div>
+
+  <!-- Books Grid -->
+  <div class="books-grid" id="booksGrid">
+
+    <!-- BOOK 1: Thirukkural -->
+    <div class="book-card" data-category="ethics" id="book-thirukkural">
+      <div class="book-cover-banner bg-thirukkural">
+        <span class="book-tag">Universal Ethics</span>
+        <div class="book-header-titles">
+          <h3 class="book-title-tamil">திருக்குறள்</h3>
+          <p class="book-title-en">Thirukkural &bull; 133 Chapters</p>
+        </div>
+      </div>
+      <div class="book-body">
+        <div class="book-author-row">
+          <span>✍️</span> <span>Author: Thiruvalluvar (திருவள்ளுவர்)</span>
+        </div>
+        <p class="book-description">
+          The supreme guide to human ethics, wealth, and virtuous life. 1,330 couplets categorized into Virtue (அறம்), Wealth (பொருள்), and Love (இன்பம்).
+        </p>
+
+        <div class="sample-quote-box">
+          <div class="quote-tamil">"அகர முதல எழுத்தெல்லாம் ஆதி பகவன் முதற்றே உலகு"</div>
+          <div class="quote-en">As 'A' leads all letters, the Primordial Lord leads the world.</div>
+        </div>
+
+        <div class="book-actions-footer">
+          <button type="button" class="btn-study-read" onclick="openStudyModal('thirukkural')">📖 Study Chapters</button>
+          <button type="button" class="btn-listen-audio" onclick="playBookAudio('thirukkural')">
+            <span>🔊</span> Listen with Subtitles
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOOK 2: Ponniyin Selvan -->
+    <div class="book-card" data-category="history" id="book-ponniyin">
+      <div class="book-cover-banner bg-ponniyin">
+        <span class="book-tag">Chola Historical Epic</span>
+        <div class="book-header-titles">
+          <h3 class="book-title-tamil">பொன்னியின் செல்வன்</h3>
+          <p class="book-title-en">Ponniyin Selvan &bull; 5 Volumes</p>
+        </div>
+      </div>
+      <div class="book-body">
+        <div class="book-author-row">
+          <span>✍️</span> <span>Author: Kalki Krishnamurthy (கல்கி)</span>
+        </div>
+        <p class="book-description">
+          The unforgettable saga of the great Chola Empire, Arulmozhivarman (Rajaraja Chola I), and the heroic adventures of Vallavaraiyan Vandiyathevan along the Kaveri.
+        </p>
+
+        <div class="sample-quote-box">
+          <div class="quote-tamil">"ஆடித் திருநாளன்று வீராணம் ஏரிக்கரையில் வந்தியத்தேவன் தன் புரவியைச் செலுத்தினான்..."</div>
+          <div class="quote-en">On Aadi Perukku, Vandiyathevan rode his horse along Veeranam Lake...</div>
+        </div>
+
+        <div class="book-actions-footer">
+          <button type="button" class="btn-study-read" onclick="openStudyModal('ponniyin')">📖 Study Chapters</button>
+          <button type="button" class="btn-listen-audio" onclick="playBookAudio('ponniyin')">
+            <span>🔊</span> Listen with Subtitles
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOOK 3: Silappathikaram -->
+    <div class="book-card" data-category="epics" id="book-silambu">
+      <div class="book-cover-banner bg-silambu">
+        <span class="book-tag">Great Sangam Epic</span>
+        <div class="book-header-titles">
+          <h3 class="book-title-tamil">சிலப்பதிகாரம்</h3>
+          <p class="book-title-en">Silappathikaram &bull; The Tale of the Anklet</p>
+        </div>
+      </div>
+      <div class="book-body">
+        <div class="book-author-row">
+          <span>✍️</span> <span>Author: Ilango Adigal (இளங்கோ அடிகள்)</span>
+        </div>
+        <p class="book-description">
+          The iconic epic celebrating the chastity, justice, and fiery courage of Kannagi in ancient Poompuhar, Madurai, and Vanchi.
+        </p>
+
+        <div class="sample-quote-box">
+          <div class="quote-tamil">"அரசியல் பிழைத்தோர்க்கு அறங்கூற்றாவதூஉம், உரைசால் பத்தினியை உயர்ந்தோர் ஏத்தலும்..."</div>
+          <div class="quote-en">Righteousness strikes down unjust rulers; the chaste wife is revered by all.</div>
+        </div>
+
+        <div class="book-actions-footer">
+          <button type="button" class="btn-study-read" onclick="openStudyModal('silambu')">📖 Study Chapters</button>
+          <button type="button" class="btn-listen-audio" onclick="playBookAudio('silambu')">
+            <span>🔊</span> Listen with Subtitles
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOOK 4: Aathichoodi & Konrai Vendhan -->
+    <div class="book-card" data-category="ethics" id="book-avvaiyar">
+      <div class="book-cover-banner bg-avvaiyar">
+        <span class="book-tag">Wisdom Poetry</span>
+        <div class="book-header-titles">
+          <h3 class="book-title-tamil">ஆத்திசூடி &amp; கொன்றை வேந்தன்</h3>
+          <p class="book-title-en">Aathichoodi &bull; Alphabetical Precepts</p>
+        </div>
+      </div>
+      <div class="book-body">
+        <div class="book-author-row">
+          <span>✍️</span> <span>Author: Avvaiyar (ஔவையார்)</span>
+        </div>
+        <p class="book-description">
+          Timeless moral maxims framed in single rhythmic lines for students, travelers, and lifelong learners across generations.
+        </p>
+
+        <div class="sample-quote-box">
+          <div class="quote-tamil">"அறம் செய விரும்பு, ஆறுவது சினம், இயல்வது கரவேல், ஈவது விலக்கேல்"</div>
+          <div class="quote-en">Desire to do good, cool your anger, share what you can, never forbid charity.</div>
+        </div>
+
+        <div class="book-actions-footer">
+          <button type="button" class="btn-study-read" onclick="openStudyModal('avvaiyar')">📖 Study Chapters</button>
+          <button type="button" class="btn-listen-audio" onclick="playBookAudio('avvaiyar')">
+            <span>🔊</span> Listen with Subtitles
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOOK 5: Bharathiyar Kavithaigal -->
+    <div class="book-card" data-category="patriotic" id="book-bharathiyar">
+      <div class="book-cover-banner bg-bharathiyar">
+        <span class="book-tag">Patriotic &amp; Renaissance</span>
+        <div class="book-header-titles">
+          <h3 class="book-title-tamil">பாரதியார் கவிதைகள்</h3>
+          <p class="book-title-en">Mahakavi Bharathiyar &bull; Songs of Freedom</p>
+        </div>
+      </div>
+      <div class="book-body">
+        <div class="book-author-row">
+          <span>✍️</span> <span>Author: Subramania Bharati (சுப்பிரமணிய பாரதியார்)</span>
+        </div>
+        <p class="book-description">
+          Electrifying poems of fearlessness, freedom, progressive social justice, and pride in the Tamil language and motherland.
+        </p>
+
+        <div class="sample-quote-box">
+          <div class="quote-tamil">"அச்சமில்லை அச்சமில்லை அச்சமென்ப தில்லையே, இச்சகத்து ளோரெலாம் எதிர்த்து நின்ற போதினும்..."</div>
+          <div class="quote-en">No fear, no fear, no fear at all! Even if the whole world stands against us!</div>
+        </div>
+
+        <div class="book-actions-footer">
+          <button type="button" class="btn-study-read" onclick="openStudyModal('bharathiyar')">📖 Study Chapters</button>
+          <button type="button" class="btn-listen-audio" onclick="playBookAudio('bharathiyar')">
+            <span>🔊</span> Listen with Subtitles
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOOK 6: Manimekalai -->
+    <div class="book-card" data-category="epics" id="book-manimekalai">
+      <div class="book-cover-banner bg-manimekalai">
+        <span class="book-tag">Buddhist Philosophical Epic</span>
+        <div class="book-header-titles">
+          <h3 class="book-title-tamil">மணிமேகலை</h3>
+          <p class="book-title-en">Manimekalai &bull; The Inexhaustible Bowl</p>
+        </div>
+      </div>
+      <div class="book-body">
+        <div class="book-author-row">
+          <span>✍️</span> <span>Author: Seethalai Saathanar (சீத்தலைச் சாத்தனார்)</span>
+        </div>
+        <p class="book-description">
+          The compassionate journey of Manimekalai carrying the miraculous bowl 'Akshaya Patra' to feed the hungry and bring solace to all living beings.
+        </p>
+
+        <div class="sample-quote-box">
+          <div class="quote-tamil">"உண்டி கொடுத்தோர் உயிர் கொடுத்தோரே; மண்டிணி ஞாலத்து வாழ்வோர்க்கெல்லாம்..."</div>
+          <div class="quote-en">Those who give food give life itself to all beings on this earth.</div>
+        </div>
+
+        <div class="book-actions-footer">
+          <button type="button" class="btn-study-read" onclick="openStudyModal('manimekalai')">📖 Study Chapters</button>
+          <button type="button" class="btn-listen-audio" onclick="playBookAudio('manimekalai')">
+            <span>🔊</span> Listen with Subtitles
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Interactive Study Reader Modal with Chapters & Verse-by-Verse Subtitle Sync -->
+<div class="study-modal-backdrop" id="studyModal" onclick="if(event.target===this) closeStudyModal()">
+  <div class="study-modal-box">
+    <div class="study-modal-header">
+      <div>
+        <h2 id="modalBookTitle">Thirukkural Study Room</h2>
+        <div class="sub-tamil" id="modalBookTamil">திருக்குறள் உரை &amp; குரல் வழி படிப்பு</div>
+      </div>
+      <button type="button" class="study-close-btn" onclick="closeStudyModal()">&times;</button>
+    </div>
+
+    <!-- Modal Audio Player Bar -->
+    <div style="background: #fbf3e4; border: 1px solid #ebd9b5; border-radius: 14px; padding: 14px 18px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="font-size: 22px;">🎧</span>
+        <div>
+          <div style="font-size: 13.5px; font-weight: 800; color: #420709;" id="modalCurrentAudioName">Listening: Chapter Audio Track</div>
+          <div style="font-size: 11.5px; color: #78350f;">Click any verse below to play and highlight that exact line</div>
+        </div>
+      </div>
+      <button type="button" class="btn-audio-play btn-audio-ctrl" id="btnModalPlay" onclick="toggleModalAudioPlayback()" style="padding: 7px 16px; font-size: 13px;">
+        <span id="modalPlayIcon">▶</span> Play All Verses
+      </button>
+    </div>
+
+    <!-- Chapter Verses Container -->
+    <div id="modalVersesList">
+      <!-- Injected via JavaScript -->
+    </div>
+  </div>
+</div>
+
+<script>
+  // Book Library Database for Study and Audio Subtitles
+  const bookLibrary = {
+    thirukkural: {
+      title: "Thirukkural (திருக்குறள்)",
+      tamil: "அறத்துப்பால் — கடவுள் வாழ்த்து & வான்சிறப்பு",
+      verses: [
+        {
+          no: "குறள் 1",
+          tamil: "அகர முதல எழுத்தெல்லாம் ஆதி\nபகவன் முதற்றே உலகு.",
+          meaning: "As the letter 'A' is the first of all letters, so the Eternal God is the foremost ruler of the universe.",
+          audioText: "அகர முதல எழுத்தெல்லாம் ஆதி பகவன் முதற்றே உலகு. As 'A' leads all letters, so the Primordial God leads the world."
+        },
+        {
+          no: "குறள் 2",
+          tamil: "கற்றதனால் ஆய பயனென்கொல் வாலறிவன்\nநற்றாள் தொழாஅர் எனின்.",
+          meaning: "What benefit has learning brought to those who do not revere the sacred feet of the all-wise Lord?",
+          audioText: "கற்றதனால் ஆய பயனென்கொல் வாலறிவன் நற்றாள் தொழாஅர் எனின். What is the fruit of knowledge if one does not adore the All-Wise Creator?"
+        },
+        {
+          no: "குறள் 11",
+          tamil: "வான்நின்று உலகம் வழங்கி வருதலால்\nதான்அமிழ்தம் என்றுணரற் பாற்று.",
+          meaning: "Because rain sustains the entire universe without fail, it must truly be deemed as ambrosia.",
+          audioText: "வான்நின்று உலகம் வழங்கி வருதலால் தான் அமிழ்தம் என்றுணரற் பாற்று. By the bountiful rain the world endures; rain is the ambrosia of life."
+        },
+        {
+          no: "குறள் 391",
+          tamil: "கற்க கசடறக் கற்பவை கற்றபின்\nநிற்க அதற்குத் தக.",
+          meaning: "Learn flawlessly what is worthy of learning; and having learned, abide truthfully by that learning.",
+          audioText: "கற்க கசடறக் கற்பவை கற்றபின் நிற்க அதற்குத் தக. Learn thoroughly that which is noble; and let your life reflect that learning."
+        }
+      ]
+    },
+    ponniyin: {
+      title: "Ponniyin Selvan (பொன்னியின் செல்வன்)",
+      tamil: "முதல் பாகம்: புது வெள்ளம் — வீர நாராயண ஏரி",
+      verses: [
+        {
+          no: "அத்தியாயம் 1",
+          tamil: "ஆடித் திங்கள் பதினெட்டாம் நாள் அன்று சோழ நாட்டின் வீராணம் ஏரிக்கரையில் இளவல் வல்லவரையன் வந்தியத்தேவன் தன் புரவியைச் செலுத்தினான்.",
+          meaning: "On the auspicious eighteenth day of Aadi month, the valiant youth Vallavaraiyan Vandiyathevan galloped his steed along the expansive banks of Veeranam Lake in the Chola Kingdom.",
+          audioText: "On the 18th day of Aadi, Vallavaraiyan Vandiyathevan rode his horse along Veeranam Lake, watching the waves of sacred water."
+        },
+        {
+          no: "அத்தியாயம் 2",
+          tamil: "தஞ்சைப் பெருவுடையார் ஆலயத்தின் நிழல் நிலத்தில் விழாது வானத்தை நோக்கியே கம்பீரமாய் நின்றிருந்தது; சோழப் பேரரசின் பெருமையை உலகுக்கு பறைசாற்றியது.",
+          meaning: "The towering vimana of Thanjavur Brihadisvara Temple stood majestically, proclaiming the architectural brilliance and valor of the Chola empire.",
+          audioText: "The majestic gopuram of Thanjavur temple reached into the sky, symbolizing the zenith of Chola golden era."
+        }
+      ]
+    },
+    silambu: {
+      title: "Silappathikaram (சிலப்பதிகாரம்)",
+      tamil: "புகார்க் காண்டம் & மதுரை காண்டம்",
+      verses: [
+        {
+          no: "மங்கல வாழ்த்துப் பாடல்",
+          tamil: "திங்களைப் போற்றுதும் திங்களைப் போற்றுதும்!\nஞாயிறு போற்றுதும் ஞாயிறு போற்றுதும்!\nமாமழை போற்றுதும் மாமழை போற்றுதும்!",
+          meaning: "Praise we the Cool Moon, praise we the Radiant Sun, praise we the Life-giving Rain that blesses the fertile realm!",
+          audioText: "Praise the Moon, praise the Sun, praise the rains that bless the land of Kaveri."
+        },
+        {
+          no: "வழக்குரை காதை",
+          tamil: "தேரா மன்னா, செப்புவது உடையேன்; எள்ளறு சிறப்பின் இமையவர் வியப்ப, புள்உறு புன்கண் தீர்த்தோன் அன்றோ நின் முன்னோர்!",
+          meaning: "Unenquiring King! Hear my truth! Did not your great ancestor Sibi offer his own flesh to save a dove from harm?",
+          audioText: "Kannagi confronted the Pandyan King in Madurai with the sacred anklet, demanding righteousness and truth."
+        }
+      ]
+    },
+    avvaiyar: {
+      title: "Aathichoodi & Konrai Vendhan (ஆத்திசூடி)",
+      tamil: "ஔவையார் அருளிய நீதிகள்",
+      verses: [
+        {
+          no: "பாடல் 1 - 4",
+          tamil: "அறம் செய விரும்பு.\nஆறுவது சினம்.\nஇயல்வது கரவேல்.\nஈவது விலக்கேல்.",
+          meaning: "Cherish virtue; restrain your burning rage; never conceal your capability to help; never turn away those who give alms.",
+          audioText: "Desire virtue. Quench your fury. Do not hide your wealth from the needy. Never obstruct acts of benevolence."
+        },
+        {
+          no: "கொன்றை வேந்தன்",
+          tamil: "அன்னையும் பிதாவும் முன்னணி தெய்வம்.\nஆலயம் தொழுவது சாலவும் நன்று.\nஇல்வாழ்க்கை என்பது இரவோடு வாழ்வு.",
+          meaning: "Mother and father are the foremost visible gods. Visiting temples brings peace and clarity to the soul.",
+          audioText: "Mother and father are your primary deities. Worship in sanctified temples is profoundly beneficial."
+        }
+      ]
+    },
+    bharathiyar: {
+      title: "Bharathiyar Kavithaigal (பாரதியார் கவிதைகள்)",
+      tamil: "அச்சமில்லை & பாரத சமுதாயம்",
+      verses: [
+        {
+          no: "பாடல் 1",
+          tamil: "அச்சமில்லை அச்சமில்லை அச்சமென்ப தில்லையே,\nஇச்சகத்து ளோரெலாம் எதிர்த்து நின்ற போதினும்,\nஅச்சமில்லை அச்சமில்லை அச்சமென்ப தில்லையே!",
+          meaning: "No fear, no fear, not an atom of fear! Even if the entire world unites in opposition against us, fear we know not!",
+          audioText: "We have no fear! Even if the skies crumble and fall upon our heads, we will never yield to fear!"
+        },
+        {
+          no: "செந்தமிழ் நாடு",
+          tamil: "செந்தமிழ் நாடெனும் போதினிலே - இன்பத்\nதேன்வந்து பாயுது காதினிலே - எங்கள்\nதந்தையர் நாடென்ற பேச்சினிலே - ஒரு\nசக்தி பிறக்குது மூச்சினிலே!",
+          meaning: "When the name 'Senthamizh Naadu' is uttered, sweet honey flows into our ears; when we speak of our ancestral soil, new energy surges through every breath!",
+          audioText: "Senthamizh Naadu fills our hearts with ambrosial joy and fuels our spirit with boundless vigor."
+        }
+      ]
+    },
+    manimekalai: {
+      title: "Manimekalai (மணிமேகலை)",
+      tamil: "ஆபுத்திரன் திறம் & அமுதசுரபி",
+      verses: [
+        {
+          no: "பாடல் 1",
+          tamil: "உண்டி கொடுத்தோர் உயிர் கொடுத்தோரே,\nஉண்டி முதற்றே உணவின் பிண்டம்;\nஉணவெனப் படுவது நிலத்தொடு நீரே.",
+          meaning: "Those who give food give the gift of life itself; for the human body is formed of food, nourished by the earth and sacred waters.",
+          audioText: "To bestow food upon the hungry is to bestow life upon humanity. Compassion is the supreme virtue."
+        }
+      ]
+    }
+  };
+
+  let activeBookKey = 'thirukkural';
+  let isAudioPlaying = false;
+  let currentAudioIndex = 0;
+  let synth = window.speechSynthesis;
+  let speechUtterance = null;
+
+  // Filter Categories
+  function filterCategory(cat, btn) {
+    document.querySelectorAll('.lib-filter-pill').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const cards = document.querySelectorAll('.book-card');
+    cards.forEach(card => {
+      if (cat === 'all' || card.dataset.category === cat) {
+        card.style.display = 'flex';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+
+  // Study Modal Handling
+  function openStudyModal(bookKey) {
+    activeBookKey = bookKey;
+    const book = bookLibrary[bookKey];
+    if (!book) return;
+
+    document.getElementById('modalBookTitle').innerText = book.title;
+    document.getElementById('modalBookTamil').innerText = book.tamil;
+    document.getElementById('modalCurrentAudioName').innerText = "Book: " + book.title;
+
+    const listContainer = document.getElementById('modalVersesList');
+    listContainer.innerHTML = '';
+
+    book.verses.forEach((v, idx) => {
+      const item = document.createElement('div');
+      item.className = 'verse-reader-item';
+      item.id = 'modal-verse-' + idx;
+      item.innerHTML = `
+        <div style="font-size: 11.5px; font-weight: 800; color: var(--h-maroon); text-transform: uppercase; margin-bottom: 6px;">
+          ${v.no}
+        </div>
+        <div class="verse-tamil">${v.tamil.replace(/\n/g, '<br>')}</div>
+        <div class="verse-meaning"><strong>Meaning:</strong> ${v.meaning}</div>
+        <button type="button" class="verse-audio-btn" onclick="playSingleVerse('${bookKey}', ${idx})">
+          <span>🔊</span> Listen Verse with Subtitles
+        </button>
+      `;
+      listContainer.appendChild(item);
+    });
+
+    document.getElementById('studyModal').classList.add('open');
+  }
+
+  function closeStudyModal() {
+    document.getElementById('studyModal').classList.remove('open');
+    stopAudioPlayback();
+  }
+
+  // Playbook Audio from cards
+  function playBookAudio(bookKey) {
+    activeBookKey = bookKey;
+    const book = bookLibrary[bookKey];
+    if (!book) return;
+
+    document.getElementById('currentTrackTitle').innerText = book.title;
+    document.getElementById('currentTrackSub').innerText = book.tamil;
+
+    // Scroll to audio player smoothly
+    document.getElementById('audioMasterIsland').scrollIntoView({ behavior: 'smooth' });
+
+    startBookAudioSequence(bookKey, 0);
+  }
+
+  function togglePlayActiveBook() {
+    if (isAudioPlaying) {
+      stopAudioPlayback();
+    } else {
+      startBookAudioSequence(activeBookKey, currentAudioIndex);
+    }
+  }
+
+  function toggleModalAudioPlayback() {
+    togglePlayActiveBook();
+  }
+
+  function playSingleVerse(bookKey, idx) {
+    activeBookKey = bookKey;
+    startBookAudioSequence(bookKey, idx, true);
+  }
+
+  function startBookAudioSequence(bookKey, startIndex = 0, singleOnly = false) {
+    if (!synth) {
+      alert("Text-to-speech audio is not supported in this browser.");
+      return;
+    }
+
+    synth.cancel();
+    const book = bookLibrary[bookKey];
+    if (!book || !book.verses[startIndex]) return;
+
+    currentAudioIndex = startIndex;
+    const verse = book.verses[startIndex];
+
+    // Highlight in modal if open
+    document.querySelectorAll('.verse-reader-item').forEach(el => el.classList.remove('highlighted'));
+    const highlightedEl = document.getElementById('modal-verse-' + startIndex);
+    if (highlightedEl) highlightedEl.classList.add('highlighted');
+
+    // Update Teleprompter Subtitles
+    const subText = `${verse.tamil.replace(/\n/g, ' ')} — ${verse.meaning}`;
+    document.getElementById('subtitleText').innerText = subText;
+
+    // Build Speech Utterance
+    speechUtterance = new SpeechSynthesisUtterance(verse.audioText || verse.meaning);
+    speechUtterance.rate = 0.92;
+    speechUtterance.pitch = 1.0;
+
+    // Search for Indian or Tamil voice if available
+    const voices = synth.getVoices();
+    const tamilVoice = voices.find(v => v.lang.includes('ta') || v.lang.includes('en-IN') || v.name.includes('India'));
+    if (tamilVoice) speechUtterance.voice = tamilVoice;
+
+    speechUtterance.onstart = function() {
+      setPlayStateUI(true);
+    };
+
+    speechUtterance.onend = function() {
+      if (!singleOnly && startIndex + 1 < book.verses.length) {
+        startBookAudioSequence(bookKey, startIndex + 1, false);
+      } else {
+        setPlayStateUI(false);
+      }
+    };
+
+    speechUtterance.onerror = function() {
+      setPlayStateUI(false);
+    };
+
+    synth.speak(speechUtterance);
+  }
+
+  function stopAudioPlayback() {
+    if (synth) synth.cancel();
+    setPlayStateUI(false);
+    document.querySelectorAll('.verse-reader-item').forEach(el => el.classList.remove('highlighted'));
+  }
+
+  function setPlayStateUI(playing) {
+    isAudioPlaying = playing;
+    const playPauseIcon = document.getElementById('playPauseIcon');
+    const playPauseText = document.getElementById('playPauseText');
+    const discIcon = document.getElementById('audioDiscIcon');
+    const modalPlayIcon = document.getElementById('modalPlayIcon');
+
+    if (playing) {
+      if (playPauseIcon) playPauseIcon.innerText = '⏸';
+      if (playPauseText) playPauseText.innerText = 'Pause Audio';
+      if (modalPlayIcon) modalPlayIcon.innerText = '⏸';
+      if (discIcon) discIcon.classList.add('playing');
+    } else {
+      if (playPauseIcon) playPauseIcon.innerText = '▶';
+      if (playPauseText) playPauseText.innerText = 'Listen Audio';
+      if (modalPlayIcon) modalPlayIcon.innerText = '▶';
+      if (discIcon) discIcon.classList.remove('playing');
+    }
+  }
+
+  
+  // Daily Kurals with Engaging Real-life Stories
+  const dailyKuralData = [
+    {
+      day: "Today's Kural",
+      no: 1,
+      noText: "குறள் 1 (கடவுள் வாழ்த்து)",
+      tamil: "அகர முதல எழுத்தெல்லாம் ஆதி\nபகவன் முதற்றே உலகு.",
+      meaningTamil: "எழுத்துக்கள் எல்லாம் 'அ' என்னும் எழுத்தை முதலாகக் கொண்டு தொடங்குகின்றன; அதுபோல உலகம் ஆதிபகவனாகிய முழுமுதற் கடவுளை முதலாகக் கொண்டு இயங்குகிறது.",
+      meaningEnglish: "As the letter 'A' is the first and foundation of all alphabets, so the Supreme Divine is the eternal origin of this vast universe.",
+      storyTitle: "The Weaver's Sacred Beginning (நெசவாளியின் முதல் நூல்)",
+      storyContent: "In an ancient Tamil handloom village along the Kaveri, a master weaver taught his son never to lay the shuttle until the lead thread was set true. Just as every exquisite silk saree draws its strength from the first foundational thread, every action and human connection starts with reverence for the prime source.",
+      storyLesson: "Moral: Every noble journey starts with humility and a sacred foundation."
+    },
+    {
+      day: "Kindness & Grace",
+      no: 314,
+      noText: "குறள் 314 (இன்னா செய்யாமை)",
+      tamil: "இன்னாசெய்தாரை ஒறுத்தல் அவர்நாண\nநன்னயம் செய்து விடல்.",
+      meaningTamil: "நமக்குத் தீங்கு செய்தவரைத் தண்டிக்கும் சிறந்த வழி, அவர் தம் செயலுக்கு வெட்கப்படும்படியாக அவருக்கு நன்மையைச் செய்து மறந்து விடுவதே ஆகும்.",
+      meaningEnglish: "The supreme punishment for someone who harms you is to shame them with generous kindness, and forget the malice completely.",
+      storyTitle: "The Roadside Mango Orchard (மாந்தோப்பு உழவன்)",
+      storyContent: "A farmer caught a traveler throwing stones to knock mangoes from his trees, breaking a branch. Instead of shouting, the farmer picked the ripest golden mangoes in a basket and handed them to the traveler, saying, 'A stone may give you sour fruit; kindness will always give you sweet ones.' Ashamed, the traveler bowed and tended the broken branch.",
+      storyLesson: "Moral: Respond to bitterness with grace; love turns foes into friends."
+    },
+    {
+      day: "True Companionship",
+      no: 788,
+      noText: "குறள் 788 (நட்பு)",
+      tamil: "உடுக்கை இழந்தவன் கைபோல ஆங்கே\nஇடுக்கண் களைவதாம் நட்பு.",
+      meaningTamil: "ஆடை நழுவும்போது கை உடனே சென்று மானம் காப்பது போல, நண்பனுக்குத் துன்பம் வந்த கணமே ஓடிச்சென்று உதவி செய்வதே உண்மையான நட்பு.",
+      meaningEnglish: "True friendship rushes instantly to wipe away affliction, just as the hand springs instinctively to catch slipping attire.",
+      storyTitle: "The Midnight Flat Tire on NH44 (நெடுஞ்சாலை தோழன்)",
+      storyContent: "Traveling on a stormy night between Salem and Dindigul, Selvam's car broke down in darkness. Without hesitation, his carpool companion Sundar immediately stepped into the pouring rain with a flashlight, helping jack up the wheel in minutes before Selvam could even ask.",
+      storyLesson: "Moral: Real companions act before words are even spoken."
+    },
+    {
+      day: "Perseverance & Hard Work",
+      no: 619,
+      noText: "குறள் 619 (ஆள்வினை உடைமை)",
+      tamil: "தெய்வத்தான் ஆகா தெனினும் முயற்சிதன்\nமெய்வருத்தக் கூலி தரும்.",
+      meaningTamil: "விதியின் வலிமையால் ஒரு காரியம் முடியாது என்றாலும், விடாமுயற்சியோடு தன் உடல் வருந்தி உழைக்கும் உழைப்பானது அதற்குரிய பலனை நிச்சயமாகத் தரும்.",
+      meaningEnglish: "Though destiny may decree a task impossible, persistent labor that strains body and soul will surely yield its rightful reward.",
+      storyTitle: "The Mountain Road Sculptor (பாறை செதுக்கிய தொழிலாளி)",
+      storyContent: "Villagers in the Kolli Hills were cut off from hospitals by a steep rocky slope. When contractors gave up, an elderly stonemason began chiseling the boulder daily with a small hammer. After four years of steady daily blows, a safe pathway opened, saving hundreds of lives.",
+      storyLesson: "Moral: Tireless dedication conquers what destiny thought impossible."
+    }
+  ];
+
+  let currentDailyKuralIndex = 0;
+
+  function renderDailyKuralUI() {
+    const kural = dailyKuralData[currentDailyKuralIndex];
+    if (!kural) return;
+
+    document.getElementById('kuralDayLabel').innerText = kural.day;
+    document.getElementById('kuralNoBadge').innerText = kural.noText;
+    document.getElementById('dailyKuralTamilText').innerHTML = kural.tamil.replace(/\n/g, '<br>');
+    document.getElementById('dailyKuralMeaningTamil').innerText = kural.meaningTamil;
+    document.getElementById('dailyKuralMeaningEnglish').innerText = kural.meaningEnglish;
+    document.getElementById('dailyStoryTitle').innerText = "✨ Real-Life Story: " + kural.storyTitle;
+    document.getElementById('dailyStoryContent').innerText = kural.storyContent;
+    document.getElementById('dailyStoryLesson').innerText = "📌 " + kural.storyLesson;
+  }
+
+  function changeDailyKural(delta) {
+    currentDailyKuralIndex = (currentDailyKuralIndex + delta + dailyKuralData.length) % dailyKuralData.length;
+    renderDailyKuralUI();
+  }
+
+  function playDailyKuralAudio() {
+    const kural = dailyKuralData[currentDailyKuralIndex];
+    if (!kural || !synth) return;
+
+    synth.cancel();
+    document.getElementById('currentTrackTitle').innerText = "Thirukkural " + kural.noText;
+    document.getElementById('currentTrackSub').innerText = kural.meaningEnglish;
+
+    const fullAudioText = `${kural.tamil.replace(/\n/g, ' ')}. ${kural.meaningEnglish}. Story lesson: ${kural.storyLesson}`;
+    const subText = `${kural.tamil.replace(/\n/g, ' ')} — ${kural.meaningEnglish}`;
+    document.getElementById('subtitleText').innerText = subText;
+
+    // Scroll to player
+    document.getElementById('audioMasterIsland').scrollIntoView({ behavior: 'smooth' });
+
+    speechUtterance = new SpeechSynthesisUtterance(fullAudioText);
+    speechUtterance.rate = 0.92;
+    speechUtterance.pitch = 1.0;
+
+    const voices = synth.getVoices();
+    const tamilVoice = voices.find(v => v.lang.includes('ta') || v.lang.includes('en-IN') || v.name.includes('India'));
+    if (tamilVoice) speechUtterance.voice = tamilVoice;
+
+    speechUtterance.onstart = () => setPlayStateUI(true);
+    speechUtterance.onend = () => setPlayStateUI(false);
+    speechUtterance.onerror = () => setPlayStateUI(false);
+
+    synth.speak(speechUtterance);
+  }
+
+  // Auto initialize on load
+  document.addEventListener('DOMContentLoaded', () => {
+    renderDailyKuralUI();
+  });
+
+  // Pre-load available voices
+  if (synth && synth.onvoiceschanged !== undefined) {
+    synth.onvoiceschanged = () => synth.getVoices();
+  }
+</script>
+{% endblock %}
