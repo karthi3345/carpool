@@ -2,7 +2,12 @@ import os
 import re
 import uuid
 from datetime import datetime
-import fitz  # PyMuPDF
+
+try:
+    import fitz  # PyMuPDF
+except ImportError:
+    fitz = None
+
 from PIL import Image, ImageDraw, ImageFont
 
 # Initialize RapidOCR engine
