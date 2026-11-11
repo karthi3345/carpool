@@ -19,6 +19,17 @@ try:
 
     def application(environ, start_response):
         try:
+            # Diagnostic: inspect /var/task contents if requested or on error
+            if environ.get('PATH_INFO') == '/__debug_fs__':
+                import glob
+                tree = glob.glob('/var/task/**/*', recursive=True)
+                body = ("Files in /var/task:\n\n" + "\n".join(tree)).encode('utf-8')
+                start_response("200 OK", [
+                    ("Content-Type", "text/plain"),
+                    ("Content-Length", str(len(body)))
+                ])
+                return [body]
+
             return _django_app(environ, start_response)
         except Exception:
             err_trace = traceback.format_exc()
