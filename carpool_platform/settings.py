@@ -30,6 +30,8 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
+    'cloudinary_storage',
+    'cloudinary',
     'rest_framework',
     'django_celery_results',
 ]
@@ -128,9 +130,21 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Media files
+# Media files & Cloudinary Storage
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+CLOUDINARY_CLOUD_NAME = env('CLOUDINARY_CLOUD_NAME', default='wtxe3ffw')
+CLOUDINARY_API_KEY = env('CLOUDINARY_API_KEY', default='754469489494381')
+CLOUDINARY_API_SECRET = env('CLOUDINARY_API_SECRET', default='fx978eIsL4nL0tKG4e4WXGLHxEY')
+
+if CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET:
+    CLOUDINARY_STORAGE = {
+        'CLOUD_NAME': CLOUDINARY_CLOUD_NAME,
+        'API_KEY': CLOUDINARY_API_KEY,
+        'API_SECRET': CLOUDINARY_API_SECRET,
+    }
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
