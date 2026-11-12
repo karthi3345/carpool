@@ -171,7 +171,7 @@ def help_center_view(request):
     return render(request, 'support/help_center.html')
 
 def heritage_library_view(request):
-    return render(request, 'public/heritage.html')
+    return render(request, ['landing/heritage.html', 'public/heritage.html'])
 
 def admin_dashboard_view(request):
     return render(request, 'dashboard/admin_dashboard.html')
