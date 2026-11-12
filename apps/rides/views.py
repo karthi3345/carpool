@@ -147,9 +147,18 @@ def search_rides_view(request):
 
     base_qs = Ride.objects.filter(status='published', available_seats__gt=0)
     if from_city:
-        base_qs = base_qs.filter(origin__name__icontains=from_city)
+        from_clean = from_city.strip()
+        # If user searches 'Madurai', include all Madurai hubs/suburbs or district matches
+        if from_clean.lower() == 'madurai':
+            base_qs = base_qs.filter(Q(origin__name__icontains='Madurai') | Q(origin__district__iexact='Madurai') | Q(origin_point__icontains='Madurai'))
+        else:
+            base_qs = base_qs.filter(Q(origin__name__icontains=from_clean) | Q(origin_point__icontains=from_clean))
     if to_city:
-        base_qs = base_qs.filter(destination__name__icontains=to_city)
+        to_clean = to_city.strip()
+        if to_clean.lower() == 'madurai':
+            base_qs = base_qs.filter(Q(destination__name__icontains='Madurai') | Q(destination__district__iexact='Madurai') | Q(destination_point__icontains='Madurai'))
+        else:
+            base_qs = base_qs.filter(Q(destination__name__icontains=to_clean) | Q(destination_point__icontains=to_clean))
 
     # Filter rides strictly for the selected journey date and minimum seats requested
     active_rides = base_qs.filter(departure_date=selected_date)

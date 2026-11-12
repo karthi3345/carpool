@@ -246,7 +246,7 @@
   <form class="search" id="search" autocomplete="off" action="/rides/search/" method="GET">
     <div class="field">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.500a2.500 2.500 0 1 1 0-5 2.500 2.500 0 0 1 0 5z"/></svg>
-      <div><label for="from">From</label><input id="from" name="from_city" list="cities" placeholder="Enter departure city" required></div>
+      <div><label for="from">From</label><input id="from" name="from_city" list="cities" placeholder="e.g. Madurai, Pudur, Madurai North, Chennai" required></div>
     </div>
     <!-- Interactive Swap Cities Button (Chennai <-> Madurai) -->
     <button type="button" id="swap-home-cities-btn" title="Swap departure and destination" style="background: #F1F5F9; border: 1.5px solid #CBD5E1; border-radius: 50%; width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #0066FF; transition: all 0.2s ease; margin: auto -12px; z-index: 10; padding: 0; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.06);">
@@ -256,7 +256,7 @@
     </button>
     <div class="field">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.500a2.500 2.500 0 1 1 0-5 2.500 2.500 0 0 1 0 5z"/></svg>
-      <div><label for="to">To</label><input id="to" name="to_city" list="cities" placeholder="Enter destination" required></div>
+      <div><label for="to">To</label><input id="to" name="to_city" list="cities" placeholder="e.g. Madurai, Pudur, Madurai North, Chennai" required></div>
     </div>
     <div class="field has-chevron">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 2h2v2h6V2h2v2h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3zM5 9v10h14V9zm2 2h3v3H7z"/></svg>
@@ -281,9 +281,42 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.500" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>Find a Ride</button>
   </form>
   <datalist id="cities">
-    <option>Chennai</option><option>Madurai</option><option>Coimbatore</option><option>Trichy</option>
-    <option>Salem</option><option>Tirunelveli</option><option>Thanjavur</option><option>Rameswaram</option>
-    <option>Kanyakumari</option><option>Ooty</option><option>Kodaikanal</option><option>Pondicherry</option>
+    <!-- Major Tamil Nadu Cities -->
+    <option value="Chennai">Chennai</option>
+    <option value="Madurai">Madurai</option>
+    <option value="Coimbatore">Coimbatore</option>
+    <option value="Trichy">Trichy</option>
+    <option value="Salem">Salem</option>
+    <option value="Tirunelveli">Tirunelveli</option>
+    <option value="Thanjavur">Thanjavur</option>
+    <option value="Rameswaram">Rameswaram</option>
+    <option value="Kanyakumari">Kanyakumari</option>
+    <option value="Ooty">Ooty</option>
+    <option value="Kodaikanal">Kodaikanal</option>
+    <option value="Pondicherry">Pondicherry</option>
+    <option value="Vellore">Vellore</option>
+    <option value="Erode">Erode</option>
+    <option value="Dindigul">Dindigul</option>
+
+    <!-- Madurai Hubs & Suburbs -->
+    <option value="Madurai Central / Periyar">Madurai Central / Periyar Bus Stand</option>
+    <option value="Madurai - Mattuthavani MIBT">Madurai - Mattuthavani MIBT</option>
+    <option value="Madurai - Arapalayam">Madurai - Arapalayam Bus Stand</option>
+    <option value="Madurai - Pudur / ITI">Madurai - Pudur / ITI Stop</option>
+    <option value="Madurai North (Koodal Nagar)">Madurai North (Koodal Nagar / Park Town)</option>
+    <option value="Madurai - Goripalayam">Madurai - Goripalayam Thevar Statue</option>
+    <option value="Madurai - Kalavasal Junction">Madurai - Kalavasal Junction</option>
+    <option value="Madurai - Thiruparankundram">Madurai - Thiruparankundram</option>
+    <option value="Madurai - Othakadai / High Court">Madurai - Othakadai / High Court Bench</option>
+    <option value="Madurai - Tirunagar">Madurai - Tirunagar</option>
+    <option value="Madurai - Viraganoor Ring Road">Madurai - Viraganoor Ring Road Bypass</option>
+    <option value="Madurai - Anna Nagar">Madurai - Anna Nagar 80 Feet Road</option>
+    <option value="Madurai - Alagar Kovil">Madurai - Alagar Kovil</option>
+    <option value="Madurai - Sholavandan">Madurai - Sholavandan</option>
+    <option value="Madurai - Melur">Madurai - Melur Toll Plaza</option>
+    <option value="Madurai - Usilampatti">Madurai - Usilampatti</option>
+    <option value="Madurai - Tirumangalam">Madurai - Tirumangalam Toll</option>
+    <option value="Madurai - Vadipatti">Madurai - Vadipatti Bypass</option>
   </datalist>
 
   <div class="hero-actions">
