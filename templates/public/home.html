@@ -46,6 +46,108 @@
     fill: #fff !important;
   }
 
+  .field {
+    position: relative !important;
+  }
+
+  /* Exact BlaBlaCar Style Modern Location Suggestion Dropdown */
+  .loc-dropdown-box {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    width: 380px;
+    max-width: 92vw;
+    max-height: 380px;
+    background: #FFFFFF;
+    border-radius: 18px;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.16), 0 4px 12px rgba(15, 23, 42, 0.08);
+    border: 1px solid #E2E8F0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 99999;
+    display: none;
+    padding: 6px 0;
+    scrollbar-width: thin;
+    scrollbar-color: #CBD5E1 transparent;
+  }
+  .loc-dropdown-box::-webkit-scrollbar {
+    width: 6px;
+  }
+  .loc-dropdown-box::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .loc-dropdown-box::-webkit-scrollbar-thumb {
+    background-color: #CBD5E1;
+    border-radius: 4px;
+  }
+  .loc-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 18px;
+    border-bottom: 1px solid #F1F5F9;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease;
+    text-align: left;
+  }
+  .loc-item:last-child {
+    border-bottom: none;
+  }
+  .loc-item:hover, .loc-item.active {
+    background: #F8FAFC;
+  }
+  .loc-item-text {
+    flex: 1;
+    min-width: 0;
+    padding-right: 12px;
+  }
+  .loc-title {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: #0F172A;
+    line-height: 1.35;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .loc-subtitle {
+    font-size: 12px;
+    color: #64748B;
+    line-height: 1.35;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  .loc-chevron {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    color: #94A3B8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .loc-chevron svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    fill: none;
+  }
+  .loc-item:hover .loc-chevron {
+    color: #0066FF;
+  }
+  .loc-empty-msg {
+    padding: 16px 20px;
+    font-size: 13px;
+    color: #64748B;
+    text-align: center;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
   /* Search Bar Strict Single Line Proper Alignment */
   @media (min-width: 900px) {
     .search {
@@ -71,6 +173,7 @@
       align-items: center !important;
       gap: 12px !important;
       box-sizing: border-box !important;
+      position: relative !important;
     }
     .search .field:last-of-type,
     .search .field.no-divider {
@@ -244,9 +347,10 @@
   </div>
 
   <form class="search" id="search" autocomplete="off" action="/rides/search/" method="GET">
-    <div class="field">
+    <div class="field" id="field-from-wrapper">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.500a2.500 2.500 0 1 1 0-5 2.500 2.500 0 0 1 0 5z"/></svg>
-      <div><label for="from">From</label><input id="from" name="from_city" list="cities" placeholder="e.g. Madurai, Pudur, Madurai North, Chennai" required></div>
+      <div><label for="from">From</label><input id="from" name="from_city" placeholder="e.g. Madurai, Pudur, Madurai North, Chennai" required autocomplete="off"></div>
+      <div class="loc-dropdown-box" id="from-suggestions"></div>
     </div>
     <!-- Interactive Swap Cities Button (Chennai <-> Madurai) -->
     <button type="button" id="swap-home-cities-btn" title="Swap departure and destination" style="background: #F1F5F9; border: 1.5px solid #CBD5E1; border-radius: 50%; width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #0066FF; transition: all 0.2s ease; margin: auto -12px; z-index: 10; padding: 0; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.06);">
@@ -254,9 +358,10 @@
         <path d="M7 16V4M7 4L3 8M7 4L11 8M17 8V20M17 20L21 16M17 20L13 16"/>
       </svg>
     </button>
-    <div class="field">
+    <div class="field" id="field-to-wrapper">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.500a2.500 2.500 0 1 1 0-5 2.500 2.500 0 0 1 0 5z"/></svg>
-      <div><label for="to">To</label><input id="to" name="to_city" list="cities" placeholder="e.g. Madurai, Pudur, Madurai North, Chennai" required></div>
+      <div><label for="to">To</label><input id="to" name="to_city" placeholder="e.g. Madurai, Pudur, Madurai North, Chennai" required autocomplete="off"></div>
+      <div class="loc-dropdown-box" id="to-suggestions"></div>
     </div>
     <div class="field has-chevron">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 2h2v2h6V2h2v2h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3zM5 9v10h14V9zm2 2h3v3H7z"/></svg>
@@ -1245,6 +1350,216 @@ function toggleFaq(element) {
       } else {
         initHomeCalendar();
       }
+    })();
+
+    // Exact Two-Line Location Autocomplete Dropdown with Subtitle & Chevron
+    (function() {
+      const fromInput = document.getElementById('from');
+      const toInput = document.getElementById('to');
+      const fromBox = document.getElementById('from-suggestions');
+      const toBox = document.getElementById('to-suggestions');
+
+      // Pre-harvest datalist fallback items
+      const datalistOptions = Array.from(document.querySelectorAll('#cities option')).map(opt => {
+        const fullVal = opt.value.trim();
+        let district = '';
+        const m = opt.textContent.match(/\(([^)]+)\)$/);
+        if (m) district = m[1].trim();
+        return { name: fullVal, district: district, state: 'Tamil Nadu' };
+      });
+
+      // Format location into exact title & subtitle layout matching reference image
+      function formatLocationItem(item) {
+        const rawName = item.name.trim();
+        const district = item.district ? item.district.trim() : 'Tamil Nadu';
+        let title = rawName;
+        let subtitle = 'Tamil Nadu, India';
+
+        // Known realistic landmark subtitle overrides
+        if (/Chennai International Airport/i.test(rawName)) {
+          title = 'Chennai International Airport (MAA)';
+          subtitle = 'Airport Road, Meenambakkam, Chennai, Tamil Nadu, India';
+        } else if (/Chennai Central Railway Station/i.test(rawName)) {
+          title = 'Chennai Central Railway Station';
+          subtitle = 'Periamet, Jutkapuram, Park Town, Chennai, Tamil Nadu, India';
+        } else if (rawName.toLowerCase() === 'chennai central') {
+          title = 'Chennai Central';
+          subtitle = 'Tamil Nadu';
+        } else if (/Chennai Trade Centre/i.test(rawName)) {
+          title = 'Chennai Trade Centre - Nandambakkam';
+          subtitle = 'Nandambakkam, Tamil Nadu, India';
+        } else if (rawName.includes(' - ')) {
+          // e.g. "Chennai - Koyambedu CMBT Bus Terminus" or "Madurai - Mattuthavani MIBT"
+          const parts = rawName.split(' - ');
+          const cityName = parts[0].trim();
+          const areaName = parts.slice(1).join(' - ').trim();
+          title = rawName;
+          subtitle = `${areaName}, ${cityName}, Tamil Nadu, India`;
+        } else if (district && district.toLowerCase() !== rawName.toLowerCase()) {
+          title = rawName;
+          subtitle = `${district}, Tamil Nadu, India`;
+        } else {
+          title = rawName;
+          subtitle = 'Tamil Nadu, India';
+        }
+
+        return { title, subtitle, rawName };
+      }
+
+      function setupAutocomplete(input, box) {
+        if (!input || !box) return;
+        let debounceTimer = null;
+        let activeIndex = -1;
+
+        function closeBox() {
+          box.style.display = 'none';
+          box.innerHTML = '';
+          activeIndex = -1;
+        }
+
+        function renderResults(items, query) {
+          box.innerHTML = '';
+          activeIndex = -1;
+          if (!items || items.length === 0) {
+            box.innerHTML = '<div class="loc-empty-msg">No matching locations found</div>';
+            box.style.display = 'block';
+            return;
+          }
+
+          // Limit dropdown view to 12 top relevant results for clean scrolling
+          const displayed = items.slice(0, 12);
+          displayed.forEach((item, index) => {
+            const formatted = formatLocationItem(item);
+            const row = document.createElement('div');
+            row.className = 'loc-item';
+            row.dataset.index = index;
+            row.dataset.raw = formatted.rawName;
+            row.dataset.title = formatted.title;
+
+            row.innerHTML = `
+              <div class="loc-item-text">
+                <div class="loc-title">${escapeHTML(formatted.title)}</div>
+                <div class="loc-subtitle">${escapeHTML(formatted.subtitle)}</div>
+              </div>
+              <div class="loc-chevron">
+                <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            `;
+
+            row.addEventListener('click', function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              input.value = formatted.title;
+              closeBox();
+              input.focus();
+            });
+
+            box.appendChild(row);
+          });
+
+          box.style.display = 'block';
+        }
+
+        function escapeHTML(str) {
+          return str.replace(/[&<>'"]/g, tag => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;'
+          }[tag] || tag));
+        }
+
+        function fetchLocations(query) {
+          const q = (query || '').trim().toLowerCase();
+          if (q.length === 0) {
+            closeBox();
+            return;
+          }
+
+          // Fetch from live backend API
+          fetch(`/api/v1/locations/cities/?q=${encodeURIComponent(q)}`)
+            .then(res => res.json())
+            .then(data => {
+              if (data && data.success && Array.isArray(data.cities) && data.cities.length > 0) {
+                renderResults(data.cities, q);
+              } else {
+                // Client-side fallback from datalist options
+                const fallback = datalistOptions.filter(opt =>
+                  opt.name.toLowerCase().includes(q) ||
+                  (opt.district && opt.district.toLowerCase().includes(q))
+                );
+                renderResults(fallback, q);
+              }
+            })
+            .catch(() => {
+              const fallback = datalistOptions.filter(opt =>
+                opt.name.toLowerCase().includes(q) ||
+                (opt.district && opt.district.toLowerCase().includes(q))
+              );
+              renderResults(fallback, q);
+            });
+        }
+
+        input.addEventListener('input', function() {
+          clearTimeout(debounceTimer);
+          const val = this.value;
+          debounceTimer = setTimeout(() => {
+            fetchLocations(val);
+          }, 120);
+        });
+
+        input.addEventListener('focus', function() {
+          if (this.value.trim().length > 0) {
+            fetchLocations(this.value);
+          }
+        });
+
+        // Keyboard navigation (ArrowDown, ArrowUp, Enter, Escape)
+        input.addEventListener('keydown', function(e) {
+          if (box.style.display === 'none') return;
+          const rows = box.querySelectorAll('.loc-item');
+          if (!rows.length) return;
+
+          if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            activeIndex = (activeIndex + 1) % rows.length;
+            updateActive(rows);
+          } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            activeIndex = (activeIndex - 1 + rows.length) % rows.length;
+            updateActive(rows);
+          } else if (e.key === 'Enter') {
+            if (activeIndex >= 0 && activeIndex < rows.length) {
+              e.preventDefault();
+              rows[activeIndex].click();
+            }
+          } else if (e.key === 'Escape') {
+            closeBox();
+          }
+        });
+
+        function updateActive(rows) {
+          rows.forEach((r, idx) => {
+            if (idx === activeIndex) {
+              r.classList.add('active');
+              r.scrollIntoView({ block: 'nearest' });
+            } else {
+              r.classList.remove('active');
+            }
+          });
+        }
+
+        // Close when clicking outside
+        document.addEventListener('click', function(e) {
+          if (!input.contains(e.target) && !box.contains(e.target)) {
+            closeBox();
+          }
+        });
+      }
+
+      setupAutocomplete(fromInput, fromBox);
+      setupAutocomplete(toInput, toBox);
     })();
   </script>
 
