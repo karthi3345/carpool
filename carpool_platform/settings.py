@@ -21,6 +21,7 @@ ALLOWED_HOSTS = ['*']
 
 # Application definition
 DJANGO_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -30,6 +31,7 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
+    'channels',
     'cloudinary_storage',
     'cloudinary',
     'rest_framework',
@@ -149,6 +151,27 @@ if CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET:
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ASGI Application for Django Channels
+ASGI_APPLICATION = 'carpool_platform.asgi.application'
+
+# Channel Layer Configuration (Redis if available, with in-memory fallback for local/serverless)
+REDIS_URL = env('REDIS_URL', default=env('CELERY_BROKER_URL', default=''))
+if REDIS_URL and ('redis://' in REDIS_URL or 'rediss://' in REDIS_URL):
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
+            'CONFIG': {
+                'hosts': [REDIS_URL],
+            },
+        },
+    }
+else:
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels.layers.InMemoryChannelLayer',
+        },
+    }
 
 # REST Framework Configuration
 REST_FRAMEWORK = {

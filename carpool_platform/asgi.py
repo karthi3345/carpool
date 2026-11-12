@@ -1,16 +1,24 @@
 """
-ASGI config for carpool_platform project.
-
-It exposes the ASGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/6.1/howto/deployment/asgi/
+ASGI config for carpool_platform project with Django Channels support.
 """
 
 import os
-
 from django.core.asgi import get_asgi_application
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'carpool_platform.settings')
 
-application = get_asgi_application()
+# Initialize Django ASGI application early to ensure the AppRegistry is loaded
+django_asgi_app = get_asgi_application()
+
+from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.auth import AuthMiddlewareStack
+import apps.rides.routing
+
+application = ProtocolTypeRouter({
+    "http": django_asgi_app,
+    "websocket": AuthMiddlewareStack(
+        URLRouter(
+            apps.rides.routing.websocket_urlpatterns
+        )
+    ),
+})

@@ -1,0 +1,636 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Live GPS Tracking – Ride #{{ ride.id }} | TamizhPayanam{% endblock %}
+
+{% block extra_css %}
+<!-- Leaflet Map CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<style>
+  :root {
+    --track-primary: #0066FF;
+    --track-success: #10B981;
+    --track-dark: #0F172A;
+    --track-gray: #64748B;
+    --track-bg: #F8FAFC;
+    --track-border: #E2E8F0;
+  }
+
+  body {
+    background-color: var(--track-bg);
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  .tracking-container {
+    max-width: 1200px;
+    margin: 28px auto 60px auto;
+    padding: 0 16px;
+  }
+
+  /* Header Card */
+  .tracking-header-card {
+    background: #FFFFFF;
+    border-radius: 20px;
+    padding: 24px 28px;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+    border: 1px solid var(--track-border);
+    margin-bottom: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+  }
+
+  .route-title-box {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .route-badge {
+    background: #EEF2FF;
+    color: #4F46E5;
+    font-weight: 800;
+    font-size: 13px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .route-heading {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--track-dark);
+    margin: 0;
+  }
+
+  .status-pill-live {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #DCFCE7;
+    color: #15803D;
+    font-size: 13.5px;
+    font-weight: 800;
+    padding: 8px 18px;
+    border-radius: 999px;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+  }
+
+  .pulse-dot {
+    width: 10px;
+    height: 10px;
+    background: #16A34A;
+    border-radius: 50%;
+    animation: livePulse 1.6s infinite ease-in-out;
+  }
+
+  @keyframes livePulse {
+    0% { transform: scale(0.9); opacity: 1; }
+    50% { transform: scale(1.4); opacity: 0.5; }
+    100% { transform: scale(0.9); opacity: 1; }
+  }
+
+  /* Main Grid */
+  .tracking-grid {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 24px;
+  }
+
+  @media (max-width: 960px) {
+    .tracking-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Map Container */
+  .map-card {
+    background: #FFFFFF;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 6px 24px rgba(15, 23, 42, 0.08);
+    border: 1px solid var(--track-border);
+    position: relative;
+  }
+
+  #live-gps-map {
+    width: 100%;
+    height: 560px;
+    z-index: 1;
+  }
+
+  /* Floating Overlay inside Map */
+  .map-floating-stats {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    border-radius: 14px;
+    padding: 12px 18px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .stat-group {
+    display: flex;
+    flex-direction: column;
+  }
+  .stat-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--track-gray);
+  }
+  .stat-value {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--track-dark);
+  }
+
+  /* Sidebar Details */
+  .tracking-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .side-card {
+    background: #FFFFFF;
+    border-radius: 20px;
+    padding: 22px;
+    box-shadow: 0 4px 18px rgba(15, 23, 42, 0.05);
+    border: 1px solid var(--track-border);
+  }
+
+  .side-card-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--track-dark);
+    margin: 0 0 16px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  /* Driver info */
+  .driver-flex {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+  .driver-avatar-circle {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0066FF, #00C6FF);
+    color: #FFFFFF;
+    font-size: 20px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 102, 255, 0.25);
+  }
+  .driver-name {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--track-dark);
+    line-height: 1.2;
+  }
+  .driver-veh {
+    font-size: 13px;
+    color: var(--track-gray);
+    margin-top: 2px;
+  }
+
+  /* Timeline points */
+  .timeline-mini {
+    position: relative;
+    padding-left: 24px;
+  }
+  .timeline-mini::before {
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 6px;
+    bottom: 6px;
+    width: 2px;
+    background: #CBD5E1;
+  }
+  .point-item {
+    position: relative;
+    margin-bottom: 18px;
+  }
+  .point-item:last-child {
+    margin-bottom: 0;
+  }
+  .point-dot {
+    position: absolute;
+    left: -24px;
+    top: 3px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #FFFFFF;
+    border: 3px solid #0066FF;
+  }
+  .point-dot.dest {
+    border-color: #EF4444;
+  }
+  .point-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--track-dark);
+  }
+  .point-sub {
+    font-size: 12px;
+    color: var(--track-gray);
+    margin-top: 1px;
+  }
+
+  /* Driver Simulation / Broadcasting Controls */
+  .broadcast-controls {
+    background: #F1F5F9;
+    border-radius: 14px;
+    padding: 16px;
+    margin-top: 16px;
+    border: 1px dashed #CBD5E1;
+  }
+
+  .btn-track-action {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 14px;
+    text-align: center;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+  }
+  .btn-track-broadcast {
+    background: #0066FF;
+    color: #FFFFFF;
+    box-shadow: 0 4px 12px rgba(0, 102, 255, 0.25);
+    margin-bottom: 10px;
+  }
+  .btn-track-broadcast:hover {
+    background: #0052CC;
+  }
+  .btn-track-stop {
+    background: #EF4444;
+    color: #FFFFFF;
+  }
+
+  /* Custom Car Marker Styling */
+  .car-marker-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: #0066FF;
+    color: #FFFFFF;
+    border-radius: 50%;
+    box-shadow: 0 6px 18px rgba(0, 102, 255, 0.45);
+    border: 3px solid #FFFFFF;
+    transition: transform 0.3s ease;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="tracking-container">
+
+  <!-- Header Card -->
+  <div class="tracking-header-card">
+    <div class="route-title-box">
+      <span class="route-badge">Ride #{{ ride.id }}</span>
+      <h1 class="route-heading">{{ ride.origin.name }} &rarr; {{ ride.destination.name }}</h1>
+    </div>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <span id="socket-status" class="status-pill-live">
+        <span class="pulse-dot"></span>
+        <span id="socket-status-text">Connecting to Live GPS...</span>
+      </span>
+      <a href="/rides/{{ ride.id }}/" style="color: #64748B; font-weight: 700; font-size: 14px; text-decoration: none; padding: 6px 12px; border: 1px solid #CBD5E1; border-radius: 8px;">
+        &larr; Ride Details
+      </a>
+    </div>
+  </div>
+
+  <!-- Main Grid -->
+  <div class="tracking-grid">
+
+    <!-- Map View -->
+    <div class="map-card">
+      <div id="live-gps-map"></div>
+
+      <!-- Floating Stats -->
+      <div class="map-floating-stats">
+        <div class="stat-group">
+          <span class="stat-label">Live Speed</span>
+          <span class="stat-value" id="disp-speed">0.0 km/h</span>
+        </div>
+        <div style="width: 1px; height: 28px; background: #E2E8F0;"></div>
+        <div class="stat-group">
+          <span class="stat-label">Last Updated</span>
+          <span class="stat-value" id="disp-time">Just now</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar Details -->
+    <div class="tracking-sidebar">
+
+      <!-- Driver & Vehicle Card -->
+      <div class="side-card">
+        <h3 class="side-card-title">Driver & Vehicle</h3>
+        <div class="driver-flex">
+          <div class="driver-avatar-circle">
+            {{ ride.driver_name|slice:":1"|upper }}
+          </div>
+          <div>
+            <div class="driver-name">{{ ride.driver_name }}</div>
+            <div class="driver-veh">{{ ride.vehicle_model }} &bull; {{ ride.vehicle_number }}</div>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: space-between; font-size: 13px; color: #64748B; padding-top: 10px; border-top: 1px solid #F1F5F9;">
+          <span>Fuel: <strong>{{ ride.fuel_type|default:'Petrol' }}</strong></span>
+          <span>Seats: <strong>{{ ride.available_seats }} available</strong></span>
+        </div>
+      </div>
+
+      <!-- Route Landmarks -->
+      <div class="side-card">
+        <h3 class="side-card-title">Route Itinerary</h3>
+        <div class="timeline-mini">
+          <div class="point-item">
+            <div class="point-dot"></div>
+            <div class="point-name">{{ ride.origin.name }}</div>
+            <div class="point-sub">{{ ride.origin_point|default:'Pickup location' }}</div>
+          </div>
+          <div class="point-item">
+            <div class="point-dot dest"></div>
+            <div class="point-name">{{ ride.destination.name }}</div>
+            <div class="point-sub">{{ ride.destination_point|default:'Drop-off point' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live GPS Broadcasting Box for Driver -->
+      <div class="side-card">
+        <h3 class="side-card-title">
+          <span>GPS Sharing</span>
+          <span style="font-size: 11px; background: #E0F2FE; color: #0284C7; padding: 2px 8px; border-radius: 6px;">HTML5 Geo</span>
+        </h3>
+        <p style="font-size: 13px; color: #64748B; margin-bottom: 12px;">
+          Drivers can share device GPS in real time, or test broadcast mode along the route.
+        </p>
+
+        <button type="button" id="btn-device-gps" class="btn-track-action btn-track-broadcast">
+          📡 Share My Real Device GPS
+        </button>
+
+        <button type="button" id="btn-sim-gps" class="btn-track-action" style="background: #10B981; color: #FFF;">
+          🚗 Simulate Driving Broadcast
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<script>
+(function() {
+  const rideId = "{{ ride.id }}";
+  const originCoords = [{{ origin_lat }}, {{ origin_lng }}];
+  const destCoords = [{{ dest_lat }}, {{ dest_lng }}];
+
+  // Initialize Map
+  const map = L.map('live-gps-map', {
+    zoomControl: true,
+    scrollWheelZoom: false
+  }).setView(originCoords, 11);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  // Markers
+  const originMarker = L.marker(originCoords, {
+    title: "{{ ride.origin.name }}"
+  }).addTo(map).bindPopup("<strong>Departure:</strong> {{ ride.origin.name }}<br><small>{{ ride.origin_point }}</small>");
+
+  const destMarker = L.marker(destCoords, {
+    title: "{{ ride.destination.name }}"
+  }).addTo(map).bindPopup("<strong>Destination:</strong> {{ ride.destination.name }}<br><small>{{ ride.destination_point }}</small>");
+
+  // Route Polyline
+  const routeLine = L.polyline([originCoords, destCoords], {
+    color: '#0066FF',
+    weight: 4,
+    opacity: 0.7,
+    dashArray: '8, 8'
+  }).addTo(map);
+
+  map.fitBounds(routeLine.getBounds(), { padding: [50, 50] });
+
+  // Custom Moving Vehicle Marker
+  const carIcon = L.divIcon({
+    className: 'car-div-icon',
+    html: `
+      <div class="car-marker-icon" id="vehicle-car-pin">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
+        </svg>
+      </div>
+    `,
+    iconSize: [44, 44],
+    iconAnchor: [22, 22]
+  });
+
+  let vehicleMarker = L.marker(originCoords, { icon: carIcon }).addTo(map);
+
+  // Status Elements
+  const statusPill = document.getElementById('socket-status');
+  const statusText = document.getElementById('socket-status-text');
+  const dispSpeed = document.getElementById('disp-speed');
+  const dispTime = document.getElementById('disp-time');
+
+  // WebSocket Connection via Django Channels
+  const wsScheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
+  const wsUrl = `${wsScheme}://${window.location.host}/ws/rides/${rideId}/tracking/`;
+  let socket = null;
+  let reconnectInterval = 3000;
+
+  function connectWebSocket() {
+    socket = new WebSocket(wsUrl);
+
+    socket.onopen = function() {
+      statusPill.style.background = '#DCFCE7';
+      statusPill.style.color = '#15803D';
+      statusText.innerText = 'Live GPS Connected';
+    };
+
+    socket.onmessage = function(event) {
+      try {
+        const payload = JSON.parse(event.data);
+        if (payload.type === 'gps_update' || payload.type === 'location_update') {
+          updateVehiclePosition(payload.lat, payload.lng, payload.speed, payload.heading);
+        } else if (payload.type === 'connection_established') {
+          statusText.innerText = 'GPS Tracking Active';
+        }
+      } catch(e) {
+        console.error("WebSocket message parse error:", e);
+      }
+    };
+
+    socket.onclose = function() {
+      statusPill.style.background = '#FEF2F2';
+      statusPill.style.color = '#B91C1C';
+      statusText.innerText = 'Reconnecting...';
+      setTimeout(connectWebSocket, reconnectInterval);
+    };
+
+    socket.onerror = function(err) {
+      console.warn("WebSocket encounter:", err);
+    };
+  }
+
+  connectWebSocket();
+
+  function updateVehiclePosition(lat, lng, speed, heading) {
+    const newLatLng = [lat, lng];
+    vehicleMarker.setLatLng(newLatLng);
+
+    // Rotate pin if heading provided
+    const pin = document.getElementById('vehicle-car-pin');
+    if (pin && heading !== undefined) {
+      pin.style.transform = `rotate(${heading}deg)`;
+    }
+
+    // Update floating stats
+    if (speed !== undefined) {
+      dispSpeed.innerText = `${parseFloat(speed).toFixed(1)} km/h`;
+    }
+    const now = new Date();
+    dispTime.innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  }
+
+  // Real Device GPS Broadcast
+  let watchId = null;
+  const btnDevice = document.getElementById('btn-device-gps');
+  btnDevice.addEventListener('click', function() {
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser.");
+      return;
+    }
+
+    if (watchId !== null) {
+      navigator.geolocation.clearWatch(watchId);
+      watchId = null;
+      btnDevice.innerText = '📡 Share My Real Device GPS';
+      btnDevice.style.background = '#0066FF';
+      return;
+    }
+
+    btnDevice.innerText = '🛑 Stop Sharing GPS';
+    btnDevice.style.background = '#EF4444';
+
+    watchId = navigator.geolocation.watchPosition(
+      function(pos) {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        const speed = (pos.coords.speed || 0) * 3.6; // convert m/s to km/h
+        const heading = pos.coords.heading || 0;
+
+        // Local update
+        updateVehiclePosition(lat, lng, speed, heading);
+
+        // Send over WebSocket to all passengers
+        if (socket && socket.readyState === WebSocket.OPEN) {
+          socket.send(json.stringify({
+            action: 'location_update',
+            lat: lat,
+            lng: lng,
+            speed: speed,
+            heading: heading,
+            role: 'driver'
+          }));
+        }
+      },
+      function(err) {
+        console.warn("Geolocation watch error:", err.message);
+      },
+      { enableHighAccuracy: true, maximumAge: 1000 }
+    );
+  });
+
+  // Simulated Driving Broadcast along Route
+  let simInterval = null;
+  const btnSim = document.getElementById('btn-sim-gps');
+  btnSim.addEventListener('click', function() {
+    if (simInterval) {
+      clearInterval(simInterval);
+      simInterval = null;
+      btnSim.innerText = '🚗 Simulate Driving Broadcast';
+      btnSim.style.background = '#10B981';
+      return;
+    }
+
+    btnSim.innerText = '🛑 Stop Simulation';
+    btnSim.style.background = '#EF4444';
+
+    let progress = 0;
+    const steps = 100;
+    const latDiff = (destCoords[0] - originCoords[0]) / steps;
+    const lngDiff = (destCoords[1] - originCoords[1]) / steps;
+
+    simInterval = setInterval(() => {
+      progress++;
+      if (progress > steps) progress = 0;
+
+      const curLat = originCoords[0] + (latDiff * progress);
+      const curLng = originCoords[1] + (lngDiff * progress);
+      const simSpeed = 55.0 + (Math.random() * 12);
+
+      // Send through WebSocket to broadcast to all clients
+      if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify({
+          action: 'location_update',
+          lat: curLat,
+          lng: curLng,
+          speed: simSpeed,
+          heading: 145,
+          role: 'driver'
+        }));
+      } else {
+        // Fallback local update if offline
+        updateVehiclePosition(curLat, curLng, simSpeed, 145);
+      }
+    }, 1500);
+  });
+
+})();
+</script>
+{% endblock %}

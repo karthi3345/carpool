@@ -616,6 +616,37 @@ def ride_detail_view(request, ride_id):
     })
 
 
+def ride_live_track_view(request, ride_id):
+    """
+    Real-Time GPS Tracking Page powered by Django Channels WebSocket.
+    Displays live interactive OpenStreetMap / Leaflet map, moving vehicle marker,
+    driver info, speed, heading, route polyline, and real-time status.
+    """
+    ride = get_object_or_404(Ride, id=ride_id)
+    
+    # Calculate initial origin and destination coordinates
+    origin_lat = float(ride.origin.latitude) if ride.origin.latitude else 13.0827
+    origin_lng = float(ride.origin.longitude) if ride.origin.longitude else 80.2707
+    dest_lat = float(ride.destination.latitude) if ride.destination.latitude else 9.9252
+    dest_lng = float(ride.destination.longitude) if ride.destination.longitude else 78.1198
+
+    # Determine if current viewer is the driver
+    is_driver = False
+    if request.user.is_authenticated:
+        user_name = (request.user.get_full_name() or request.user.username).strip().lower()
+        if user_name and user_name in ride.driver_name.lower():
+            is_driver = True
+
+    return render(request, 'rides/track.html', {
+        'ride': ride,
+        'origin_lat': origin_lat,
+        'origin_lng': origin_lng,
+        'dest_lat': dest_lat,
+        'dest_lng': dest_lng,
+        'is_driver': is_driver,
+    })
+
+
 def cancel_ride_view(request, ride_id):
     """
     Allow driver to cancel their published ride.
