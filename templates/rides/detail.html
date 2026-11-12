@@ -470,6 +470,11 @@
       <li class="bb-pref-item">
         <span class="bb-pref-icon">🚗</span>
         <span style="text-transform: uppercase;">{{ ride.vehicle_model|default:'MARUTI SWIFT DZIRE' }} &bull; {{ ride.vehicle_number|default:'TN-58-AX-9912' }}</span>
+        {% if ride.fuel_type %}
+          <span style="background: {% if ride.fuel_type == 'EV' %}#DCFCE7; color: #15803D;{% elif ride.fuel_type == 'Diesel' %}#FEF3C7; color: #B45309;{% elif ride.fuel_type == 'CNG' %}#ECFCCB; color: #4D7C0F;{% else %}#E0F2FE; color: #0284C7;{% endif %} font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 6px; margin-left: 8px;">
+            {% if ride.fuel_type == 'EV' %}⚡ EV{% elif ride.fuel_type == 'Diesel' %}⛽ DIESEL{% elif ride.fuel_type == 'CNG' %}🌿 CNG{% else %}⛽ PETROL{% endif %}
+          </span>
+        {% endif %}
       </li>
     </ul>
 

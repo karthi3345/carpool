@@ -48,8 +48,20 @@ TN_CITY_ALIASES = {
     'vellore': 'Vellore',
     'salem': 'Salem',
     'madurai': 'Madurai',
+    'madurai north': 'Madurai',
+    'madurai south': 'Madurai',
+    'pudur': 'Madurai',
+    'k.pudur': 'Madurai',
+    'mattuthavani': 'Madurai',
+    'arapalayam': 'Madurai',
+    'thallakulam': 'Madurai',
+    'tirunagar': 'Madurai',
     'chennai': 'Chennai',
     'coimbatore': 'Coimbatore',
+    'tambaram': 'Chengalpattu',
+    'avadi': 'Tiruvallur',
+    'velachery': 'Chennai',
+    'guindy': 'Chennai',
 }
 
 def is_valid_tamilnadu_district(district_name):

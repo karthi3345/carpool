@@ -386,6 +386,9 @@ def publish_ride_view(request):
 
         seats = int(request.POST.get('available_seats', 3))
         price = Decimal(request.POST.get('price_per_seat', 500))
+        fuel_type = request.POST.get('fuel_type', 'Petrol').strip()
+        if fuel_type not in ['Petrol', 'Diesel', 'EV', 'CNG']:
+            fuel_type = 'Petrol'
         driver = request.POST.get('driver_name', 'Verified Driver').strip()
         vehicle_model = request.POST.get('vehicle_model', 'Maruti Suzuki Dzire').strip()
         vehicle_number = request.POST.get('vehicle_number', 'TN-01-AB-1234').strip().upper()
@@ -513,6 +516,7 @@ def publish_ride_view(request):
                 available_seats=seats,
                 total_seats=seats,
                 price_per_seat=price,
+                fuel_type=fuel_type,
                 driver_name=driver,
                 vehicle_model=vehicle_model,
                 vehicle_number=vehicle_number,
@@ -549,6 +553,7 @@ def publish_ride_view(request):
                 available_seats=seats,
                 total_seats=seats,
                 price_per_seat=price,
+                fuel_type=fuel_type,
                 driver_name=driver,
                 vehicle_model=vehicle_model,
                 vehicle_number=vehicle_number,

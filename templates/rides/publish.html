@@ -689,8 +689,8 @@
             <div class="field-input-box">
               <span class="field-icon">📍</span>
               <div class="field-text-wrap">
-                <label class="field-label-small">From (Departure City)</label>
-                <input type="text" id="id_origin" name="origin_name" class="field-input-clean" placeholder="Enter departure city (e.g. Chennai)" value="{{ form_data.origin_name|default:'' }}" required list="citiesList" autocomplete="off">
+                <label class="field-label-small">From (Departure City / Area)</label>
+                <input type="text" id="id_origin" name="origin_name" class="field-input-clean" placeholder="e.g. Madurai, Madurai North, Pudur, Chennai" value="{{ form_data.origin_name|default:'' }}" required list="citiesList" autocomplete="off">
               </div>
             </div>
           </div>
@@ -700,8 +700,8 @@
             <div class="field-input-box">
               <span class="field-icon">🎯</span>
               <div class="field-text-wrap">
-                <label class="field-label-small">To (Destination City)</label>
-                <input type="text" id="id_dest" name="destination_name" class="field-input-clean" placeholder="Enter destination city (e.g. Madurai)" value="{{ form_data.destination_name|default:'' }}" required list="citiesList" autocomplete="off">
+                <label class="field-label-small">To (Destination City / Area)</label>
+                <input type="text" id="id_dest" name="destination_name" class="field-input-clean" placeholder="e.g. Madurai, Madurai North, Pudur, Chennai" value="{{ form_data.destination_name|default:'' }}" required list="citiesList" autocomplete="off">
               </div>
             </div>
           </div>
@@ -719,7 +719,7 @@
               <span class="field-icon">📌</span>
               <div class="field-text-wrap">
                 <label class="field-label-small">Pickup Landmark (Suggested for City)</label>
-                <input type="text" id="id_origin_point" name="origin_point" class="field-input-clean" placeholder="e.g. Koyambedu CMBT / Tambaram" value="{{ form_data.origin_point|default:'' }}" list="originLandmarksList" autocomplete="off">
+                <input type="text" id="id_origin_point" name="origin_point" class="field-input-clean" placeholder="e.g. Madurai North / Pudur / CMBT" value="{{ form_data.origin_point|default:'' }}" list="originLandmarksList" autocomplete="off">
                 <datalist id="originLandmarksList"></datalist>
               </div>
             </div>
@@ -731,7 +731,7 @@
               <span class="field-icon">🏁</span>
               <div class="field-text-wrap">
                 <label class="field-label-small">Drop Landmark (Choose for Destination City)</label>
-                <input type="text" id="id_dest_point" name="destination_point" class="field-input-clean" placeholder="Select or type drop landmark" value="{{ form_data.destination_point|default:'' }}" list="destLandmarksList" autocomplete="off">
+                <input type="text" id="id_dest_point" name="destination_point" class="field-input-clean" placeholder="e.g. Madurai North / Pudur / Drop point" value="{{ form_data.destination_point|default:'' }}" list="destLandmarksList" autocomplete="off">
                 <datalist id="destLandmarksList"></datalist>
               </div>
             </div>
@@ -875,8 +875,24 @@
           </div>
         </div>
 
-        <!-- Government ID Number (Aadhaar / Passport / Voter ID) -->
-        <div class="form-row-2" style="margin-bottom: 16px;">
+        <div class="form-row-2">
+          <!-- Fuel Type: Petrol, Diesel, EV, CNG -->
+          <div class="form-field-group">
+            <div class="field-input-box">
+              <span class="field-icon">⛽</span>
+              <div class="field-text-wrap" style="width: 100%;">
+                <label class="field-label-small">Fuel / Powertrain Type</label>
+                <select id="id_fuel_type" name="fuel_type" class="field-input-clean" style="cursor: pointer; background: transparent; font-weight: 700; color: #0F172A;">
+                  <option value="Petrol" {% if form_data.fuel_type == 'Petrol' or not form_data.fuel_type %}selected{% endif %}>⛽ Petrol</option>
+                  <option value="Diesel" {% if form_data.fuel_type == 'Diesel' %}selected{% endif %}>⛽ Diesel</option>
+                  <option value="EV" {% if form_data.fuel_type == 'EV' %}selected{% endif %}>⚡ Electric Vehicle (EV)</option>
+                  <option value="CNG" {% if form_data.fuel_type == 'CNG' %}selected{% endif %}>🌿 Green CNG</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Government ID Number (Aadhaar / Passport / Voter ID) -->
           <div class="form-field-group">
             <div class="field-input-box">
               <span class="field-icon">🆔</span>
@@ -1024,6 +1040,8 @@
       <datalist id="citiesList">
         <option value="Chennai">
         <option value="Madurai">
+        <option value="Madurai North">
+        <option value="Pudur (Madurai)">
         <option value="Coimbatore">
         <option value="Trichy">
         <option value="Salem">
@@ -1085,6 +1103,7 @@
           <div class="preview-vehicle-name">
             <span>🚗</span>
             <span id="prev_car_model">Maruti Suzuki Dzire VXI</span>
+            <span id="prev_fuel_tag" style="background: #E0F2FE; color: #0284C7; font-size: 11px; font-weight: 800; padding: 2px 7px; border-radius: 6px; margin-left: 6px;">⛽ Petrol</span>
           </div>
           <span class="preview-vehicle-plate" id="prev_car_plate">TN-01-AB-1234</span>
         </div>
@@ -1181,6 +1200,8 @@
         'Airport Metro / Tirusulam'
       ],
       'madurai': [
+        'Madurai North (Koodal Nagar / Park Town)',
+        'Pudur (K.Pudur ITI / Bus Stand)',
         'Mattuthavani Integrated Bus Stand (MIBT)',
         'Periyar Central Bus Stand',
         'Arapalayam Bus Stand',
@@ -1189,6 +1210,20 @@
         'Kalavasal Junction (Theni Road)',
         'Viraganoor Ring Road Bypass',
         'Fathima College Toll Junction'
+      ],
+      'madurai north': [
+        'Madurai North Railway Station',
+        'Koodal Nagar Railway Junction',
+        'Park Town Bypass',
+        'Alagar Kovil Road / Thallakulam',
+        'Fathima College Junction'
+      ],
+      'pudur': [
+        'K.Pudur Bus Stand',
+        'Pudur ITI Bus Stop',
+        'Karpaga Nagar Roundana',
+        'Alagar Kovil Road Junction',
+        'Surveyor Colony Bypass'
       ],
       'coimbatore': [
         'Gandhipuram Central Bus Stand',
@@ -1339,6 +1374,34 @@
     bindInputToText('id_car_model', 'prev_car_model', 'Maruti Suzuki Dzire VXI');
     bindInputToText('id_car_number', 'prev_car_plate', 'TN-01-AB-1234', function(v) { return v.toUpperCase(); });
     bindInputToText('id_seats', 'prev_seats_num', '3');
+
+    // Fuel Type selection preview
+    const fuelSelect = document.getElementById('id_fuel_type');
+    const prevFuelTag = document.getElementById('prev_fuel_tag');
+    if (fuelSelect && prevFuelTag) {
+      function updateFuelTag() {
+        const val = fuelSelect.value;
+        if (val === 'EV') {
+          prevFuelTag.textContent = '⚡ Electric (EV)';
+          prevFuelTag.style.background = '#DCFCE7';
+          prevFuelTag.style.color = '#15803D';
+        } else if (val === 'CNG') {
+          prevFuelTag.textContent = '🌿 Green CNG';
+          prevFuelTag.style.background = '#ECFCCB';
+          prevFuelTag.style.color = '#4D7C0F';
+        } else if (val === 'Diesel') {
+          prevFuelTag.textContent = '⛽ Diesel';
+          prevFuelTag.style.background = '#FEF3C7';
+          prevFuelTag.style.color = '#B45309';
+        } else {
+          prevFuelTag.textContent = '⛽ Petrol';
+          prevFuelTag.style.background = '#E0F2FE';
+          prevFuelTag.style.color = '#0284C7';
+        }
+      }
+      fuelSelect.addEventListener('change', updateFuelTag);
+      updateFuelTag();
+    }
     // Datepicker & Time Controls Setup
     const dateInput = document.getElementById('id_date');
     const dateWrapper = document.getElementById('date_input_wrapper');

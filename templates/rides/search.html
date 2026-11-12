@@ -1234,6 +1234,11 @@
               </div>
               <div class="vehicle-info-text">
                 {{ ride.vehicle_model|default:"Toyota Innova" }} &bull; {{ ride.vehicle_number|default:"TN 07 AB 1234" }}
+                {% if ride.fuel_type %}
+                  <span style="background: {% if ride.fuel_type == 'EV' %}#DCFCE7; color: #15803D;{% elif ride.fuel_type == 'Diesel' %}#FEF3C7; color: #B45309;{% elif ride.fuel_type == 'CNG' %}#ECFCCB; color: #4D7C0F;{% else %}#E0F2FE; color: #0284C7;{% endif %} font-size: 10.5px; font-weight: 800; padding: 1.5px 6px; border-radius: 5px; margin-left: 6px;">
+                    {% if ride.fuel_type == 'EV' %}⚡ EV{% elif ride.fuel_type == 'Diesel' %}⛽ Diesel{% elif ride.fuel_type == 'CNG' %}🌿 CNG{% else %}⛽ Petrol{% endif %}
+                  </span>
+                {% endif %}
               </div>
               <div class="verified-driver-pill">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>

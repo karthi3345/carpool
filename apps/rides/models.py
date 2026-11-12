@@ -48,6 +48,13 @@ class Ride(models.Model):
     support_notes = models.TextField(blank=True, default='Awaiting customer support document manual verification.')
     available_seats = models.PositiveIntegerField(default=3)
     total_seats = models.PositiveIntegerField(default=3)
+    FUEL_TYPE_CHOICES = (
+        ('Petrol', 'Petrol ⛽'),
+        ('Diesel', 'Diesel ⛽'),
+        ('EV', 'Electric (EV) ⚡'),
+        ('CNG', 'CNG 🌿'),
+    )
+    fuel_type = models.CharField(max_length=20, choices=FUEL_TYPE_CHOICES, default='Petrol', blank=True)
     price_per_seat = models.DecimalField(max_digits=7, decimal_places=2, default=450.00)
 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='published')
